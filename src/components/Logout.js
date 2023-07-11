@@ -1,20 +1,25 @@
 import React from "react";
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { logout } from '../actions/currentUser.js'
-import { withRouter } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 
-const Logout = ({logout, history}) => {
+const Logout = () => {
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
+
+    const handleLogout = (event) => {
+        event.preventDefault();
+        dispatch(logout());
+        navigate('/');
+      };
+    
 
     return (
-        <form onSubmit={(event) => {
-            event.preventDefault()
-            logout()
-            history.push('/')
-            } 
-        }>
+        <form onSubmit={handleLogout}>
             <input type="submit" value="Log Out" />
         </form>
     )
 }
 
-export default withRouter(connect( null, { logout })(Logout));
+export default Logout;

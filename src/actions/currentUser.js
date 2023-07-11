@@ -19,29 +19,30 @@ export const clearCurrentUser = () => {
 // asynchronous action creators
 
 export const login = (credentials, history) => {
-    console.log(credentials)
-    return(dispatch) => {
-           return fetch('http://localhost:3001/api/v1/login', {
-                credentials: "include",
-                method: 'POST',
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(credentials)
-            })
-            .then(resp => {return resp.json()})
-            .then(user => { 
+    console.log(credentials, history, 'history')
+    return async (dispatch) => {
+        try{ 
+        const response = await fetch('http://localhost:3001/api/v1/login', {
+            credentials: 'include',
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(credentials),
+          });
+          const user = await response.json();
                 if(user.error){
                     alert(user.error)
                 } else {
                     dispatch({ type: 'SET_CURRENT_USER', user: user })
                     dispatch(fetchRuns())
                     dispatch(resetLoginForm())
-                    history.push('/profile')
-                    
+                    console.log(history, 'history')
+                    history.push('/profile')                  
                 }
-            })
-            .catch(console.log)
+        } catch(error){
+            console.log(error)
+        } 
         };
 }
 

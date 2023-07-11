@@ -1,4 +1,4 @@
-import { resetNewRunForm } from './newRunForm'
+import { resetNewRunForm } from './newRun'
 
 export const clearRuns = () => {
     return {
