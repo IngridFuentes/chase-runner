@@ -1,7 +1,7 @@
-import React, { useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import './App.scss';
 import { connect } from 'react-redux';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
 import Home from './components/Home.js';
 import Login from './components/Login.js';
@@ -13,18 +13,7 @@ import RunsContainer from './containers/RunsContainer.js';
 
 function App(props) {
 
-  console.log(props)
-  // const [isLoggedIn, setIsLoggedIn] = useState(loggedIn);
-
-  // const handleLogin = () => {
-  //   // Simulating a login action
-  //   setIsLoggedIn(true);
-  // };
-
-  // const handleLogout = () => {
-  //   // Simulating a logout action
-  //   setIsLoggedIn(false);
-  // };
+console.log(props)
 
   const loggedIn = true;
   
@@ -39,13 +28,12 @@ function App(props) {
     <div className="App">
       {loggedIn ? <NavBar /> : <Home /> }
       {/* <MediaQuery minWidth={800}> */}
-      <BrowserRouter>
         <Routes>
           <Route exact path="/" element={<Home />} />
           <Route exact path="/login" element={<Login />} />
           <Route exact path="/profile" element={loggedIn ? <RunsContainer /> : <Home />} />
         </Routes>
-      </BrowserRouter>
+
       {/* </MediaQuery> */}
     </div>
   );

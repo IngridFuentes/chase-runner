@@ -2,8 +2,12 @@ import React from "react";
 import { connect } from 'react-redux';
 import { updateLoginForm } from '../actions/loginForm.js'
 import { login } from '../actions/currentUser.js'
+import { useNavigate } from 'react-router-dom'
 
-const Login = ({loginForm, updateLoginForm, login, history }) => {
+
+const Login = ({loginForm, updateLoginForm, login}) => {
+
+    const navigate = useNavigate();
 
     const handleOnChange = event => {
         const {name, value} = event.target
@@ -19,7 +23,8 @@ const Login = ({loginForm, updateLoginForm, login, history }) => {
         if (!event.target.checkValidity()) {
             return alert("Invalid username or email")
           } else {
-              login(loginForm, history)
+              login(loginForm);
+              navigate('/profile');
           }
     }
     return (
