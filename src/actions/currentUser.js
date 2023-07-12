@@ -18,39 +18,64 @@ export const clearCurrentUser = () => {
 
 // asynchronous action creators
 
+// export const login = (credentials, history) => {
+//     console.log(credentials, history, 'history')
+//     return async (dispatch) => {
+//         try{ 
+//         const resp = await fetch('http://localhost:3000/api/v1/login', {
+//             credentials: 'include',
+//             method: 'POST',
+//             headers: {
+//               'Content-Type': 'application/json',
+//             },
+//             body: JSON.stringify(credentials),
+//           });
+//           const user = await resp.json();
+//                 if(user.error){
+//                     alert(user.error)
+//                 } else {
+//                     dispatch({ type: 'SET_CURRENT_USER', user: user })
+//                     dispatch(fetchRuns())
+//                     dispatch(resetLoginForm())
+//                     console.log(history, 'history')
+//                     history.push('/profile')                  
+//                 }
+//         } catch(error){
+//             console.log(error)
+//         } 
+//         };
+// }
 export const login = (credentials, history) => {
-    console.log(credentials, history, 'history')
-    return async (dispatch) => {
-        try{ 
-        const response = await fetch('http://localhost:3001/api/v1/login', {
-            credentials: 'include',
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(credentials),
-          });
-          const user = await response.json();
+    return(dispatch) => {
+
+           return fetch('http://localhost:3000/api/v1/login', {
+                credentials: "include",
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(credentials)
+            })
+            .then(resp => {return resp.json()})
+            .then(user => { 
                 if(user.error){
                     alert(user.error)
                 } else {
                     dispatch({ type: 'SET_CURRENT_USER', user: user })
                     dispatch(fetchRuns())
                     dispatch(resetLoginForm())
-                    console.log(history, 'history')
-                    history.push('/profile')                  
+                    history.push('/profile')
+                    
                 }
-        } catch(error){
-            console.log(error)
-        } 
+            })
+            .catch(console.log)
         };
 }
-
 export const logout = event => {
     return dispatch => {
         dispatch(clearCurrentUser())
         dispatch(clearRuns())
-        return fetch('http://localhost:3001/api/v1/logout', {
+        return fetch('http://localhost:3000/api/v1/logout', {
             credentials: "include",
             method: "DELETE"
         })
@@ -60,7 +85,7 @@ export const logout = event => {
 export const getCurrentUser = () => {
     // console.log("DISPATCHING GET CURRENT USER")
     return(dispatch) => {
-            return fetch('http://localhost:3001/api/v1/get_current_user', {
+            return fetch('http://localhost:3000/api/v1/get_current_user', {
                 credentials: "include",
                 method: 'GET',
                 headers: {
@@ -75,6 +100,7 @@ export const getCurrentUser = () => {
                     dispatch(setCurrentUser(user))
                 }
             })
-        };
+
+    };
 }
 

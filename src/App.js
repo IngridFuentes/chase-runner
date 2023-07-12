@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import './App.scss';
-import { connect } from 'react-redux';
 import { Routes, Route } from 'react-router-dom';
 import MediaQuery from 'react-responsive';
 import Home from './components/Home.js';
@@ -9,22 +9,25 @@ import { getCurrentUser } from './actions/currentUser.js';
 import { fetchRuns } from './actions/fetchRuns';
 import NavBar from './components/NavBar.js';
 import RunsContainer from './containers/RunsContainer.js';
+import RunCard from './components/RunCard';
 
 
-function App(props) {
+function App() {
 
-console.log(props)
+  const loggedIn = useSelector(state => !!state.currentUserReducer);
+  const runs = useSelector(state => state.runsReducer);
+  const dispatch = useDispatch();
 
-  const loggedIn = true;
   
   useEffect(() => {
-      props.getCurrentUser();
-      props.fetchRuns();
-  }, [props]);
+    dispatch(getCurrentUser());
+    dispatch(fetchRuns());
+  }, [dispatch]);
 
   // const { loggedIn,  runs } = props
 
   return (
+
     <div className="App">
       {loggedIn ? <NavBar /> : <Home /> }
       {/* <MediaQuery minWidth={800}> */}
@@ -38,13 +41,6 @@ console.log(props)
     </div>
   );
 }
-const mapStateToProps = state => {
-  return ({
-    loggedIn: !!state.currentUserReducer,
-    runs: state.runsReducer
-  })
-}
 
-
-export default connect(mapStateToProps, { getCurrentUser, fetchRuns }) (App);
+export default App;
 

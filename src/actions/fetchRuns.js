@@ -33,7 +33,7 @@ export const fetchRuns = () =>  {
         // debugger
         // dispatch({type: 'LOADING_JOB_APPLICATIONS'});
         // console.log('inside fetch job applications')
-        return fetch('http://localhost:3001/api/v1/runs', {
+        return fetch('http://localhost:3000/api/v1/runs', {
             credentials: "include",
             method: 'GET',
             headers: {
@@ -60,7 +60,7 @@ export const createRun = (runData, history ) => {
             }
         }
 
-        return fetch('http://localhost:3001/api/v1/runs', {
+        return fetch('http://localhost:3000/api/v1/runs', {
             credentials: "include",
             method: "POST",
             headers: {
@@ -97,7 +97,7 @@ export const  updateRun = (runData, history ) => {
                 }
             }
     
-            return fetch(`http://localhost:3001/api/v1/job_applications/${runData.runId}`, {
+            return fetch(`http://localhost:3000/api/v1/job_applications/${runData.runId}`, {
                 credentials: "include",
                 method: "PATCH",
                 headers: {
@@ -123,7 +123,7 @@ export const deleteRun = (runId, history) => {
 
     return dispatch => {
 
-        return fetch(`http://localhost:3001/api/v1/runs/${runId}`, {
+        return fetch(`http://localhost:3000/api/v1/runs/${runId}`, {
             credentials: "include",
             method: "DELETE",
             headers: {

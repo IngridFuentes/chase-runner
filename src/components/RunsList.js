@@ -1,14 +1,16 @@
 import React from 'react'
-// import JobApplicationCard from "./JobApplicationCard.js"
+import RunCard from "./RunCard.js"
 
 const RunsList = (props) => {
-  // console.log(props)
+  console.log(props)
     return (
-      
+      <> 
           <ul>
-            {/* {props.jobs.map(job => <JobApplicationCard job={job} key={job.id}/> )} */}
-            <div>Marathon's list</div>
+            {/* {props.runs.map(run => <RunCard run={run} key={run.id}/> )} */}
+            {props.runs}
+            <RunCard runs={props.runs}/>
           </ul>
+        </>
        
       )
 }

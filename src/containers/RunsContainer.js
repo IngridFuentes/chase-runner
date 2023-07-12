@@ -7,30 +7,32 @@ import { NavLink } from 'react-router-dom'
 
 const RunsContainer = (props) => {  
 
-    // const [ query, setQuery ] = useState('');
+    const [ query, setQuery ] = useState('');
 
+    const handleSubmit = (event) => {
+        event.preventDefault()
+    }
 
-    // const handleSubmit = (event) => {
-    //     event.preventDefault()
-    // }
-
-    // const handleOnChange = (event) => {
-    //     setQuery(event.target.value)
-    // }
+    const handleOnChange = (event) => {
+        setQuery(event.target.value)
+    }
 
     // useEffect(() => {
     //     props.fetchRuns()
     // }, [props])
 
-    // const filteredRuns = useMemo(() => {
+    const filteredRuns = "ny"
+    // useMemo(() => {
     //     return props.runsReducer.filter(run =>
     //          query ? run.city.toLowerCase().includes(query.toLowerCase()) : true 
     // );
     // },[props.runsReducer, query]);
 
+    console.log(props)
+
         return(
             <div>
-                {/* <nav className="nav"> 
+                <nav className="nav"> 
                     <NavLink to="/applications/new" className="link2"> Create Application </NavLink > 
                 </nav>
                 <h4 className="job"> MY MARATHONS </h4>
@@ -43,20 +45,19 @@ const RunsContainer = (props) => {
                     />
                     <button type="submit">Submit</button>
                 </form>
-                <RunsList jobs={filteredRuns}/> */}
-               "hey"
+                <RunsList runs={filteredRuns}/>             
             </div>
         )
     }
 
-// const mapStateToProps = (state) => {
-//     return{
-//         runsReducer: state.runsReducer,
+const mapStateToProps = (state) => {
+    return{
+        runsReducer: state.runsReducer,
 
-//     }
-// }
+    }
+}
 
 
-// export default connect(mapStateToProps,{ fetchRuns }) (RunsContainer);
+export default connect(mapStateToProps,{ fetchRuns }) (RunsContainer);
 
-export default RunsContainer;
+// export default RunsContainer;
