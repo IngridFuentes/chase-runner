@@ -1,5 +1,4 @@
 class UserSerializer < ActiveModel::Serializer
-    attributes :id, :username, :email
-    has_many :runs
-  end
-  
+  include JSONAPI::Serializer
+  attributes :id, :email, :created_at
+end

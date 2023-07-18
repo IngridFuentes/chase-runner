@@ -1,14 +1,15 @@
+require 'byebug'
 class Api::V1::RunsController < ApplicationController
-    before_action :set_job_application, only: [:edit, :show, :destroy]
-
+    before_action :set_run_application, only: [:edit, :show, :destroy]
+# byebug
     def index
         if logged_in?
           runs = current_user.runs
           render json: runs, status: 200
         else
-          render json: [{
+          render json: {
             error: "You must be logged in to see your marathons",
-          }]
+          }
         end
       end
 

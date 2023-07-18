@@ -11,7 +11,7 @@ gem "sqlite3", "~> 1.4"
 
 # Use the Puma web server [https://github.com/puma/puma]
 gem "puma", "~> 5.0"
-
+gem "active_model_serializers"
 # Build JSON APIs with ease [https://github.com/rails/jbuilder]
 # gem "jbuilder"
 
@@ -23,7 +23,7 @@ gem "puma", "~> 5.0"
 
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]
 # gem "bcrypt", "~> 3.1.7"
-
+gem 'devise'
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 
@@ -35,14 +35,22 @@ gem "bootsnap", require: false
 
 # Use Rack CORS for handling Cross-Origin Resource Sharing (CORS), making cross-origin AJAX possible
 gem "rack-cors"
-
+# gem 'byebug', '~> 11.1', '>= 11.1.3'
+# gem 'debugger'
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
-  gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  # gem "debug", platforms: %i[ mri mingw x64_mingw ]
+  # gem 'byebug', platforms: %i[ mri mingw x64_mingw ]
+  gem "byebug", platforms: [:mri, :mingw, :x64_mingw]
 end
 
 group :development do
+  gem "listen", ">= 3.0.5", "< 3.2"
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem "spring"
+  gem "spring"
+  gem "spring-watcher-listen", "~> 2.0.0"
 end
 
+gem "tzinfo-data", platforms: [:mingw, :mswin, :x64_mingw, :jruby]
+gem "dotenv-rails"
