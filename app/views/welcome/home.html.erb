@@ -1,0 +1,29 @@
+<%
+=begin%>
+ <nav style="text-align: right">
+<% if user_signed_in? %>
+    <%= link_to('Logout', destroy_user_session_path, method: :delete) %>          
+  <% else %>
+    <%= link_to('Login', new_user_session_path)  %> |
+    <%= link_to('Sign Up', new_user_registration_path)  %>  
+  <% end %>
+</nav> 
+<%
+=end%>
+<%
+=begin%>
+ <h1>Welcome#home</h1>
+<p>If you're logged in, check out <%= link_to "the app", app_path %>!</p> 
+<%
+=end%>
+
+<html>
+<head>
+  <title>Welcome to My Website</title>
+</head>
+<body>
+  <h1>Welcome to My Website!</h1>
+  <p>This is the home page of my website.</p>
+  <!-- Add any additional content here -->
+</body>
+</html>

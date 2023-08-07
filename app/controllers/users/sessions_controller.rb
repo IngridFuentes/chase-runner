@@ -2,7 +2,7 @@
 
 class Users::SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
-
+  include Devise::Controllers::Helpers
   # GET /resource/sign_in
   # def new
   #   super
@@ -10,27 +10,27 @@ class Users::SessionsController < Devise::SessionsController
 
   # POST /resource/sign_in
   def create
-     super
-     user = User.find_or_create_by(username: params[:session][:username], email: params[:session][:email])
-      # if user && user.authenticate(params[:session][:email])
-      if user
-        session[:user_id] = user.id
-        render json: user
-      else
-        render json: {
-                 error: "Invalid credentials",
-               }
-      end
+    #  super
+    #  user = User.find_or_create_by(username: params[:session][:username], email: params[:session][:email])
+    #   # if user && user.authenticate(params[:session][:email])
+    #   if user
+    #     session[:user_id] = user.id
+    #     render json: user
+    #   else
+    #     render json: {
+    #              error: "Invalid credentials",
+    #            }
+    #   end
   end
 
   def get_current_user
-    if logged_in?
-      render json: current_user
-    else
-      render json: {
-               error: "No one logged in",
-             }
-    end
+    # if logged_in?
+    #   render json: current_user
+    # else
+    #   render json: {
+    #            error: "No one logged in",
+    #          }
+    # end
   end
 
   # DELETE /resource/sign_out
@@ -38,10 +38,10 @@ class Users::SessionsController < Devise::SessionsController
   #   super
   # end
   def destroy
-    session.clear
-    render json: {
-      notice: "Succesfully logged out",
-    }
+    # session.clear
+    # render json: {
+    #   notice: "Succesfully logged out",
+    # }
   end
   # protected
 
@@ -50,24 +50,4 @@ class Users::SessionsController < Devise::SessionsController
   #   devise_parameter_sanitizer.permit(:sign_in, keys: [:attribute])
   # end
 
-  private
-
-  def respond_with(resource, _opts={})
-    render json: {
-      status: {code: 200, message: 'Logged in successfully.'},
-      data: UserSerializer.new(resource).serializable_hash[:data][:attributes]
-    }, status: :ok
-  end
-  def respond_to_on_destroy
-    if current_user
-      render json: {
-        status: 200,
-        message: 'Logged out successfully'
-      }, status: :ok
-      else
-        render json: {
-          status: 401,
-          message: 'Could not find an active session.'
-        }, status: unauthorized
-  end
 end
