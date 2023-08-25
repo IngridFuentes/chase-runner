@@ -2,21 +2,23 @@
 <html>
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
 
     <style>
       /* Email styles need to be inline */
     </style>
   </head>
-  <ul>
-  <% if user_signed_in? %>
-    <li><%= link_to "Hi, #{current_user.email}", edit_user_registration_path %></li>
-    <li><%= link_to 'Sign Out', destroy_user_session_path, method: :delete %></li>
-  <% else %>
-    <li><%= link_to 'Sign In', new_user_session_path %></li>
-    <li><%= link_to 'Sign Up', new_user_registration_path %></li>
-  <% end %>
-</ul>
   <body>
+    <ul>
+    <% if user_signed_in? %>
+      <li><%= link_to "Hi, #{current_user.email}", edit_user_registration_path %></li>
+      <li><%= link_to 'Sign Out', destroy_user_session_path, method: :delete %></li>
+    <% else %>
+      <li><%= link_to 'Sign In', new_user_session_path %></li>
+      <li><%= link_to 'Sign Up', new_user_registration_path %></li>
+    <% end %>
+  </ul>
     <p class="notice"><%= notice %></p>
     <p class="alert"><%= alert %></p>
     <%= yield %>

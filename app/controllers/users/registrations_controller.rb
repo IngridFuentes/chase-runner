@@ -1,8 +1,55 @@
 # frozen_string_literal: true
 
 class Users::RegistrationsController < Devise::RegistrationsController
+  # include RackSessionsFix
+  # respond_to :json
   # before_action :configure_sign_up_params, only: [:create]
   # before_action :configure_account_update_params, only: [:update]
+
+  def create
+    user = User.new(sign_up_params)
+
+    if user.save
+      token = user.generate_jwt
+      render json: token.to_json
+    else
+      render json: { errors: { 'email or password' => ['is invalid'] } }, status: :unprocessable_entity
+    end
+  end
+  # private
+
+  # def respond_with(current_user, _opts = {})
+  #   if resource.persisted?
+  #     render json: {
+  #       status: {code: 200, message: 'Signed up successfully.'},
+  #       data: UserSerializer.new(current_user).serializable_hash[:data][:attributes]
+  #     }
+  #   else
+  #     render json: {
+  #       status: {message: "User couldn't be created successfully. #{current_user.errors.full_messages.to_sentence}"}
+  #     }, status: :unprocessable_entity
+  #   end
+  # end
+  # def create
+  #   @user = User.new(user_params)
+  #   if @user.save
+  #     render json: @user
+  #   else
+  #     warden.custom_failure!
+  #     render json: { error: @user.errors }, status: :unprocessable_entity
+  #   end
+  # end
+    # user = User.new(user_params)
+    # if user && user.authenticate(params[:session][:email])
+    # if user
+    #   session[:user_id] = user.id
+    #   render json: user
+    # else
+    #   render json: {
+    #            error: "Invalid credentials",
+    #          }
+    # end
+  # end
 
   # GET /resource/sign_up
   # def new
@@ -59,5 +106,6 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # def after_inactive_sign_up_path_for(resource)
   #   super(resource)
   # end
+
 
 end
