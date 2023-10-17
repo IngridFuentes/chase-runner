@@ -1,46 +1,26 @@
-import React, {useEffect} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import './App.scss';
+import React from "react";
 import { Routes, Route } from 'react-router-dom';
-import MediaQuery from 'react-responsive';
-import Home from './components/Home.js';
-import Login from './components/Login.js';
-import { getCurrentUser } from './actions/currentUser.js';
-import { fetchRuns } from './actions/fetchRuns';
-import NavBar from './components/NavBar.js';
-import RunsContainer from './containers/RunsContainer.js';
-import RunCard from './components/RunCard';
 
+import Home from "./views/Home";
+import Dashboard from "./views/Dashboard";
+import Banner from "./components/banner";
+import styles from './styles/App.module.css';
 
 function App() {
-
-  const loggedIn = useSelector(state => !!state.currentUserReducer);
-  const runs = useSelector(state => state.runsReducer);
-  const dispatch = useDispatch();
-
-  
-  useEffect(() => {
-    dispatch(getCurrentUser());
-    dispatch(fetchRuns());
-  }, [dispatch]);
-
-  // const { loggedIn,  runs } = props
-
   return (
-
-    <div className="App">
-      {loggedIn ? <NavBar /> : <Home /> }
-      {/* <MediaQuery minWidth={800}> */}
-        <Routes>
-          <Route exact path="/" element={<Home />} />
-          <Route exact path="/login" element={<Login />} />
-          <Route exact path="/profile" element={loggedIn ? <RunsContainer /> : <Home />} />
-        </Routes>
-
-      {/* </MediaQuery> */}
-    </div>
+      <div>
+            <Banner/>
+            <div className={styles.mainContainer}>
+                <Routes>
+                    <Route path="/" element={<Home/>}></Route>
+                    <Route path="/dashboard" element={<Dashboard/>}></Route>
+                </Routes>
+            </div>
+            <div className={styles.footer}>
+                Learn more with our <a href="https://docs.passage.id">Documentation</a> and <a href="https://github.com/passageidentity">Github</a>.      
+            </div>
+      </div>
   );
 }
 
 export default App;
-
