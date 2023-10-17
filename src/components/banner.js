@@ -3,10 +3,10 @@ import styles from '../styles/Banner.module.css';
 function Banner() {
     return ( 
         <div className={styles.mainHeader}>
-            <a href="https://passage.id/" ><div className={styles.passageLogo}></div></a>
-            <div className={styles.headerText}>Passage + React Example App</div>
+            <div className={styles.projectLogo}></div>
+            <div className={styles.headerText}>CHASE RUNNER</div>
             <div className={styles.spacer}></div>
-            <a href="https://passage.id/" className={styles.link}>Go to Passage</a>
+            <a href="https://passage.id/" className={styles.link}>STATS</a>
         </div>
     );
 }
