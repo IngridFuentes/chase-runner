@@ -1,8 +1,11 @@
-import {useAuthStatus} from '../hooks/useAuthStatus';
+import {useCurrentUser} from '../hooks/useCurrentUser.js';
+// import {useAuthStatus} from '../hooks/useAuthStatus';
 import styles from '../styles/Dashboard.module.css';
 
 function Dashboard() {
-    const {isLoading, isAuthorized, username} = useAuthStatus();
+    // const {isLoading, isAuthorized, username} = useAuthStatus();
+    const {isLoading, isAuthorized, username} = useCurrentUser();
+
 
     if (isLoading) {
         return null;

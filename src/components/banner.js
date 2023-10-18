@@ -1,5 +1,6 @@
 import styles from '../styles/Banner.module.css';
 import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 function Banner() {
     return ( 
@@ -7,16 +8,23 @@ function Banner() {
             <div className={styles.projectLogo}></div>
             <div className={styles.headerText}>CHASE RUNNER</div>
             <div className={styles.spacer}></div>
-            <Button variant="dark">
+            <Button variant="light">
                 <a href="https://passage.id/">STATS</a>
             </Button>
-            <Button variant="dark">
+            <Button variant="light">
                 <a href="https://passage.id/">NEW RUN</a>
             </Button>
-            <Button variant="dark">
+            <Button variant="light">
                 <a href="https://passage.id/">GOALS</a>
             </Button>
-            <div className={styles.imageProfile}></div>
+            <Dropdown>
+            <Dropdown.Toggle variant="success" id="dropdown-basic" style={{borderStyle:'none'}}>
+                <div className={styles.imageProfile}></div>
+            </Dropdown.Toggle>
+            <Dropdown.Menu>
+                <Dropdown.Item href="/logout">Logout</Dropdown.Item>
+            </Dropdown.Menu>
+            </Dropdown>
         </div>
     );
 }

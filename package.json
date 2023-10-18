@@ -3,7 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@passageidentity/passage-auth": "^0.1.0-beta.28",
     "@passageidentity/passage-elements": "^1.14.0",
+    "@passageidentity/passage-node": "^2.6.0",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",

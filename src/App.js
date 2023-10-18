@@ -5,6 +5,9 @@ import Home from "./views/Home";
 import Dashboard from "./views/Dashboard";
 import Banner from "./components/banner";
 import styles from './styles/App.module.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+
 
 function App() {
   return (

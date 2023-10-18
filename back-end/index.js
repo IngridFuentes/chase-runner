@@ -15,31 +15,27 @@ app.use(
   );
   require("dotenv").config();
 
-const passage = new Passage({
+  const passageConfig = {
     appID: process.env.PASSAGE_APP_ID,
     apiKey: process.env.PASSAGE_API_KEY,
-    authStrategy: "HEADER"
-});
+  };
 
-app.post("/auth", async (req, res) => {
+  let passage = new Passage(passageConfig);
+  app.get("/authenticatedRoute", async(req, res) => {
     try {
-      const userID = await passage.authenticateRequest(req);
+      // Authenticate request using Passage
+      let userID = await passage.authenticateRequest(req);
+      // let passageUser = await passage.user.get(userID);
+      // console.log(passageUser.email)
       if (userID) {
-        // user is authenticated
-        const { email, phone } = await passage.user.get(userID);
-        const identifier = email ? email : phone;
-  
-        res.json({
-          authStatus: "success",
-          identifier,
-        });
+        // User is authenticated
+        let userData = await passage.user.get(userID);
+        console.log(userData);
       }
     } catch (e) {
-      // authentication failed
+      // Authentication failed
       console.log(e);
-      res.json({
-        authStatus: "failure",
-      });
+      res.send("Authentication failed!");
     }
   });
 
