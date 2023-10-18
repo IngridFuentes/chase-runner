@@ -7,23 +7,21 @@ import Banner from "./components/banner";
 import styles from './styles/App.module.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-
-
 function App() {
-  return (
-      <div>
-            <Banner/>
-            <div className={styles.mainContainer}>
-                <Routes>
-                    <Route path="/" element={<Home/>}></Route>
-                    <Route path="/dashboard" element={<Dashboard/>}></Route>
-                </Routes>
-            </div>
-            <div className={styles.footer}>
-                Chase Runner    
-            </div>
-      </div>
-  );
-}
+    return (
+        <div>
+              <Banner/>
+              <div className={styles.mainContainer}>
+                  <Routes>
+                      <Route path="/" element={<Home/>}></Route>
+                      <Route path="/dashboard" element={<Dashboard/>}></Route>
+                  </Routes>
+              </div>
+              <div className={styles.footer}>
+                  Learn more with our <a href="https://docs.passage.id">Documentation</a> and <a href="https://github.com/passageidentity">Github</a>.      
+              </div>
+        </div>
+    );
+  }
 
 export default App;

@@ -1,6 +1,8 @@
 import {useCurrentUser} from '../hooks/useCurrentUser.js';
 // import {useAuthStatus} from '../hooks/useAuthStatus';
 import styles from '../styles/Dashboard.module.css';
+import SimpleMap from '../components/SimpleMap';
+
 
 function Dashboard() {
     // const {isLoading, isAuthorized, username} = useAuthStatus();
@@ -12,8 +14,6 @@ function Dashboard() {
     }
     const authorizedBody = 
     <>
-        You successfully signed in with Passage.
-        <br/><br/>
         Your username is: <b>{username}</b>
     </>
 
@@ -30,6 +30,7 @@ function Dashboard() {
             <div className={styles.message}>
                 { isAuthorized ? authorizedBody : unauthorizedBody }
             </div>
+            <SimpleMap />
         </div>
     );
 
