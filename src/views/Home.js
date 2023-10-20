@@ -1,13 +1,26 @@
-import "@passageidentity/passage-elements/passage-auth";
-<<<<<<< HEAD
-import '@passageidentity/passage-auth'
-=======
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
+// import "@passageidentity/passage-elements/passage-auth";
+// import '@passageidentity/passage-auth'
 
-function Home() {
+// function Home() {
+//     return (
+//         <passage-auth app-id={process.env.REACT_APP_PASSAGE_APP_ID}></passage-auth>
+//     );
+// }
+
+// export default Home;
+
+import {
+    PassageAuth,
+    PassageUnAuthGuard,
+  } from "@passageidentity/passage-react";
+  import { Navigate } from "react-router-dom";
+  
+  function Home() {
     return (
-        <passage-auth app-id={process.env.REACT_APP_PASSAGE_APP_ID}></passage-auth>
+      <PassageUnAuthGuard authComp={<Navigate to="/dashboard" />}>
+        <PassageAuth />
+      </PassageUnAuthGuard>
     );
-}
-
-export default Home;
+  }
+  
+  export default Home;
