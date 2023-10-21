@@ -1,56 +1,104 @@
-.mainHeader{
-    padding: 20px 30px;
-    display: flex;
-    align-items: center;
-    background-color: #ffffff;
-    color: rgb(63 65 181);
-  }
-  
-  .headerText {
-    font-size: 15px;
-    margin: 0px 10px;
-    color:  rgb(63 65 181);
-  }
-    
-  .projectLogo {
-    background-image: url('../image/runner.jpg');
-    background-size: 4rem;
-    width: 60px;
-    height: 60px;
-  }
-  
-  .spacer {
-    flex-grow: 1;
-  }
-a{
-  text-decoration: none;
+.mainHeader {
+  padding: 20px 30px;
+  display: flex;
+  align-items: center;
+  background-color: #ffffff;
+  color: rgb(63 65 181);
 }
-  .link {
-    margin-left: 20px;
-    color:rgb(63 65 181);
-    text-decoration-color: rgb(63 65 181);
-  }
-button{
+
+.headerText {
+  font-size: 15px;
+  margin: 0px 10px;
+  color: rgb(63 65 181);
+}
+
+.projectLogo {
+  background-image: url("../image/runner.jpg");
+  background-size: 4rem;
+  width: 60px;
+  height: 60px;
+}
+
+.spacer {
+  flex-grow: 1;
+}
+
+.link {
+  margin-left: 20px;
+  color: rgb(63 65 181);
+  text-decoration-color: rgb(63 65 181);
+}
+button {
   margin-right: 5px;
-<<<<<<< HEAD
   background-color: #ffffff;
   border-radius: 5px;
   border: solid 1px grey;
-=======
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
+  text-decoration: none;
 }
-.imageProfile{
-  background-image: url('../image/avatar.jpeg');
+.imageProfile {
+  background-image: url("../image/avatar.jpeg");
   background-size: 3rem;
   border: solid 1px grey;
   margin-left: 5px;
   width: 3rem;
   height: 3rem;
   border-radius: 50%;
-<<<<<<< HEAD
   cursor: pointer;
 }
 
-=======
+/* media queries */
+
+@media (max-width: 767px) {
+  .mainHeader {
+    text-align: center;
+  }
+  .imageProfile {
+    background-image: url("../image/avatar.jpeg");
+    background-size: 3rem;
+    border: solid 1px grey;
+    margin-left: 5px;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .headerText {
+    display: none;
+  }
+  .projectLogo {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    background-size: 6rem;
+    width: 80px;
+    height: 80px;
+  }
 }
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
+
+@media (max-width: 400px) {
+  .mainHeader {
+    display: block;
+    text-align: center;
+    float: none;
+    width: 100%;
+    padding: 10px 15px;
+  }
+  a {
+    font-size: 16px;
+  }
+  .imageProfile {
+    background-size: 2rem;
+    padding: 20px;
+    width: 2rem;
+    height: 2rem;
+  }
+  .headerText {
+    display: none;
+  }
+  .projectLogo {
+    background-size: 4rem;
+    width: 100px;
+    height: 100px;
+    margin: auto;
+  }
+}
