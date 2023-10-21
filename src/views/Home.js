@@ -1,8 +1,5 @@
 import "@passageidentity/passage-elements/passage-auth";
-<<<<<<< HEAD
-import '@passageidentity/passage-auth'
-=======
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
+// import '@passageidentity/passage-auth'
 
 function Home() {
     return (

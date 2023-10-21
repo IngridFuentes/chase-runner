@@ -1,20 +1,9 @@
 .mainContainer {
     background: white;
-<<<<<<< HEAD
     min-height: 310px;
-=======
-    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
-    border-radius: 20px;
-    width: 310px;
-    min-height: 310px;
-    margin: 30px auto;
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
 }
 .footer {
     text-align: center;
     font-size: 18px;
-<<<<<<< HEAD
     margin-top: 14rem;
-=======
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
 }
