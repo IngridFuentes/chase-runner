@@ -1,9 +1,15 @@
 .mainContainer {
-    background: white;
-    min-height: 310px;
+  background: white;
+  min-height: 310px;
 }
 .footer {
-    text-align: center;
-    font-size: 18px;
-    margin-top: 14rem;
+  text-align: center;
+  font-size: 18px;
+  margin-top: 14rem;
+}
+
+@media (max-width: 400px) {
+  .footer {
+    display: none;
+  }
 }
