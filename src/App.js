@@ -6,6 +6,9 @@ import Dashboard from "./views/Dashboard";
 import Banner from "./components/banner";
 import styles from './styles/App.module.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import NewRun from "./views/NewRun";
+import Stats from "./views/Stats";
+import Goals from "./views/Goals";
 
 function App() {
     return (
@@ -15,6 +18,9 @@ function App() {
                   <Routes>
                       <Route path="/" element={<Home/>}></Route>
                       <Route path="/dashboard" element={<Dashboard/>}></Route>
+                      <Route path="/newrun" element={<NewRun/>}></Route>
+                      <Route path="/stats" element={<Stats/>}></Route>
+                      <Route path="/goals" element={<Goals/>}></Route>
                   </Routes>
               </div>
               <div className={styles.footer}>

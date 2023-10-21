@@ -9,13 +9,13 @@ function Banner() {
             <div className={styles.headerText}>CHASE RUNNER</div>
             <div className={styles.spacer}></div>
             <Button variant="light">
-                <a href="https://passage.id/">STATS</a>
+                <a href="/stats">STATS</a>
             </Button>
             <Button variant="light">
-                <a href="https://passage.id/">NEW RUN</a>
+                <a href="/newrun">NEW RUN</a>
             </Button>
             <Button variant="light">
-                <a href="https://passage.id/">GOALS</a>
+                <a href="/goals">GOALS</a>
             </Button>
             <Dropdown>
             <Dropdown.Toggle variant="success" id="dropdown-basic" style={{borderStyle:'none'}}>
