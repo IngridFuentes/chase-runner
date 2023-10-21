@@ -1,55 +1,76 @@
-<<<<<<< HEAD
-import {useCurrentUser} from '../hooks/useCurrentUser.js';
+// import {useCurrentUser} from '../hooks/useCurrentUser.js';
 // import {useAuthStatus} from '../hooks/useAuthStatus';
 import styles from '../styles/Dashboard.module.css';
+import { PassageAuthGuard } from "@passageidentity/passage-react";
+import { usePassageUserInfo } from "../hooks/";
+import LogoutButton from "../components/LogoutButton";
 import SimpleMap from '../components/SimpleMap';
 
 
 function Dashboard() {
     // const {isLoading, isAuthorized, username} = useAuthStatus();
-    const {isLoading, isAuthorized, username} = useCurrentUser();
+    // const {isLoading, isAuthorized, username} = useCurrentUser();
+    const { userInfo, loading } = usePassageUserInfo();
 
-=======
-import {useAuthStatus} from '../hooks/useAuthStatus';
-import styles from '../styles/Dashboard.module.css';
+    if (loading) {
+        return (
+          <div className={styles.dashboard}>
+            <div className={styles.title}>Loading</div>
+          </div>
+        );
+      }
 
-function Dashboard() {
-    const {isLoading, isAuthorized, username} = useAuthStatus();
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
-
-    if (isLoading) {
-        return null;
-    }
-    const authorizedBody = 
-    <>
-<<<<<<< HEAD
-=======
-        You successfully signed in with Passage.
-        <br/><br/>
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
-        Your username is: <b>{username}</b>
-    </>
-
-    const unauthorizedBody = 
-    <>
-        You have not logged in and cannot view the dashboard.
-        <br/><br/>
-        <a href="/" className={styles.link}>Login to continue.</a>
-    </>
-
-    return (
-        <div className={styles.dashboard}>
-            <div className={styles.title}>{isAuthorized ? 'Welcome!' : 'Unauthorized'}</div>
-            <div className={styles.message}>
-                { isAuthorized ? authorizedBody : unauthorizedBody }
+      return (
+        <PassageAuthGuard
+          unAuthComp={
+            <div className={styles.dashboard}>
+              <div className={styles.title}>you must be logged in</div>
+              <div className={styles.message}>
+                <a href="/">Login</a>
+              </div>
             </div>
-<<<<<<< HEAD
-            <SimpleMap />
-=======
->>>>>>> 4ed30e5721e21fa7f0ba6b89df04b0f07f401fe3
-        </div>
-    );
+          }
+        >
+          <div className={styles.dashboard}>
+            <div className={styles.title}>Welcome</div>
+            <div className={styles.message}>
+              You successfully signed in with Passage. This is your homepage. <br />
+              <br />
+              Your username is: {userInfo?.email}
+            </div>
+            <LogoutButton />
+          </div>
+          <SimpleMap />
+        </PassageAuthGuard>
+      );
+    }
+  
+  export default Dashboard;
 
-}
+//     if (isLoading) {
+//         return null;
+//     }
+//     const authorizedBody = 
+//     <>
+//         Your username is: <b>{username}</b>
+//     </>
 
-export default Dashboard;
+//     const unauthorizedBody = 
+//     <>
+//         You have not logged in and cannot view the dashboard.
+//         <br/><br/>
+//         <a href="/" className={styles.link}>Login to continue.</a>
+//     </>
+
+//     return (
+//         <div className={styles.dashboard}>
+//             <div className={styles.title}>{isAuthorized ? 'Welcome!' : 'Unauthorized'}</div>
+//             <div className={styles.message}>
+//                 { isAuthorized ? authorizedBody : unauthorizedBody }
+//             </div>
+//             <SimpleMap />
+//         </div>
+//     );
+
+// }
+

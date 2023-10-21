@@ -10,7 +10,6 @@ const SimpleMap = () => {
     const position = [51.505, -0.09];
   
     return ( 
-      // Make sure you set the height and width of the map container otherwise the map won't show
         <MapContainer center={[latitude, longitude]} zoom={13} ref={mapRef} style={{height: "50vh", width: "50vw"}}>
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
