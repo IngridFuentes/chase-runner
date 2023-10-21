@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import styles from '../styles/NewRun.module.css';
 
 const states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+const eventTypes = ['5K', '10K', 'Marathon', 'Fun Run', 'Road', 'Trail']
 
 export default function NewRun() {
     const [race, setRace] = useState([]);
@@ -34,6 +35,15 @@ export default function NewRun() {
                             })}
                         </select>
                     </div>
+                    <div>
+                        <select name="Event Types">
+                            <option value="">Select your Type of Event</option>
+                            {eventTypes.map((type) => {
+                                return <option value={type}>{type}</option>
+                            })}
+                        </select>
+                    </div>
+                    
                     <button>Submit</button>
                 </label>
             </form>
