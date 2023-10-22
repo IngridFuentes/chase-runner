@@ -6,18 +6,34 @@ const eventTypes = ['5K', '10K', 'Marathon', 'Fun Run', 'Road', 'Trail']
 
 export default function NewRun() {
     const [race, setRace] = useState([]);
+    const [stateLocation, setStateLocation] = useState("");
+    const [eventType, setEventType] = useState("");
 
     useEffect(() => {
-        fetch('http://www.RunReg.com/api/search')
+        fetch('http://www.RunReg.com/api/search/', {
+            }, {
+                mode: "no-cors"
+            })
         .then((data) => data.json())
         .then((res) => {
-            console.log(res)
-            //testing json response data
-            console.log(res.MatchingEvents[0].Region);
-            setRace(res.MatchingEvents[0].EventName)
+            // //testing json response data
+        
+            //fetch not fully working, having trouble updating the fetch request with the appropriate parameters
+
+            // const dummyEvent = Object.keys(res.MatchingEvents[0]).map((key) => {
+            //     return <p>{key}</p>
+            // })
+            // setRace(dummyEvent)
         })
         .catch((err) => console.log(err))
-    })
+    }, [stateLocation, eventType])
+
+    const selectState = (e) => {
+        setStateLocation(e)
+    }
+    const selectEventType = (e) => {
+        setEventType(e)
+    }
 
     return (
         <div className={styles.newrunSearch}>
@@ -27,16 +43,21 @@ export default function NewRun() {
                     <div>
                         <input></input>
                     </div>
-                    <div>
-                        <select name="states">
+                    <div className="selectors">
+                        <select 
+                            value={stateLocation}
+                            onChange={(e) => selectState(e.target.value)}
+                        >
                             <option value="">Select your State</option>
                             {states.map((state) => {
                                 return <option value={state}>{state}</option>
                             })}
                         </select>
-                    </div>
-                    <div>
-                        <select name="Event Types">
+                        <br></br>
+                        <select
+                            value={eventType}
+                            onChange={(e) => selectEventType(e.target.value)}
+                        >
                             <option value="">Select your Type of Event</option>
                             {eventTypes.map((type) => {
                                 return <option value={type}>{type}</option>
@@ -48,7 +69,7 @@ export default function NewRun() {
                 </label>
             </form>
             {/* For testing of results display after fetching from api */}
-            <p>{race}</p>
+            {/* <p>{race}</p> */}
         </div>
 
     )
