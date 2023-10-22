@@ -40,7 +40,7 @@ function Dashboard() {
             </div>
             <LogoutButton />
           </div>
-          <SimpleMap />
+            <SimpleMap />
         </PassageAuthGuard>
       );
     }
