@@ -1,0 +1,95 @@
+import React, { useState, useEffect } from 'react';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import L from 'leaflet'; // Import Leaflet library
+import image from '../image/pin.png';
+
+const CityMap = () => {
+  const [cityName, setCityName] = useState('');
+  const [cityCoordinates, setCityCoordinates] = useState(null);
+  const [mapCenter, setMapCenter] = useState([51.505, -0.09]); // Default map center
+  const [savedPlaces, setSavedPlaces] = useState([]);
+
+  const handleCitySearch = async () => {
+    try {
+      const response = await fetch(
+        `https://api.geoapify.com/v1/geocode/search?text=${cityName}&lang=en&limit=10&type=city&apiKey=63f9e025a41e4c2eb7b9fea7f557a9b5`
+      );
+      const data = await response.json();
+        console.log(data.features[0].properties, 'data')
+        const { lat, lon } = data.features[0].properties;
+        setCityCoordinates({ lat, lon });
+
+    const res = await fetch('http://localhost:3000/api/places', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ lat, lon, name: cityName  }),
+    });
+    if(!res.ok){
+        throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`)
+    }
+
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    //Fetch saved places from the backend
+    const fetchSavedPlaces = async () => {
+      try {
+          const response = await fetch('http://localhost:3000/api/places');
+          if(response.ok) {
+            const data = await response.json();
+            setSavedPlaces(data);
+            console.log(data, 'hi');
+          } else{
+            throw new Error('Network response was not ok.');
+          }
+        // const data = await response.json();
+        // console.log(data, 'backend data')
+        // setSavedPlaces(data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchSavedPlaces();
+  }, []);
+
+  const customIcon = new L.Icon({
+    iconUrl: image,
+    iconSize: [25, 25], 
+  });
+
+  return (
+    <div>
+      <input
+        type="text"
+        placeholder="Enter city name"
+        value={cityName}
+        onChange={(e) => setCityName(e.target.value)}
+      />
+      <button onClick={handleCitySearch}>Search</button>
+      <MapContainer center={mapCenter} zoom={13} style={{ height: '400px', width: '100%' }}>
+        <TileLayer
+          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+          url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+        />
+        {cityCoordinates && (
+          <Marker position={[cityCoordinates.lat, cityCoordinates.lon]} icon={customIcon}>
+            <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup>
+          </Marker>
+        )}
+        {savedPlaces.map((place, index) => (
+          <Marker key={index} position={[place.lat, place.lon, place.name]} icon={customIcon}>
+            <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}`}</Popup>
+          </Marker>
+        ))}
+      </MapContainer>
+    </div>
+  );
+};
+
+export default CityMap;
+
