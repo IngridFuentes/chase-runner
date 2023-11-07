@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet'; // Import Leaflet library
 import image from '../image/pin.png';
+import ConfettiExplosion from 'react-confetti-explosion';
+
 
 const CityMap = () => {
   const [cityName, setCityName] = useState('');
   const [cityCoordinates, setCityCoordinates] = useState(null);
-  const [mapCenter, setMapCenter] = useState([51.505, -0.09]); // Default map center
+  const [mapCenter, setMapCenter] = useState([39.106667, -94.676392]); // Default map center
   const [savedPlaces, setSavedPlaces] = useState([]);
+  const [showConfetti, setShowConfetti] = useState(false);
 
   const handleCitySearch = async () => {
     try {
@@ -29,6 +32,10 @@ const CityMap = () => {
     if(!res.ok){
         throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`)
     }
+    setShowConfetti(true);
+    setTimeout(() => {
+        setShowConfetti(false);
+      }, 3000);
 
     } catch (error) {
       console.error(error);
@@ -71,7 +78,16 @@ const CityMap = () => {
         onChange={(e) => setCityName(e.target.value)}
       />
       <button onClick={handleCitySearch}>Search</button>
-      <MapContainer center={mapCenter} zoom={13} style={{ height: '400px', width: '100%' }}>
+      {showConfetti && <ConfettiExplosion 
+            force={0.8}
+            duration={3000}
+            particleCount={400}
+            width={2000}
+            angle={120} 
+            gravity={0.5}
+        />}
+      
+      <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '100%' }}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -86,6 +102,7 @@ const CityMap = () => {
             <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}`}</Popup>
           </Marker>
         ))}
+         
       </MapContainer>
     </div>
   );
