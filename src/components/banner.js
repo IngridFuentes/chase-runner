@@ -8,22 +8,24 @@ function Banner() {
             <div className={styles.projectLogo}></div>
             <div className={styles.headerText}>CHASE RUNNER</div>
             <div className={styles.spacer}></div>
-            <Button variant="light">
-                <a href="/stats">STATS</a>
-            </Button>
-            <Button variant="light">
-                <a href="/newrun">NEW RUN</a>
-            </Button>
-            <Button variant="light">
-                <a href="/goals">GOALS</a>
-            </Button>
+            <div className={styles.btns}>
+                <Button variant="light">
+                    <a href="/stats">STATS</a>
+                </Button>
+                <Button variant="light">
+                    <a href="/newrun">NEW RUN</a>
+                </Button>
+                <Button variant="light">
+                    <a href="/goals">GOALS</a>
+                </Button>
+            </div>
             <Dropdown>
-            <Dropdown.Toggle variant="success" id="dropdown-basic" style={{borderStyle:'none'}}>
+                <Dropdown.Toggle variant="success" id="dropdown-basic" style={{borderStyle:'none', backgroundColor:'white', borderRadius:'0'}}>
                 <div className={styles.imageProfile}></div>
-            </Dropdown.Toggle>
-            <Dropdown.Menu>
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
                 <Dropdown.Item href="/logout">Logout</Dropdown.Item>
-            </Dropdown.Menu>
+                </Dropdown.Menu>
             </Dropdown>
         </div>
     );

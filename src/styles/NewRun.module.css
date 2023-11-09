@@ -4,8 +4,11 @@ label {
 }
 
 .newrunSearch {
-    background-color: aliceblue;
+    /* background-color: aliceblue; */
     text-align: center;
     padding: 10px;
     margin: 10px;
+}
+ul{
+    list-style-type: none;
 }

@@ -1,5 +1,4 @@
 .mainHeader{
-    padding: 20px 30px;
     display: flex;
     align-items: center;
     background-color: #ffffff;
@@ -22,9 +21,6 @@
   .spacer {
     flex-grow: 1;
   }
-a{
-  text-decoration: none;
-}
   .link {
     margin-left: 20px;
     color:rgb(63 65 181);
@@ -46,4 +42,11 @@ button{
   border-radius: 50%;
   cursor: pointer;
 }
+.btns{
+  margin-bottom: 1rem;
+}
 
+.btns a{
+    text-decoration: none;
+    color: black;
+}

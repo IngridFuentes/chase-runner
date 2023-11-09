@@ -3,9 +3,7 @@ import {useAuthStatus} from '../hooks/useAuthStatus';
 import styles from '../styles/Dashboard.module.css';
 import SimpleMap from '../components/SimpleMap';
 import AddRun from "./AddRun";
-import CityMap from './Example';
-
-
+import CityMap from './CityMap';
 
 
 function Dashboard() {

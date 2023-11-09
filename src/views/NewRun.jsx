@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
 import styles from '../styles/NewRun.module.css';
 import AddRun from "./AddRun";
 
@@ -36,23 +39,35 @@ export default function NewRun() {
                     <button type="submit">Show List of Runs</button>
                 </label>
             </form>
-            <div className={styles.results}>
-                <ul>
-                    {race.map((event, index) => (
-                        // console.log(event.EventCity, "e")
-                        <li key={index}> 
-                            {event.EventCity}
-                        {event.Categories.map((e, i) => (
-                            <li key={i}>
-                                {e.CategoryName}
-                                {e.Distance}
-                            </li>
-                            // console.log(e, "eeeeeeeeee")
-                        ))}
-                     </li>
-                    ))}
-                </ul>
-            </div>
+            <Container>
+                <div className={styles.results}>
+                <Row>
+                            <ul>
+                                {race.map((event, index) => (
+                                // console.log(event.EventCity, "e")
+                                   
+                                    <li key={index}> 
+                                        <Col> 
+                                            City
+                                           <Row> {event.EventCity} </Row>
+                                        </Col>
+                                  
+                                    {event.Categories.map((e, i) => (
+                                    <li key={i}>
+                                  
+                                        <Col> Category: 
+                                            <Row> {e.CategoryName} </Row>
+                                        </Col>
+                                        <Col> Distance: {e.Distance} </Col>
+                                    </li>
+                                    // console.log(e, "eeeeeeeeee")
+                                    ))}
+                                    </li>
+                                ))}
+                             </ul>
+                        </Row>
+                </div>
+            </Container>
             {/* <form onSubmit={handleSubmit}>
                 <label>
                     Search for Run
