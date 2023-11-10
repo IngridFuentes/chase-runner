@@ -3,13 +3,15 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import styles from '../styles/NewRun.module.css';
-import AddRun from "./AddRun";
+import SearchFilter from "./SearchFilter";
 
 // const states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
 // const eventTypes = ['5K', '10K', 'Marathon', 'Fun Run', 'Road', 'Trail']
 
 export default function NewRun() {
     const [race, setRace] = useState([]);
+    const [buttonClicked, setButtonClicked] = useState(false);
+    const [searchText, setSearchText] = useState('');
     // const [stateLocation, setStateLocation] = useState("");
     // const [eventType, setEventType] = useState("");
 
@@ -26,89 +28,67 @@ export default function NewRun() {
             console.error(error);
         }
     };
-
+// console.log(fetchEventData(), 'fetch')
     const handleSubmit = (e) => {
         e.preventDefault();
         fetchEventData();
+        setButtonClicked(true);
+    };
+
+    const handleSearchChange = (text) => {
+        setSearchText(text);
+        const filteredData = race.filter((event) => event.EventState.toLowerCase().includes(text.toLowerCase()))
+        setRace(filteredData)
     };
 
     return (
         <div className={styles.newrunSearch}>
+            { !buttonClicked && ( 
             <form onSubmit={handleSubmit}>
                 <label>
                     <button type="submit">Show List of Runs</button>
                 </label>
             </form>
+            )}
+            {buttonClicked && (
+            <SearchFilter value={searchText} onChange={handleSearchChange}/>
+            )}
             <Container>
                 <div className={styles.results}>
-                <Row>
-                            <ul>
-                                {race.map((event, index) => (
+                        {race.map((event, index) => (
                                 // console.log(event.EventCity, "e")
-                                   
-                                    <li key={index}> 
-                                        <Col> 
-                                            City
-                                           <Row> {event.EventCity} </Row>
+                            <Row key={index}> 
+                                        <Col md={2}>
+                                            <div> City: </div>
+                                            {event.EventCity}
                                         </Col>
-                                  
-                                    {event.Categories.map((e, i) => (
-                                    <li key={i}>
-                                  
-                                        <Col> Category: 
-                                            <Row> {e.CategoryName} </Row>
+                                        <Col md={2}>
+                                            <div >State:</div>
+                                            {event.EventState}
+                                        <br/>
                                         </Col>
-                                        <Col> Distance: {e.Distance} </Col>
-                                    </li>
-                                    // console.log(e, "eeeeeeeeee")
-                                    ))}
-                                    </li>
-                                ))}
-                             </ul>
-                        </Row>
+                                        <Col md={4}>
+                                            Category:
+                                            {event.Categories.map((e, i) => (
+                                            <div key={i}>{e.CategoryName}</div>
+                                            ))}
+                                        <br/>
+                                        </Col>
+                                        <Col md={2}>
+                                            <div className={styles.columnHeader}>Distance:</div>
+                                            {event.Categories.map((e, i) => (
+                                            <div key={i}>{e.Distance}</div>
+                                            ))}
+                                        <br/>
+                                        </Col>
+                                        <Col md={2}>
+                                          <button> <a href={event.EventUrl} target="_blank" rel="noreferrer"> Sign up </a> </button>
+                                        <br/>
+                                        </Col>
+                            </Row>
+                        ))}
                 </div>
             </Container>
-            {/* <form onSubmit={handleSubmit}>
-                <label>
-                    Search for Run
-                    <div>
-                        <input></input>
-                    </div>
-                    <div className="selectors">
-                        <select 
-                            value={stateLocation}
-                            onChange={(e) => setStateLocation(e.target.value)}
-                        >
-                            <option value="">Select your State</option>
-                            {states.map((state) => {
-                                return <option key={state} value={state}>{state}</option>
-                            })}
-                        </select>
-                        <br></br>
-                        <select
-                            value={eventType}
-                            onChange={(e) => setEventType(e.target.value)}
-                        >
-                            <option value="">Select your Type of Event</option>
-                            {eventTypes.map((type) => {
-                                return <option key={type} value={type}>{type}</option>
-                            })}
-                        </select>
-                    </div>
-                    
-                    <button type="submit">Submit</button>
-                </label>
-            </form> */}
-            {/* For testing of results display after fetching from api */}
-            {/* <p>{race}</p> */}
-            {/* {data.map((event) => (
-                <div key={event.id}>
-                    <p>{event.name}</p>
-                    {/* Render other event details */}
-                {/* </div> */}
-            {/* ))} */}
-            {/* <AddRun /> */}
         </div>
-
     )
 };
