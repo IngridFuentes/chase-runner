@@ -3,10 +3,10 @@ import {useAuthStatus} from '../hooks/useAuthStatus';
 import styles from '../styles/Dashboard.module.css';
 import SimpleMap from '../components/SimpleMap';
 import AddRun from "./AddRun";
-import CityMap from './CityMap';
+import Map from './Map';
 
 
-function Dashboard() {
+const Dashboard = () => {
     const {isLoading, isAuthorized, username} = useAuthStatus();
     // const {isLoading, isAuthorized, username} = useCurrentUser();
 
@@ -34,7 +34,7 @@ function Dashboard() {
             </div>
             {/* <SimpleMap /> */}
             {/* <AddRun /> */}
-            <CityMap />
+            <Map />
 
         </div>
     );
