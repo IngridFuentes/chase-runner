@@ -1,0 +1,29 @@
+.login{
+    text-align: center;
+    display: block;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    width: 35%;
+    padding-top: 80px;
+
+}
+.buttonLogin{
+    background-color: #439f43;
+    font-size: 20px;
+    font-family: sans-serif;
+    height: 40px;
+    width: 250px;
+    text-align: center;
+    margin: 0 auto;
+    display: block;
+    border-radius: 8px;
+    border: none;
+}
+a{
+    color: white;
+    text-decoration: none;
+}
+.loginPage{
+    margin-top: 100px;
+}

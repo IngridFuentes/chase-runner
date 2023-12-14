@@ -197,7 +197,7 @@ const handleCityKeyDown = (e, selectedCity) => {
                   />
                   <div className={styles.searchIcon}>
                     { cityName === "" ? ( 
-                        <SearchIcon /> 
+                        <SearchIcon className={styles.searchIcon}/> 
                     ) : ( 
                         <CloseIcon onClick={handleCitySelection}/>
                     )}
@@ -243,7 +243,7 @@ const handleCityKeyDown = (e, selectedCity) => {
                 angle={120} 
                 gravity={0.5}
             />}
-      <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '100%', marginTop: '12rem'}}>
+      <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '100%', marginTop: '5rem'}}>
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -260,8 +260,6 @@ const handleCityKeyDown = (e, selectedCity) => {
         ))}
          
       </MapContainer>
-
-      hi
     </div>
   );
 };

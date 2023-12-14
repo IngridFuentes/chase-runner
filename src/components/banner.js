@@ -14,7 +14,7 @@ const Banner = () => {
     return ( 
         <div className={styles.mainHeader}>
             <div className={styles.projectLogo}></div>
-            <div className={styles.headerText}>CHASE RUNNER</div>
+            <div className={styles.headerImage}></div>
             <div className={styles.spacer}></div>
             {/* <div className={styles.btns}> */}
                 {/* <Button variant="light" onClick={handleOpenPopup}>

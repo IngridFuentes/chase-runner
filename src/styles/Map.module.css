@@ -14,9 +14,12 @@
 }
 .searchInput{
     display: flex;
+    align-items: center;
+    display: flex;
+    justify-content: center;
 }
 .search input{
-    width: 300px;
+    width: 400px;
     height: 30px;
 }
 .dropdown{
@@ -45,4 +48,7 @@ p:hover{
     background-color: rgb(233, 233, 233);
     width: 300px;
     margin: 0;
+}
+.searchIcon{
+    margin-left: -20px;
 }

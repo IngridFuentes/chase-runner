@@ -8,14 +8,16 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import NewRun from "./views/NewRun";
 import Stats from "./views/Stats";
 import Goals from "./views/Goals";
+import Login from "./views/Login";
 
 function App() {
     return (
         <div>
-              <Banner/>
-              <div className={styles.mainContainer}>
+              {/* <Banner/> */}
+              <div className={styles.mainContainer} >
                   <Routes>
-                      <Route path="/" element={<Home/>}></Route>
+                      <Route path="/" element={<Login/>}></Route>
+                      <Route path="/login" element={<Home/>}></Route>
                       <Route path="/dashboard" element={<Dashboard/>}></Route>
                       <Route path="/newrun" element={<NewRun/>}></Route>
                       <Route path="/stats" element={<Stats/>}></Route>

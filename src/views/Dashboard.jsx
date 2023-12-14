@@ -1,8 +1,7 @@
 // import {useCurrentUser} from '../hooks/useCurrentUser.js';
 import {useAuthStatus} from '../hooks/useAuthStatus';
 import styles from '../styles/Dashboard.module.css';
-import SimpleMap from '../components/SimpleMap';
-import AddRun from "./AddRun";
+import Banner from '../components/Banner'
 import Map from './Map';
 
 
@@ -16,7 +15,8 @@ const Dashboard = () => {
     }
     const authorizedBody = 
     <>
-        Your username is: <b>{username}</b>
+        {/* Your username is: <b>{username}</b> */}
+        Welcome back, runner!
     </>
 
     const unauthorizedBody = 
@@ -28,12 +28,11 @@ const Dashboard = () => {
 
     return (
         <div className={styles.dashboard}>
-            <div className={styles.title}>{isAuthorized ? 'Welcome!' : 'Unauthorized'}</div>
+            <Banner />
+            {/* <div className={styles.title}>{isAuthorized ? 'Welcome!' : 'Unauthorized'}</div> */}
             <div className={styles.message}>
                 { isAuthorized ? authorizedBody : unauthorizedBody }
             </div>
-            {/* <SimpleMap /> */}
-            {/* <AddRun /> */}
             <Map />
 
         </div>

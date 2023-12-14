@@ -3,19 +3,23 @@
     align-items: center;
     background-color: #ffffff;
     color: rgb(63 65 181);
+    margin-top: -18px
   }
   
-  .headerText {
-    font-size: 15px;
-    margin: 0px 10px;
-    color:  rgb(63 65 181);
+  .headerImage {
+    background-image: url('../image/logoImage.jpg');
+    background-size: 4rem;
+    width: 65px;
+    height: 35px;
+    margin-top: -30px 
   }
     
   .projectLogo {
-    background-image: url('../image/runner.jpg');
+    background-image: url('../image/runnerLogo.jpg');
     background-size: 4rem;
     width: 60px;
-    height: 60px;
+    height: 40px;
+    margin-top: -30px 
   }
   
   .spacer {
