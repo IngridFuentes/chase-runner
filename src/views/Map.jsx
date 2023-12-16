@@ -8,6 +8,7 @@ import styles from '../styles/Map.module.css';
 import useMapData from '../hooks/useMapData';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
+import Checkbox from '@mui/material/Checkbox';
 
 
 const Map = () => {
@@ -36,6 +37,19 @@ const Map = () => {
   } = useMapData();
 
   const [filteredData, setFilteredData] = useState([]);
+  const [checked, setChecked] = useState([]);
+
+  const handleToggle = (value) => () => {
+    const currentIndex = checked.indexOf(value);
+    const newChecked = [...checked];
+
+    if(currentIndex === -1){
+      newChecked.push(value);
+    }else{
+      newChecked.splice(currentIndex, 1);
+    }
+    setChecked(newChecked);
+  };
 
   // console.log(data, 'dataaaaaa')
   // console.log(data.features.filter((value) => console.log(value.properties.city.toLowerCase().includes(value))), 'newdata')
@@ -199,7 +213,7 @@ const handleCityKeyDown = (e, selectedCity) => {
                     { cityName === "" ? ( 
                         <SearchIcon className={styles.searchIcon}/> 
                     ) : ( 
-                        <CloseIcon onClick={handleCitySelection}/>
+                        <CloseIcon onClick={handleCitySelection} className={styles.closeIcon} />
                     )}
                   </div>
                 </div>
@@ -212,10 +226,24 @@ const handleCityKeyDown = (e, selectedCity) => {
                   <div
                   key={index} 
                   className={styles.dropdownRow}
-                  onClick={() => handleCitySelection(d)}
+                  // onClick={() => handleCitySelection(d)}
                   // onKeyDown={(e) => handleCityKeyDown(e, d)}
                   >
+                    <div onClick={() => handleCitySelection(d)} className={styles.list}>
                     {d.properties.city}, {d.properties.state}, {d.properties.country}, {d.properties.formatted}
+                    </div>
+                    <Checkbox
+                      edge="end"
+                      onChange={handleToggle(index)}
+                      checked={checked.indexOf(index) !== -1}
+                      className={styles.checkbox}
+                    />
+                    <Checkbox
+                      edge="end"
+                      onChange={handleToggle(index)}
+                      checked={checked.indexOf(index) !== -1}
+                      className={styles.checkbox}
+                    />
                   </div>
                 ))}
             </div>

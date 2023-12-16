@@ -19,13 +19,14 @@
     justify-content: center;
 }
 .search input{
-    width: 400px;
+    width: 500px;
     height: 30px;
 }
 .dropdown{
-    margin-top: 5px;
-    width: 300px;
-    height: 200px;
+    margin: auto;
+    margin-top: 3px;
+    width: 500px;
+    height: 300px;
     background-color: white;
     box-shadow: rgba(0,0,0,0.35) 0px 5px 15px;
     overflow: hidden;
@@ -35,7 +36,7 @@
     display: none;
 }
 .dropdown .dropdownRow{
-    width: 300px;
+    width: 480px;
     height: 50px;
     display: flex;
     align-items: center;
@@ -51,4 +52,11 @@ p:hover{
 }
 .searchIcon{
     margin-left: -20px;
+}
+.closeIcon{
+    margin-left: -20px;
+}
+.list{
+    width: 450px;
+    margin: 8px;
 }
