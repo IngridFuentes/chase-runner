@@ -273,6 +273,7 @@ console.log(data, 'data 2')
         showConfetti,
         handleCitySearch,
         data,
+        setData,
         handleSubmit,
         suggestions,
         handleSuggestionClick,
@@ -280,7 +281,7 @@ console.log(data, 'data 2')
         // selectedCityIndex,
         // saveCityToBackend
         // fetchCitiesFromAPI,
-        // fetchSavedPlaces,
+        fetchSavedPlaces,
       }
 
 }

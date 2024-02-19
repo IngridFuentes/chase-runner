@@ -16,13 +16,17 @@
     width: 250px;
     text-align: center;
     margin: 0 auto;
-    display: block;
     border-radius: 8px;
     border: none;
+    display: flex;
+    position: relative;
+    margin-top: -7rem;
+    align-items: center;
+    justify-content: center;
 }
-a{
-    color: white;
-    text-decoration: none;
+.link{
+    color: white !important;
+    text-decoration: none !important;
 }
 .loginPage{
     margin-top: 100px;

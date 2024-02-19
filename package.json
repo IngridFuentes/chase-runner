@@ -9,6 +9,7 @@
     "@mui/icons-material": "^5.14.19",
     "@mui/material": "^5.14.20",
     "@passageidentity/passage-elements": "^1.14.0",
+    "@passageidentity/passage-react": "^0.8.0",
     "@testing-library/jest-dom": "^5.16.1",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
@@ -32,6 +33,7 @@
     "react-router-dom": "^6.2.1",
     "react-scripts": "5.0.0",
     "react-select": "^5.8.0",
+    "shake.js": "^1.2.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

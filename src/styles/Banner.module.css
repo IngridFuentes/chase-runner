@@ -7,10 +7,10 @@
   }
   
   .headerImage {
-    background-image: url('../image/logoImage.jpg');
+    background-image: url('../image/logoImage.png');
     background-size: 4rem;
     width: 65px;
-    height: 35px;
+    height: 30px;
     margin-top: -30px 
   }
     
