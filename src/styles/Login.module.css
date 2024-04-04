@@ -31,3 +31,60 @@
 .loginPage{
     margin-top: 100px;
 }
+
+/* Form Container */
+.formContainer {
+    width: 400px;
+    margin: 0 auto;
+  }
+  
+  /* Form Header */
+  .formHeader {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  
+  .formHeader h2 {
+    font-size: 24px;
+    color: #333;
+  }
+  
+  /* Form Input Fields */
+  .formGroup {
+    margin-bottom: 20px;
+  }
+  
+  .formGroup label {
+    display: block;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 5px;
+  }
+  
+  .formGroup input[type="text"],
+  .formGroup input[type="email"],
+  .formGroup input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+  }
+  
+  /* Form Button */
+  .formBtn {
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    color: #fff;
+    background-color: rgb(35, 196, 43);
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .formBtn:hover {
+    background-color: #0056b3;
+  }
+  

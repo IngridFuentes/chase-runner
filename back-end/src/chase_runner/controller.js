@@ -9,8 +9,8 @@ const getMarkers = (req, res) => {
 };
 
 const addMarker = (req, res) => {
-    const { lat, lon, name, country, selectedracetype } = req.body;
-    const values = [lat, lon, name, country, selectedracetype ] 
+    const { lat, lon, name, country, selectedracetype, user_id } = req.body;
+    const values = [lat, lon, name, country, selectedracetype, user_id ] 
     pool.query(queries.addMarker, values, (error, results) => {
         if(error) throw error;
         res.status(201).send("Marker added successfully");

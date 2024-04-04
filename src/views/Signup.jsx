@@ -1,9 +1,13 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from '../styles/Login.module.css';
+
 
 const Signup = () => {
-    const [username, setUsername] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,21 +25,56 @@ const Signup = () => {
       }
 
       const data = await response.json();
-      localStorage.setItem('token', data.token);
+      const userId = data.userId;
+      console.log(userId, 'user id')
+      localStorage.setItem('userId', userId);
       // Redirect to dashboard or perform any other action on successful login
+      navigate('/profile');
     } catch (error) {
       console.error('Signup error:', error);
     }
   };
 
   return (
-    <div>
-      <h2>Login</h2>
+    <div className={styles.formContainer}>
+      <div className={styles.formHeader}>
+        <h2>Sign Up</h2>
+      </div>
       <form onSubmit={handleSubmit}>
-        <input type="name" placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} />
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit">Login</button>
+        <div className={styles.formGroup}>
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className={styles.formBtn}>Sign Up</button>
       </form>
     </div>
   );

@@ -146,7 +146,9 @@ const handleCitySelection = async (selectedCity) => {
   // setSelectedRaceType(selectedRaceType);
 
   // console.log('Selected City:', city, state, country, selectedRaceType);
+  const userId = localStorage.getItem('userId');
 
+  console.log(userId, 'user id frontend')
   try {
     // Call the backend to save the marker with the raceType and color
     const response = await fetch('http://localhost:3000/api/places', {
@@ -161,6 +163,7 @@ const handleCitySelection = async (selectedCity) => {
         country,
         state,
         selectedracetype: selectedRaceType,
+        user_id: userId,
         // color: selectedMarathonType[selectedCityIndex]?.color || '',
         // customIcon(selectedRaceType)
       }),

@@ -28,6 +28,8 @@
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import styles from '../styles/Login.module.css';
+import { Link } from "react-router-dom";
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -51,22 +53,51 @@ const Login = () => {
 
       const data = await response.json();
       console.log(data, "data login")
-      localStorage.setItem('token', data.token);
-      // Redirect to dashboard or perform any other action on successful login
+      const { userId, status } = data;
+      if (status === 'Success' && userId) {
+        localStorage.setItem('userId', userId); // Store the userId in localStorage
+        navigate('/profile'); // Redirect to the profile page or any other page
+      } else {
+        throw new Error('Login failed');
+      }
     } catch (error) {
       console.error('Login error:', error);
     }
-    navigate('/profile');
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
-        <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button type="submit">Login</button>
+    
+    <div className={styles.formContainer}>
+        <div className={styles.formHeader}>
+        <h2>Login</h2>
+    </div>
+      <form onSubmit={handleSubmit} className={styles.loginForm}>
+      <div className={styles.formGroup}>
+          <label htmlFor="email">Email</label>
+          <input
+            type="text"
+            id="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+        </div>
+        <div className={styles.formGroup}>
+          <label htmlFor="password">Password</label>
+          <input
+            type="password"
+            id="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+        </div>
+        <button type="submit" className={styles.formBtn} >Login</button>
       </form>
+      <br/>
+      <p className={styles.formHeader}>Don't have an account yet? 
+           <Link to='/signup'> Create an account </Link>
+        </p>
     </div>
   );
 };

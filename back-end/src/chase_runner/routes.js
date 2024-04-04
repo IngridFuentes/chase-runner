@@ -1,12 +1,12 @@
-// const { Router } = require('express');
-// const router = Router();
-// const controller = require('./controller');
+const { Router } = require('express');
+const router = Router();
+const controller = require('./controller');
 // // const { auth0Login, auth0Signup, auth0Logout } = require('./authService');
 
 
-// router.get('/', controller.getMarkers);
-// router.post('/', controller.addMarker);
-// module.exports = router;
+router.get('/', controller.getMarkers);
+router.post('/', controller.addMarker);
+module.exports = router;
 
 // const login = async (req, res) => {
 //     try {

@@ -1,5 +1,5 @@
 const express = require("express");
-// const runnerRoutes = require('./src/chase_runner/routes');
+const runnerRoutes = require('./src/chase_runner/routes');
 const userRoutes = require('./routers/authRouter');
 const bodyParser = require('body-parser');
 const { Client } = require('pg');
@@ -46,31 +46,124 @@ app.use(cookieParser());
 //   res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
 // });
 
+// app.post('/signup', async (req, res) => {
+//   const { email, username, password } = req.body;
+
+//   try {
+//     // Hash the password
+//     const hash = await bcrypt.hash(password, salt);
+
+//     // Insert user data into the database
+//     const postgres = "INSERT INTO users (email, username, password) VALUES ($1, $2, $3)";
+//     await client.query(postgres, [email, username, hash]);
+
+//     // Send success response
+//     return res.json({ status: "Success" });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     return res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
+// Middleware to verify JWT and extract user ID
+const authenticateUser = (req, res, next) => {
+  // Extract JWT from request headers
+  const token = req.headers.authorization.split(' ')[1];
+
+  // Verify JWT
+  jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+    if (err) {
+      return res.status(401).json({ error: 'Unauthorized' });
+    }
+    // Extract user ID from decoded token
+    req.userId = decodedToken.userId;
+    next();
+  });
+};
+
+// Example route handler that requires authentication
+app.get('/protected-route', authenticateUser, (req, res) => {
+  const userId = req.userId; // User ID extracted from JWT token
+
+  // Example: Query the database for user-specific data
+  const query = 'SELECT * FROM users WHERE user_id = $1';
+  client.query(query, [userId], (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: 'Database error' });
+    }
+    // Handle successful database query and return user-specific data
+    return res.status(200).json({ userData: result.rows });
+  });
+});
+
+
 app.post('/signup', async (req, res) => {
-  const { email, username, password } = req.body;
+  const { username, email, password } = req.body;
 
   try {
     // Hash the password
-    const hash = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     // Insert user data into the database
-    const postgres = "INSERT INTO users (email, username, password) VALUES ($1, $2, $3)";
-    await client.query(postgres, [email, username, hash]);
+    const query = 'INSERT INTO users (username, email, password) VALUES ($1, $2, $3) RETURNING id';
+    const result = await client.query(query, [username, email, hashedPassword]);
 
-    // Send success response
-    return res.json({ status: "Success" });
+    // Extract the newly generated user ID
+    const userId = result.rows[0].id;
+
+    console.log(userId, "user id backend")
+    // Return the user ID in the response
+    return res.status(201).json({ userId });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
 
+
+
+// app.post('/login', async (req, res) => {
+//   const { email, password } = req.body;
+
+//   try {
+//     // Query to retrieve user data based on email
+//     const query = 'SELECT * FROM users WHERE email = $1';
+//     const result = await client.query(query, [email]);
+
+//     // Check if a user with the provided email exists
+//     if (result.rows.length === 0) {
+//       return res.status(404).json({ error: 'User not found' });
+//     }
+
+//     // Retrieve the hashed password from the query result
+//     const hashedPassword = result.rows[0].password;
+
+//     // Compare the provided password with the hashed password
+//     const match = await bcrypt.compare(password, hashedPassword);
+
+//     // Check if the passwords match
+//     if (!match) {
+//       return res.status(401).json({ error: 'Invalid password' });
+//     }
+
+//     // Passwords match, login successful
+//     return res.status(200).json({ status: 'Success' });
+//   } catch (error) {
+//     console.error("Error:", error);
+//     return res.status(500).json({ error: "Internal server error" });
+//   }
+// });
+
+
+
+
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
     // Query to retrieve user data based on email
-    const query = 'SELECT * FROM users WHERE email = $1';
+    const query = 'SELECT id, password FROM users WHERE email = $1';
     const result = await client.query(query, [email]);
 
     // Check if a user with the provided email exists
@@ -78,8 +171,8 @@ app.post('/login', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    // Retrieve the hashed password from the query result
-    const hashedPassword = result.rows[0].password;
+    // Retrieve the user ID and hashed password from the query result
+    const { id, password: hashedPassword } = result.rows[0];
 
     // Compare the provided password with the hashed password
     const match = await bcrypt.compare(password, hashedPassword);
@@ -90,12 +183,13 @@ app.post('/login', async (req, res) => {
     }
 
     // Passwords match, login successful
-    return res.status(200).json({ status: 'Success' });
+    return res.status(200).json({ userId: id, status: 'Success' });
   } catch (error) {
     console.error("Error:", error);
     return res.status(500).json({ error: "Internal server error" });
   }
 });
+
 
 
 // const passage = new Passage({
@@ -104,7 +198,7 @@ app.post('/login', async (req, res) => {
 //     authStrategy: "HEADER"
 // });
 app.use("/", userRoutes);
-// app.use("/api/places", runnerRoutes);
+app.use("/api/places", runnerRoutes);
 
 // app.post("/auth", async (req, res) => {
 //     try {
