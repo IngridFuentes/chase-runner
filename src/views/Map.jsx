@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Select from 'react-select';
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet'; // Import Leaflet library
 import red from '../image/pin.png';
 import purple from '../image/purple.png';
@@ -49,6 +49,7 @@ const Map = () => {
   const [targetChecked, setTargetChecked] = useState(-1);
   const [selectedMarathonType, setSelectedMarathonType] = useState({});
   const [selectedRaceType, setSelectedRaceType] = useState(null);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(true);
 
   const handleToggle = (index, type) => () => {
     if (type === 'done') {
@@ -58,24 +59,23 @@ const Map = () => {
     }
   };
   const marathonTypeOptions = [
-    { value: '5K', label: '5K', color: 'yellow'},
-    { value: '10K', label: '10K', color: 'green'},
-    { value: 'full', label: 'Full', color: 'blue' },
-    { value: 'half', label: 'Half', color: 'purple' },
-    { value: 'ultra', label: 'Ultra', color: 'red' },
+    { value: '5K', label: '5K'},
+    { value: '10K', label: '10K'},
+    { value: 'full', label: 'Full'},
+    { value: 'half', label: 'Half'},
+    { value: 'ultra', label: 'Ultra'},
   ];
 
   const handleMarathonType = (index, value) => {
     const selectedOption = marathonTypeOptions.find((option) => option.value === value.value);
     setSelectedMarathonType((prevSelections) => {
       const updatedSelections = { ...prevSelections };
-      updatedSelections[index] = { value: value.value, color: selectedOption.color };
+      updatedSelections[index] = { value: value.value };
       return updatedSelections;
 
     });
     setSelectedRaceType(value.value);
   };
-
 
 const blueIcon = new L.Icon({ iconUrl: blue });
 const redIcon = new L.Icon({ iconUrl: red });
@@ -111,7 +111,7 @@ const customIcon = (selectedRaceType) => {
   }
 
   // console.log('Selected race type:', raceType);
-  console.log('Selected icon URL:', iconUrl);
+  // console.log('Selected icon URL:', iconUrl);
   return new L.Icon({
       iconUrl: iconUrl,
       iconSize: [25, 25],
@@ -143,11 +143,9 @@ const handleCitySelection = async (selectedCity) => {
   // Clear the search input and filtered data
   setCityName('');
   setFilteredData([]);
+  // setSelectedRaceType(selectedRaceType);
 
-  // setSelectedRaceType(raceType);
-
-  console.log('Selected City:', city, state, country);
-  // console.log('Selected Race Type:', raceType);
+  // console.log('Selected City:', city, state, country, selectedRaceType);
 
   try {
     // Call the backend to save the marker with the raceType and color
@@ -174,6 +172,7 @@ const handleCitySelection = async (selectedCity) => {
     setSelectedRaceType(selectedRaceType);
     // Fetch saved places again to update the map
     fetchSavedPlaces();
+    setIsDropdownVisible(false);
   } catch (error) {
     console.error(error);
   }
@@ -216,7 +215,7 @@ const handleCityKeyDown = (e, selectedCity) => {
               </div> 
             {/* <button onClick={handleSubmit}> Search </button> */}
 
-            {data.features !== undefined && ( 
+            {data.features !== undefined && isDropdownVisible && ( 
             <div className={styles.dropdown}>
                     <div className={styles.listCheckbox}>
                       <h3>Done</h3>
@@ -231,7 +230,7 @@ const handleCityKeyDown = (e, selectedCity) => {
                   // onClick={() => handleCitySelection(d)}
                   // onKeyDown={(e) => handleCityKeyDown(e, d)}
                   >
-                    <div onClick={() => handleCitySelection(d)} className={styles.list}>
+                    <div onClick={() => { handleCitySelection(d); setIsDropdownVisible(false)}} className={styles.list}>
                     {d.properties.city}, {d.properties.state}, {d.properties.country}, {d.properties.formatted}
                     </div>
                    <Checkbox

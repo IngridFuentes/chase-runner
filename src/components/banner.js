@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import styles from '../styles/Banner.module.css';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Logout from './LogoutButton';
 
 
 const Banner = () => {
@@ -32,7 +33,9 @@ const Banner = () => {
                 <div className={styles.imageProfile}></div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                <Dropdown.Item href="/logout">Logout</Dropdown.Item>
+                <Dropdown.Item href="/logout">
+                    <Logout> Logout </Logout>
+                </Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>
         </div>

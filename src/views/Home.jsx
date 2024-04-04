@@ -1,16 +1,19 @@
-import "@passageidentity/passage-elements/passage-auth";
-import styles from '../styles/Login.module.css';
-// import '@passageidentity/passage-auth'
+// import "@passageidentity/passage-elements/passage-auth";
+// import styles from '../styles/Login.module.css';
+// // import '@passageidentity/passage-auth'
 
-const Home = () => {
-    return (
-        <div className={styles.loginPage }>
-            <passage-auth app-id={process.env.REACT_APP_PASSAGE_APP_ID}></passage-auth>
-        </div>
-    );
-}
+// const Home = () => {
+//     return (
+//         <div className={styles.loginPage }>
+//             <passage-auth app-id={process.env.REACT_APP_PASSAGE_APP_ID}></passage-auth>
+//         </div>
+//     );
+// }
 
-export default Home;
+// export default Home;
+
+
+// ---------------
 
 // import {
 //     PassageAuth,
@@ -18,12 +21,16 @@ export default Home;
 //   } from "@passageidentity/passage-react";
 //   import { Navigate } from "react-router-dom";
   
-//   function Home() {
-//     return (
-//       <PassageUnAuthGuard authComp={<Navigate to="/dashboard" />}>
-//         <PassageAuth />
-//       </PassageUnAuthGuard>
-//     );
-//   }
+import React from 'react';
+import { Link } from "react-router-dom"
+
+  function Home() {
+    return (
+    //   <PassageUnAuthGuard authComp={<Navigate to="/dashboard" />}>
+    //     <PassageAuth />
+    //   </PassageUnAuthGuard>
+    <Link to='login'> Login here </Link>
+    );
+  }
   
-//   export default Home;
+  export default Home;
