@@ -1,36 +1,32 @@
-// import "@passageidentity/passage-elements/passage-auth";
-// import styles from '../styles/Login.module.css';
-// // import '@passageidentity/passage-auth'
 
-// const Home = () => {
-//     return (
-//         <div className={styles.loginPage }>
-//             <passage-auth app-id={process.env.REACT_APP_PASSAGE_APP_ID}></passage-auth>
-//         </div>
-//     );
-// }
-
-// export default Home;
-
-
-// ---------------
-
-// import {
-//     PassageAuth,
-//     PassageUnAuthGuard,
-//   } from "@passageidentity/passage-react";
-//   import { Navigate } from "react-router-dom";
-  
 import React from 'react';
-import { Link } from "react-router-dom"
+import styles from '../styles/Login.module.css';
+import { Link } from "react-router-dom";
 
-  function Home() {
-    return (
-    //   <PassageUnAuthGuard authComp={<Navigate to="/dashboard" />}>
-    //     <PassageAuth />
-    //   </PassageUnAuthGuard>
-    <Link to='login'> Login here </Link>
+const Home = () => {
+
+ return (
+        <div>
+          <img
+           loading="lazy"
+            src="https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/hasini-dibf1m/assets/1bew6og46zuv/chaserunner.jpg"
+            className="aspect-[0.86] object-contain object-center w-full fill-[url(<path-to-image>),lightgray_0px_81.565px_/_100%_91.066%_no-repeat] overflow-hidden max-w-[782px]"
+            style={{
+               display: 'block',
+               margin:'auto',
+                width: '700px',
+                height: '700px'
+            }}
+           alt=''/>    
+          <button className={styles.buttonLogin}> 
+               <Link to="/login" className={styles.link}> Log in </Link> 
+           </button>
+           <br />
+           <button className={styles.buttonLogin}> 
+               <Link to="/signup" className={styles.link}> Join for free </Link> 
+           </button>      
+
+       </div>
     );
   }
-  
-  export default Home;
+ export default Home;

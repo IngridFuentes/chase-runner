@@ -95,9 +95,9 @@ const Login = () => {
         <button type="submit" className={styles.formBtn} >Login</button>
       </form>
       <br/>
-      <p className={styles.formHeader}>Don't have an account yet? 
-           <Link to='/signup'> Create an account </Link>
-        </p>
+      <p className={styles.createAccount}>Don't have an account yet?{' '}
+           <Link to='/signup' className={styles.createAccountLink}> Create an account </Link>
+      </p>
     </div>
   );
 };
