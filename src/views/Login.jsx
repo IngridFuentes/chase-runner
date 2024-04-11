@@ -26,80 +26,145 @@
 //  export default Login;
 
 
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// import React, { useState } from 'react';
+// import { useNavigate } from 'react-router-dom';
+// import styles from '../styles/Login.module.css';
+// import { Link } from "react-router-dom";
+// import { useAuth0 } from "@auth0/auth0-react";
+
+// const Login = () => {
+//   const [email, setEmail] = useState('');
+//   const [password, setPassword] = useState('');
+//   const navigate = useNavigate();
+//   const { loginWithRedirect, user, isLoading, logout} = useAuth0();
+
+//   const handleSubmit = async (e) => {
+//     console.log(user, 'user')
+//     e.preventDefault();
+//     try {
+//       const response = await fetch('http://localhost:3000/login', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ email, password }),
+//       });
+
+//       if (!response.ok) {
+//         throw new Error('Login failed');
+//       }
+
+//       const data = await response.json();
+//       console.log(data, "data login")
+//       const { userId, status } = data;
+//       if (status === 'Success' && userId) {
+//         localStorage.setItem('userId', userId); // Store the userId in localStorage
+//         navigate('/map'); // Redirect to the profile page or any other page
+//       } else {
+//         throw new Error('Login failed');
+//       }
+//     } catch (error) {
+//       console.error('Login error:', error);
+//     }
+//   };
+
+//   return (
+    
+//     <div className={styles.formContainer}>
+//         <div className={styles.formHeader}>
+//         <h2>Login</h2>
+//     </div>
+//       <form onSubmit={handleSubmit} className={styles.loginForm}>
+//       <div className={styles.formGroup}>
+//           <label htmlFor="email">Email</label>
+//           <input
+//             type="text"
+//             id="email"
+//             value={email}
+//             onChange={(e) => setEmail(e.target.value)}
+//             required
+//           />
+//         </div>
+//         <div className={styles.formGroup}>
+//           <label htmlFor="password">Password</label>
+//           <input
+//             type="password"
+//             id="password"
+//             value={password}
+//             onChange={(e) => setPassword(e.target.value)}
+//             required
+//           />
+//         </div>
+//         {!isLoading && !user && (
+//         <button type="submit" className={styles.formBtn} onClick={() => loginWithRedirect()}>Login</button>
+//         )}
+//         {!isLoading && user && (
+//         <button type="submit" className={styles.formBtn} onClick={() => logout()}>Logout</button>
+//         )}
+//       </form>
+//       <br/>
+//       <p className={styles.createAccount}>Don't have an account yet?
+//       </p>
+//       <br />
+//       <p className={styles.createAccountLink}> <Link to='/signup'> Create an account </Link> </p>
+//     </div>
+//   );
+// };
+
+// export default Login;
+
+import { useAuth0 } from "@auth0/auth0-react";
+import React from "react";
 import styles from '../styles/Login.module.css';
-import { Link } from "react-router-dom";
+import { useState } from "react";
 
 const Login = () => {
+  const { loginWithRedirect, user, isAuthenticated, isLoading, logout} = useAuth0();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch('http://localhost:3000/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-      });
+  console.log(user, 'user')
 
-      if (!response.ok) {
-        throw new Error('Login failed');
-      }
+  const handleLogin = async () => {
+    // try {
+    //         const response = await fetch('http://localhost:3000/login', {
+    //           method: 'POST',
+    //           headers: {
+    //             'Content-Type': 'application/json',
+    //           },
+    //           body: JSON.stringify({ email, password }),
+    //         });
+      
+    //         if (!response.ok) {
+    //           throw new Error('Login failed');
+    //         }
+      
+    //         const data = await response.json();
+    //         console.log(data, 'data')
+    //       }catch (error) {
+    //                 console.error('Login error:', error);
+    //         }
 
-      const data = await response.json();
-      console.log(data, "data login")
-      const { userId, status } = data;
-      if (status === 'Success' && userId) {
-        localStorage.setItem('userId', userId); // Store the userId in localStorage
-        navigate('/profile'); // Redirect to the profile page or any other page
-      } else {
-        throw new Error('Login failed');
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-    }
+    await loginWithRedirect({
+      appState: {
+        returnTo: "/map",
+      },
+    });
   };
 
   return (
-    
-    <div className={styles.formContainer}>
-        <div className={styles.formHeader}>
-        <h2>Login</h2>
-    </div>
-      <form onSubmit={handleSubmit} className={styles.loginForm}>
-      <div className={styles.formGroup}>
-          <label htmlFor="email">Email</label>
-          <input
-            type="text"
-            id="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-        </div>
-        <div className={styles.formGroup}>
-          <label htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
-        </div>
-        <button type="submit" className={styles.formBtn} >Login</button>
-      </form>
-      <br/>
-      <p className={styles.createAccount}>Don't have an account yet?{' '}
-           <Link to='/signup' className={styles.createAccountLink}> Create an account </Link>
-      </p>
-    </div>
+    <>
+    { !isAuthenticated && (
+      <button className={styles.link} onClick={handleLogin}>
+      Log In
+      </button>
+    )}
+      { !isLoading && isAuthenticated && (
+        <button className="buttonLogout" onClick={() => logout()}>
+        Logout
+        </button>
+      )}
+    </>
   );
 };
-
 export default Login;

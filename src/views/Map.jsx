@@ -13,7 +13,9 @@ import useMapData from '../hooks/useMapData';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import Checkbox from '@mui/material/Checkbox';
+import Banner from "../components/Banner";
 // import states from '../data/states.json';
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 const Map = () => {
@@ -50,6 +52,11 @@ const Map = () => {
   const [selectedMarathonType, setSelectedMarathonType] = useState({});
   const [selectedRaceType, setSelectedRaceType] = useState(null);
   const [isDropdownVisible, setIsDropdownVisible] = useState(true);
+
+  const { user, isAuthenticated } = useAuth0();
+  const userId = isAuthenticated ? user.sub : null;
+
+  console.log(userId, 'user')
 
   const handleToggle = (index, type) => () => {
     if (type === 'done') {
@@ -146,9 +153,8 @@ const handleCitySelection = async (selectedCity) => {
   // setSelectedRaceType(selectedRaceType);
 
   // console.log('Selected City:', city, state, country, selectedRaceType);
-  const userId = localStorage.getItem('userId');
+  const userId = user.sub
 
-  console.log(userId, 'user id frontend')
   try {
     // Call the backend to save the marker with the raceType and color
     const response = await fetch('http://localhost:3000/api/places', {
@@ -197,7 +203,7 @@ const handleCityKeyDown = (e, selectedCity) => {
 };
   return (
     <div>
-          
+          <Banner />
             <div className={styles.search}>
                 <div className={styles.searchInput}>
                   <input
@@ -280,13 +286,16 @@ const handleCityKeyDown = (e, selectedCity) => {
              <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup>
           </Marker>
         )}
-        {savedPlaces.map((place, index) => (
+        {isAuthenticated && savedPlaces
+        .filter(place => place.user_id === userId)
+        .map((place, index) => (
           <Marker key={index} position={[place.lat, place.lon, place.name]} icon={customIcon(place.selectedracetype)}>
             <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedracetype}`}</Popup>
           </Marker>
         ))}
          
       </MapContainer>
+
     </div>
   );
 };

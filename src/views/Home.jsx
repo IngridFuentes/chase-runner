@@ -2,6 +2,8 @@
 import React from 'react';
 import styles from '../styles/Login.module.css';
 import { Link } from "react-router-dom";
+import Login from './Login';
+import Signup from './Signup';
 
 const Home = () => {
 
@@ -19,11 +21,12 @@ const Home = () => {
             }}
            alt=''/>    
           <button className={styles.buttonLogin}> 
-               <Link to="/login" className={styles.link}> Log in </Link> 
+               {/* <Link to="/login" className={styles.link}> Log in </Link>  */}
+               <Login /> 
            </button>
            <br />
            <button className={styles.buttonLogin}> 
-               <Link to="/signup" className={styles.link}> Join for free </Link> 
+                <Signup /> 
            </button>      
 
        </div>

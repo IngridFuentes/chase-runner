@@ -91,12 +91,16 @@
   .formBtn:hover {
     background-color: #0056b3;
   }
-  .createAccount:hover{
+  .createAccount{
     background-color: initial;
     color: initial;
     position: fixed;
+    pointer-events: none;
   }
-  .createAccountLink:hover {
+  p {
+    text-decoration: none; /* Remove underline */
+  }
+  .createAccountLink:hover{
     text-decoration: none;
-    cursor: none;
   }
+  

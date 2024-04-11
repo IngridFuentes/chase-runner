@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import styles from '../styles/Banner.module.css';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
-import Logout from './LogoutButton';
+import Logout from '../views/Logout';
 
 
 const Banner = () => {
@@ -34,7 +34,7 @@ const Banner = () => {
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                 <Dropdown.Item href="/logout">
-                    <Logout> Logout </Logout>
+                    <Logout />
                 </Dropdown.Item>
                 </Dropdown.Menu>
             </Dropdown>

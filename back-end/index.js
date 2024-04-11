@@ -67,35 +67,63 @@ app.use(cookieParser());
 
 
 // Middleware to verify JWT and extract user ID
-const authenticateUser = (req, res, next) => {
-  // Extract JWT from request headers
-  const token = req.headers.authorization.split(' ')[1];
+// const authenticateUser = (req, res, next) => {
+//   // Extract JWT from request headers
+//   const token = req.headers.authorization.split(' ')[1];
 
-  // Verify JWT
-  jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-    if (err) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-    // Extract user ID from decoded token
-    req.userId = decodedToken.userId;
-    next();
-  });
+//   console.log(token, 'token')
+
+//   // Verify JWT
+//   jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
+//     if (err) {
+//       return res.status(401).json({ error: 'Unauthorized' });
+//     }
+//     // Extract user ID from decoded token
+//     req.userId = decodedToken.userId;
+//     next();
+//   });
+// };
+
+// // Example route handler that requires authentication
+// app.get('/protected-route', authenticateUser, (req, res) => {
+//   const userId = req.userId; // User ID extracted from JWT token
+
+//   // Example: Query the database for user-specific data
+//   const query = 'SELECT * FROM users WHERE user_id = $1';
+//   client.query(query, [userId], (err, result) => {
+//     if (err) {
+//       return res.status(500).json({ error: 'Database error' });
+//     }
+//     // Handle successful database query and return user-specific data
+//     return res.status(200).json({ userData: result.rows });
+//   });
+// });
+
+// Middleware to authenticate incoming requests
+const authenticate = (req, res, next) => {
+  // Check if the user is authenticated (e.g., validate authentication token)
+  if (req.isAuthenticated()) {
+    return next(); // User is authenticated, proceed to the next middleware
+  } else {
+    return res.status(401).json({ error: 'Unauthorized' }); // User is not authenticated, send 401 Unauthorized status
+  }
 };
 
-// Example route handler that requires authentication
-app.get('/protected-route', authenticateUser, (req, res) => {
-  const userId = req.userId; // User ID extracted from JWT token
-
-  // Example: Query the database for user-specific data
-  const query = 'SELECT * FROM users WHERE user_id = $1';
-  client.query(query, [userId], (err, result) => {
-    if (err) {
-      return res.status(500).json({ error: 'Database error' });
-    }
-    // Handle successful database query and return user-specific data
-    return res.status(200).json({ userData: result.rows });
-  });
+// Route for a specific user
+app.get('/user/:userId', authenticate, (req, res) => {
+  const { userId } = req.params;
+  // Check if the authenticated user is authorized to access this route
+  if (req.user.id === userId) {
+    // User is authorized, return user-specific data
+    res.json({ userId, data: 'User-specific data' });
+  } else {
+    // User is not authorized, send 403 Forbidden status
+    res.status(403).json({ error: 'Forbidden' });
+  }
 });
+
+
+
 
 
 app.post('/signup', async (req, res) => {
@@ -199,6 +227,8 @@ app.post('/login', async (req, res) => {
 // });
 app.use("/", userRoutes);
 app.use("/api/places", runnerRoutes);
+
+
 
 // app.post("/auth", async (req, res) => {
 //     try {
