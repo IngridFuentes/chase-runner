@@ -82,7 +82,7 @@ const NewRun = () => {
                                         <br/>
                                         </Col>
                                         <Col md={2}>
-                                          <button> <a href={event.EventUrl} target="_blank" rel="noreferrer"> Sign up </a> </button>
+                                          {/* <button> <a href={event.EventUrl} target="_blank" rel="noreferrer"> Sign up </a> </button> */}
                                         <br/>
                                         </Col>
                             </Row>

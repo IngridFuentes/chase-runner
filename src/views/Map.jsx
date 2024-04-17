@@ -30,6 +30,7 @@ const Map = () => {
     mapCenter,
     savedPlaces,
     showConfetti,
+    setShowConfetti,
     handleInputSearch,
     handleSubmit,
     suggestions,
@@ -52,11 +53,21 @@ const Map = () => {
   const [selectedMarathonType, setSelectedMarathonType] = useState({});
   const [selectedRaceType, setSelectedRaceType] = useState(null);
   const [isDropdownVisible, setIsDropdownVisible] = useState(true);
+  const [marathonsDone, setMarathonsDone] = useState(0);
 
   const { user, isAuthenticated } = useAuth0();
-  const userId = isAuthenticated ? user.sub : null;
+  const userId = isAuthenticated ? user?.sub : null;
 
   console.log(userId, 'user')
+  console.log(isAuthenticated, 'is ????')
+
+  useEffect(() => {
+    // Retrieve the count of completed marathons from local storage when the component mounts
+    const storedMarathonsDone = localStorage.getItem('marathonsDone');
+    if (storedMarathonsDone) {
+      setMarathonsDone(parseInt(storedMarathonsDone));
+    }
+  }, []);
 
   const handleToggle = (index, type) => () => {
     if (type === 'done') {
@@ -117,8 +128,6 @@ const customIcon = (selectedRaceType) => {
           break;
   }
 
-  // console.log('Selected race type:', raceType);
-  // console.log('Selected icon URL:', iconUrl);
   return new L.Icon({
       iconUrl: iconUrl,
       iconSize: [25, 25],
@@ -147,6 +156,11 @@ const handleCitySelection = async (selectedCity) => {
   // Handle the city selection, e.g., saving it to the backend or updating other state
   const {city, state, country } = selectedCity.properties;
   const selectedRaceType = selectedMarathonType[0]?.value;
+  setMarathonsDone((prevCount) => prevCount + 1);
+
+    // Save the count of completed marathons to local storage
+  localStorage.setItem('marathonsDone', marathonsDone + 1);
+
   // Clear the search input and filtered data
   setCityName('');
   setFilteredData([]);
@@ -170,8 +184,6 @@ const handleCitySelection = async (selectedCity) => {
         state,
         selectedracetype: selectedRaceType,
         user_id: userId,
-        // color: selectedMarathonType[selectedCityIndex]?.color || '',
-        // customIcon(selectedRaceType)
       }),
     });
 
@@ -179,6 +191,7 @@ const handleCitySelection = async (selectedCity) => {
       throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
     }
     setSelectedRaceType(selectedRaceType);
+    setShowConfetti(true);
     // Fetch saved places again to update the map
     fetchSavedPlaces();
     setIsDropdownVisible(false);
@@ -204,6 +217,8 @@ const handleCityKeyDown = (e, selectedCity) => {
   return (
     <div>
           <Banner />
+          <div>Marathons Done so far: {marathonsDone}</div>
+          <br />
             <div className={styles.search}>
                 <div className={styles.searchInput}>
                   <input
@@ -268,12 +283,36 @@ const handleCityKeyDown = (e, selectedCity) => {
             </div>
             )}
 
-          {showConfetti && <ConfettiExplosion 
+            {showConfetti && <ConfettiExplosion 
                 force={0.8}
                 duration={3000}
                 particleCount={400}
                 width={2000}
-                angle={120} 
+                angle={0} 
+                gravity={0.5}
+            />}
+            {showConfetti && <ConfettiExplosion 
+                force={0.8}
+                duration={3000}
+                particleCount={400}
+                width={3000}
+                angle={90} 
+                gravity={0.5}
+            />}
+             {showConfetti && <ConfettiExplosion 
+                force={0.8}
+                duration={3000}
+                particleCount={400}
+                width={2000}
+                angle={180} 
+                gravity={0.5}
+            />}
+            {showConfetti && <ConfettiExplosion 
+                force={0.8}
+                duration={3000}
+                particleCount={400}
+                width={3000}
+                angle={270} 
                 gravity={0.5}
             />}
       <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '100%', marginTop: '5rem'}}>

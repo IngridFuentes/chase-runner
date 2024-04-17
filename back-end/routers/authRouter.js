@@ -24,14 +24,14 @@ const router = express.Router();
 // router.post('/signup', signup);
 // router.post('/logout', logout);
 
-router.get("/", (req, res) => {
-    console.log(req.oidc.isAuthenticated())
-    res.render("index", { title: "Express Demo" });
-})
+// router.get("/", (req, res) => {
+//     console.log(req.oidc.isAuthenticated())
+//     res.render("index", { title: "Express Demo" });
+// })
 
-router.get("/map", (req, res) => {
-    console.log('map server')
-})
+// router.get("/map", (req, res) => {
+//     console.log('map server')
+// })
 
 
 module.exports = router;

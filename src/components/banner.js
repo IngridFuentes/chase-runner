@@ -2,7 +2,9 @@ import React, { useState } from 'react';
 import styles from '../styles/Banner.module.css';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { Link } from "react-router-dom";
 import Logout from '../views/Logout';
+import Profile from '../views/Profile';
 
 
 const Banner = () => {
@@ -33,9 +35,20 @@ const Banner = () => {
                 <div className={styles.imageProfile}></div>
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
-                <Dropdown.Item href="/logout">
-                    <Logout />
-                </Dropdown.Item>
+                {/* <Dropdown.Item> */}
+                    <div>
+                        <Link to="/profile" className={styles.profile}>My Profile</Link>
+                    </div>
+                {/* </Dropdown.Item> */}
+                {/* <Dropdown.Item>
+                    {/* <Link to="/" className={styles.profile}> */}
+                      {/* <div> */}
+                      <div>
+                        < Logout />
+                      </div>
+                        {/* </div>  */}
+                    {/* </Link> */}
+                {/* </Dropdown.Item> */}
                 </Dropdown.Menu>
             </Dropdown>
         </div>

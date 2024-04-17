@@ -1,7 +1,5 @@
 
 import React from 'react';
-import styles from '../styles/Login.module.css';
-import { Link } from "react-router-dom";
 import Login from './Login';
 import Signup from './Signup';
 
@@ -19,16 +17,10 @@ const Home = () => {
                 width: '700px',
                 height: '700px'
             }}
-           alt=''/>    
-          <button className={styles.buttonLogin}> 
-               {/* <Link to="/login" className={styles.link}> Log in </Link>  */}
-               <Login /> 
-           </button>
-           <br />
-           <button className={styles.buttonLogin}> 
-                <Signup /> 
-           </button>      
-
+           alt=''
+           />    
+            <Login /> 
+            <Signup />
        </div>
     );
   }

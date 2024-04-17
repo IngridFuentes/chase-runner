@@ -115,15 +115,21 @@
 
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
+import { useEffect } from "react";
 import styles from '../styles/Login.module.css';
-import { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
-  const { loginWithRedirect, user, isAuthenticated, isLoading, logout} = useAuth0();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const { loginWithRedirect, isAuthenticated, isLoading, logout} = useAuth0();
+  const navigate = useNavigate();
 
-  console.log(user, 'user')
+  console.log(isAuthenticated, '?????')
+  useEffect(() => {
+    // Check if user is already authenticated and redirect them
+    if (isAuthenticated) {
+      navigate("/map");
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleLogin = async () => {
     // try {
@@ -152,18 +158,25 @@ const Login = () => {
     });
   };
 
+  // if (isAuthenticated) {
+  //   navigate("/map");
+  //   return null; // or loading indicator if you prefer
+  // }
+  if (isLoading) {
+    console.log("it is loading");
+  }
+
   return (
     <>
-    { !isAuthenticated && (
-      <button className={styles.link} onClick={handleLogin}>
-      Log In
+      <button className={styles.buttonLogin} onClick={handleLogin}>
+         <h3 className={styles.link}> Login </h3>
       </button>
-    )}
-      { !isLoading && isAuthenticated && (
+
+      {/* { isAuthenticated && (
         <button className="buttonLogout" onClick={() => logout()}>
         Logout
         </button>
-      )}
+      )} */}
     </>
   );
 };

@@ -271,6 +271,7 @@ console.log(data, 'data 2')
         mapCenter,
         savedPlaces,
         showConfetti,
+        setShowConfetti,
         handleCitySearch,
         data,
         setData,
