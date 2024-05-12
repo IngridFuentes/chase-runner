@@ -10,7 +10,8 @@
     background-size: 4rem;
     width: 65px;
     height: 30px;
-    margin-top: -30px 
+    /* margin-top: -30px; */
+    margin: auto;
   }
     
   .projectLogo {
@@ -18,7 +19,9 @@
     background-size: 4rem;
     width: 60px;
     height: 40px;
-    margin-top: -30px 
+    /* margin-top: -30px; */
+    margin: auto;
+    margin-left: 1rem;
   }
   
   .spacer {
@@ -60,4 +63,26 @@ button{
 .profile{
   color: black;
   text-decoration: none;
+  font-size: medium;
 }
+.dropdownMenu {
+  background-color: #ffffff;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 8px 0;
+  min-width: 150px;
+  margin-top: -30px;
+
+}
+
+.dropdownMenu div {
+  padding: 8px 20px;
+  color: #000000; 
+  font-size: medium; 
+}
+
+.dropdownMenu div:hover { 
+  background-color: #f8f9fa; 
+  color: #333;
+} 

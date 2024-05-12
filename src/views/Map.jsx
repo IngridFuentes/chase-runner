@@ -55,6 +55,10 @@ const Map = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(true);
   const [marathonsDone, setMarathonsDone] = useState(0);
 
+
+  const [showPopup, setShowPopup] = useState(false);
+
+
   const { user, isAuthenticated } = useAuth0();
   const userId = isAuthenticated ? user?.sub : null;
 
@@ -72,10 +76,17 @@ const Map = () => {
   const handleToggle = (index, type) => () => {
     if (type === 'done') {
       setDoneChecked(doneChecked === index ? -1 : index);
+      if (targetChecked === index) {
+        setTargetChecked(-1);
+      }
     } else if (type === 'target') {
       setTargetChecked(targetChecked === index ? -1 : index);
+      if (doneChecked === index) {
+        setDoneChecked(-1);
+      }
     }
   };
+
   const marathonTypeOptions = [
     { value: '5K', label: '5K'},
     { value: '10K', label: '10K'},
@@ -84,7 +95,7 @@ const Map = () => {
     { value: 'ultra', label: 'Ultra'},
   ];
 
-  const handleMarathonType = (index, value) => {
+  const handleMarathonType = (index, value, type) => {
     const selectedOption = marathonTypeOptions.find((option) => option.value === value.value);
     setSelectedMarathonType((prevSelections) => {
       const updatedSelections = { ...prevSelections };
@@ -93,6 +104,11 @@ const Map = () => {
 
     });
     setSelectedRaceType(value.value);
+
+    // if (doneChecked) {
+    //   setShowPopup(true);
+    // }
+
   };
 
 const blueIcon = new L.Icon({ iconUrl: blue });
@@ -191,10 +207,18 @@ const handleCitySelection = async (selectedCity) => {
       throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
     }
     setSelectedRaceType(selectedRaceType);
+    if (doneChecked >=0){
+      setShowPopup(true);
+    }
     setShowConfetti(true);
     // Fetch saved places again to update the map
     fetchSavedPlaces();
     setIsDropdownVisible(false);
+
+    setTimeout(() => {
+      setShowPopup(false);
+    }, 5000);
+
   } catch (error) {
     console.error(error);
   }
@@ -214,6 +238,10 @@ const handleCityKeyDown = (e, selectedCity) => {
 
  }
 };
+const handleClosePopup = () => {
+  setShowPopup(false);
+};
+
   return (
     <div>
           <Banner />
@@ -242,7 +270,7 @@ const handleCityKeyDown = (e, selectedCity) => {
             {data.features !== undefined && isDropdownVisible && ( 
             <div className={styles.dropdown}>
                     <div className={styles.listCheckbox}>
-                      <h3>Done</h3>
+                      <h3>Done </h3>
                       <h3>Target</h3>
                       <h3>Race Type</h3>
                     </div>
@@ -254,35 +282,53 @@ const handleCityKeyDown = (e, selectedCity) => {
                   // onClick={() => handleCitySelection(d)}
                   // onKeyDown={(e) => handleCityKeyDown(e, d)}
                   >
-                    <div onClick={() => { handleCitySelection(d); setIsDropdownVisible(false)}} className={styles.list}>
-                    {d.properties.city}, {d.properties.state}, {d.properties.country}, {d.properties.formatted}
+                    <div 
+                      onClick={() => { 
+                        if(doneChecked >=0) {
+                          handleCitySelection(d); 
+                        }
+                        setIsDropdownVisible(false)}} 
+                        className={styles.list}
+                    >
+                      {d.properties.city}, {d.properties.state}, {d.properties.country}, {d.properties.formatted}
                     </div>
-                   <Checkbox
+                    <Checkbox
                       edge="end"
                       onChange={handleToggle(index, 'done')}
                       checked={doneChecked === index}
                       className={styles.checkbox}
-                    />
-                      <Checkbox
+                    /> 
+                    <Checkbox
                         edge="end"
                         onChange={handleToggle(index, 'target')}
                         checked={targetChecked === index}
                         className={styles.checkbox}
                       />
+
                     <div className={styles.marathonTypeDropdown}>
-                      <Select
+                    <Select
                         options={marathonTypeOptions}
                         isSearchable={false}
                         value={selectedMarathonType[index]}
                         onChange={(value) => handleMarathonType(index, value) }
+                        onClick={(value) => handleMarathonType(index, value) }
                     />
-              </div>
-
+                    </div>
                   </div>
                 ))}
             </div>
             )}
 
+            {showPopup && (
+                      <div className={styles.popup}>
+                      <div className={styles.popupContent}>
+                        <span className={styles.close} onClick={handleClosePopup}>&times;</span>
+                        <h2>Congratulations!</h2>
+                        <p>You have completed a race.</p>
+                      </div>
+                    </div>
+            )}
+          
             {showConfetti && <ConfettiExplosion 
                 force={0.8}
                 duration={3000}
@@ -315,26 +361,28 @@ const handleCityKeyDown = (e, selectedCity) => {
                 angle={270} 
                 gravity={0.5}
             />}
-      <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '100%', marginTop: '5rem'}}>
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-          url= 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-        />
-        {cityCoordinates && (
-          <Marker position={[cityCoordinates.lat, cityCoordinates.lon]} icon={customIcon(cityCoordinates.selectedracetype)}>
-             <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup>
-          </Marker>
-        )}
-        {isAuthenticated && savedPlaces
-        .filter(place => place.user_id === userId)
-        .map((place, index) => (
-          <Marker key={index} position={[place.lat, place.lon, place.name]} icon={customIcon(place.selectedracetype)}>
-            <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedracetype}`}</Popup>
-          </Marker>
-        ))}
-         
-      </MapContainer>
-
+            
+            <div className={styles.mapBackground}>      
+              <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', marginTop: '5rem', margin: '5rem auto auto'}}>
+                <TileLayer
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                  url= 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+                />
+                {cityCoordinates && (
+                  <Marker position={[cityCoordinates.lat, cityCoordinates.lon]} icon={customIcon(cityCoordinates.selectedracetype)}>
+                    <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup>
+                  </Marker>
+                )}
+                {isAuthenticated && savedPlaces
+                .filter(place => place.user_id === userId)
+                .map((place, index) => (
+                  <Marker key={index} position={[place.lat, place.lon, place.name]} icon={customIcon(place.selectedracetype)}>
+                    <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedracetype}`}</Popup>
+                  </Marker>
+                ))}
+                
+              </MapContainer>
+            </div>
     </div>
   );
 };

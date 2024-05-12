@@ -34,7 +34,7 @@ const Banner = () => {
                 <Dropdown.Toggle variant="success" id="dropdown-basic" style={{borderStyle:'none', backgroundColor:'white', borderRadius:'0', width: 'auto'}}>
                 <div className={styles.imageProfile}></div>
                 </Dropdown.Toggle>
-                <Dropdown.Menu>
+                <Dropdown.Menu className={styles.dropdownMenu}>
                 {/* <Dropdown.Item> */}
                     <div>
                         <Link to="/profile" className={styles.profile}>My Profile</Link>
@@ -43,6 +43,10 @@ const Banner = () => {
                 {/* <Dropdown.Item>
                     {/* <Link to="/" className={styles.profile}> */}
                       {/* <div> */}
+                      <div>
+                        Settings
+                      </div>
+                      
                       <div>
                         < Logout />
                       </div>

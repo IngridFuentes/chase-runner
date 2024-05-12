@@ -113,14 +113,16 @@
 
 // export default Login;
 
+// ------------------------------------------------------
 import { useAuth0 } from "@auth0/auth0-react";
-import React from "react";
+import React, { useState } from "react";
 import { useEffect } from "react";
 import styles from '../styles/Login.module.css';
 import { useNavigate } from 'react-router-dom';
+import { ClipLoader } from "react-spinners";
 
 const Login = () => {
-  const { loginWithRedirect, isAuthenticated, isLoading, logout} = useAuth0();
+  const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
 
   console.log(isAuthenticated, '?????')
@@ -132,52 +134,28 @@ const Login = () => {
   }, [isAuthenticated, navigate]);
 
   const handleLogin = async () => {
-    // try {
-    //         const response = await fetch('http://localhost:3000/login', {
-    //           method: 'POST',
-    //           headers: {
-    //             'Content-Type': 'application/json',
-    //           },
-    //           body: JSON.stringify({ email, password }),
-    //         });
-      
-    //         if (!response.ok) {
-    //           throw new Error('Login failed');
-    //         }
-      
-    //         const data = await response.json();
-    //         console.log(data, 'data')
-    //       }catch (error) {
-    //                 console.error('Login error:', error);
-    //         }
 
     await loginWithRedirect({
       appState: {
         returnTo: "/map",
       },
     });
+
   };
 
-  // if (isAuthenticated) {
-  //   navigate("/map");
-  //   return null; // or loading indicator if you prefer
+  // if (isLoading) {
+  //   console.log("it is loading");
   // }
-  if (isLoading) {
-    console.log("it is loading");
-  }
+
 
   return (
     <>
       <button className={styles.buttonLogin} onClick={handleLogin}>
          <h3 className={styles.link}> Login </h3>
       </button>
-
-      {/* { isAuthenticated && (
-        <button className="buttonLogout" onClick={() => logout()}>
-        Logout
-        </button>
-      )} */}
     </>
   );
 };
 export default Login;
+
+// ------------------------

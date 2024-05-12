@@ -104,4 +104,9 @@
   .createAccountLink:hover{
     text-decoration: none;
   }
-  
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 10vh; /* Adjust the height as needed */
+  }
