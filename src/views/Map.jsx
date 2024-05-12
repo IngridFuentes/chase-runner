@@ -54,6 +54,7 @@ const Map = () => {
   const [selectedRaceType, setSelectedRaceType] = useState(null);
   const [isDropdownVisible, setIsDropdownVisible] = useState(true);
   const [marathonsDone, setMarathonsDone] = useState(0);
+  const [targetMarathons, setTargetMarathons] = useState(0);
 
 
   const [showPopup, setShowPopup] = useState(false);
@@ -61,9 +62,6 @@ const Map = () => {
 
   const { user, isAuthenticated } = useAuth0();
   const userId = isAuthenticated ? user?.sub : null;
-
-  console.log(userId, 'user')
-  console.log(isAuthenticated, 'is ????')
 
   useEffect(() => {
     // Retrieve the count of completed marathons from local storage when the component mounts
@@ -81,6 +79,7 @@ const Map = () => {
       }
     } else if (type === 'target') {
       setTargetChecked(targetChecked === index ? -1 : index);
+      setTargetMarathons((prevCount) => prevCount + 1);
       if (doneChecked === index) {
         setDoneChecked(-1);
       }
@@ -104,10 +103,6 @@ const Map = () => {
 
     });
     setSelectedRaceType(value.value);
-
-    // if (doneChecked) {
-    //   setShowPopup(true);
-    // }
 
   };
 
@@ -241,11 +236,11 @@ const handleCityKeyDown = (e, selectedCity) => {
 const handleClosePopup = () => {
   setShowPopup(false);
 };
-
   return (
     <div>
           <Banner />
-          <div>Marathons Done so far: {marathonsDone}</div>
+          {/* <div>Marathons Done so far: {marathonsDone}</div> */}
+          <div className={styles.welcomeName}> Welcome, {user.nickname}! </div>
           <br />
             <div className={styles.search}>
                 <div className={styles.searchInput}>
@@ -382,7 +377,7 @@ const handleClosePopup = () => {
             />} */}
             
             <div className={styles.mapBackground}>      
-              <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', marginTop: '5rem', margin: '5rem auto auto'}}>
+              <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', marginTop: '5rem', margin: '5rem auto auto', boxShadow: '0 0 10px rgb(40 173 57 / 70%)'}}>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url= 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -402,8 +397,17 @@ const handleClosePopup = () => {
               </MapContainer>
 
             </div>
-           
-    </div>
+            <div className={styles.cardContainer}> 
+                <div className={styles.card}>
+                    <h2>Marathons Run So Far</h2>
+                    <div className={styles.marathonCount}>{marathonsDone}</div>
+                </div>
+                <div className={styles.secondCard}>
+                    <h2>Marathons you'll be running in the future</h2>
+                    <div className={styles.marathonCount}>{targetMarathons}</div>
+                </div>
+            </div>
+      </div>
   );
 };
 

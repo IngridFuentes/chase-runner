@@ -112,4 +112,44 @@ p:hover{
   .close:hover {
     color: #ff0000;
   }
+  .welcomeName{
+    margin-left: 3rem;
+    font-size: larger;
+    font-family: sans-serif;
+    color: rgb(14, 142, 14);
+}
+/* .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    width: 30rem;
+    height: 15rem;
+    margin-left: 3rem;
+    margin-top: 4rem;
+    box-shadow: 0 0 10px rgb(40 173 57 / 70%);
+} */
   
+.marathonCount {
+    font-size: 48px;
+    font-weight: bold;
+    color: #333;
+    margin-top: 10px;
+    text-align: center;
+}
+.card,
+.secondCard {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgb(40 173 57 / 70%);
+    padding: 20px;
+    width: calc(50% - 20px);
+    height: 15rem;
+    margin-left: 3rem;
+    margin-top: 4rem;
+}
+
+.cardContainer {
+    display: flex;
+    justify-content: space-between;
+  }
