@@ -319,7 +319,7 @@ const handleClosePopup = () => {
             </div>
             )}
 
-            {showPopup && (
+          {showPopup && (
                       <div className={styles.popup}>
                       <div className={styles.popupContent}>
                         <span className={styles.close} onClick={handleClosePopup}>&times;</span>
@@ -327,9 +327,28 @@ const handleClosePopup = () => {
                         <p>You have completed a race.</p>
                       </div>
                     </div>
-            )}
+          )}
+
+          {showConfetti && <ConfettiExplosion 
+                force={0.8}
+                duration={3000}
+                particleCount={400}
+                width={2000}
+                angle={180} 
+                gravity={0.5}
+                zIndex={5000} 
+          />}
           
-            {showConfetti && <ConfettiExplosion 
+          {showConfetti && <ConfettiExplosion 
+                force={0.8}
+                duration={3000}
+                particleCount={400}
+                width={3000}
+                angle={90} 
+                gravity={0.5}
+                zIndex={2000} 
+          />}
+            {/* {showConfetti && <ConfettiExplosion 
                 force={0.8}
                 duration={3000}
                 particleCount={400}
@@ -360,7 +379,7 @@ const handleClosePopup = () => {
                 width={3000}
                 angle={270} 
                 gravity={0.5}
-            />}
+            />} */}
             
             <div className={styles.mapBackground}>      
               <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', marginTop: '5rem', margin: '5rem auto auto'}}>
@@ -380,9 +399,10 @@ const handleClosePopup = () => {
                     <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedracetype}`}</Popup>
                   </Marker>
                 ))}
-                
               </MapContainer>
+
             </div>
+           
     </div>
   );
 };
