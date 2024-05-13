@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import Select from 'react-select';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
-import L from 'leaflet'; // Import Leaflet library
+import L from 'leaflet';
 import red from '../image/pin.png';
 import purple from '../image/purple.png';
 import blue from '../image/blue.png';
@@ -14,7 +14,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import Checkbox from '@mui/material/Checkbox';
 import Banner from "../components/Banner";
-// import states from '../data/states.json';
 import { useAuth0 } from "@auth0/auth0-react";
 
 
@@ -43,7 +42,6 @@ const Map = () => {
     data,
     setData,
     fetchSavedPlaces,
-    fetchCitiesFromAPI
   } = useMapData();
 
   const [filteredData, setFilteredData] = useState([]);
@@ -69,6 +67,11 @@ const Map = () => {
     if (storedMarathonsDone) {
       setMarathonsDone(parseInt(storedMarathonsDone));
     }
+
+    const storedTargetMarathons = localStorage.getItem('targetMarathons');
+    if (storedTargetMarathons) {
+      setTargetMarathons(parseInt(storedTargetMarathons));
+    }
   }, []);
 
   const handleToggle = (index, type) => () => {
@@ -77,14 +80,17 @@ const Map = () => {
       if (targetChecked === index) {
         setTargetChecked(-1);
       }
-    } else if (type === 'target') {
+    } 
+    else if (type === 'target') {
+      setTargetMarathons((prevCount) => {
+        const updatedCount = prevCount + (targetChecked === index ? -1 : 1);
+        localStorage.setItem('targetMarathons', updatedCount); // Save to local storage
+        return updatedCount;
+      });
       setTargetChecked(targetChecked === index ? -1 : index);
-      setTargetMarathons((prevCount) => prevCount + 1);
-      if (doneChecked === index) {
-        setDoneChecked(-1);
-      }
     }
   };
+
 
   const marathonTypeOptions = [
     { value: '5K', label: '5K'},
@@ -164,58 +170,62 @@ const handleChange = (e) => {
 }
 
 const handleCitySelection = async (selectedCity) => {
+  if (selectedCity && selectedCity.properties) { 
   // Handle the city selection, e.g., saving it to the backend or updating other state
-  const {city, state, country } = selectedCity.properties;
-  const selectedRaceType = selectedMarathonType[0]?.value;
-  setMarathonsDone((prevCount) => prevCount + 1);
+    const {city, state, country } = selectedCity.properties;
+    const selectedRaceType = selectedMarathonType[0]?.value;
+    setMarathonsDone((prevCount) => prevCount + 1);
 
-    // Save the count of completed marathons to local storage
-  localStorage.setItem('marathonsDone', marathonsDone + 1);
+      // Save the count of completed marathons to local storage
+    localStorage.setItem('marathonsDone', marathonsDone + 1);
 
-  // Clear the search input and filtered data
-  setCityName('');
-  setFilteredData([]);
-  // setSelectedRaceType(selectedRaceType);
+    // Clear the search input and filtered data
+    setCityName('');
+    setFilteredData([]);
 
-  // console.log('Selected City:', city, state, country, selectedRaceType);
-  const userId = user.sub
+    const userId = user.sub
 
-  try {
-    // Call the backend to save the marker with the raceType and color
-    const response = await fetch('http://localhost:3000/api/places', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        lat: selectedCity.geometry.coordinates[1],
-        lon: selectedCity.geometry.coordinates[0],
-        name: city,
-        country,
-        state,
-        selectedracetype: selectedRaceType,
-        user_id: userId,
-      }),
-    });
+    try {
+      // Call the backend to save the marker with the raceType and color
+      const response = await fetch('http://localhost:3000/api/places', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lat: selectedCity.geometry.coordinates[1],
+          lon: selectedCity.geometry.coordinates[0],
+          name: city,
+          country,
+          state,
+          selectedracetype: selectedRaceType,
+          user_id: userId,
+        }),
+      });
 
-    if (!response.ok) {
-      throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
+      }
+      setSelectedRaceType(selectedRaceType);
+      if (doneChecked >=0){
+        setShowPopup(true);
+      }
+      setShowConfetti(true);
+      // Fetch saved places again to update the map
+      fetchSavedPlaces();
+      setIsDropdownVisible(false);
+
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 5000);
+
+    } catch (error) {
+      console.error(error);
     }
-    setSelectedRaceType(selectedRaceType);
-    if (doneChecked >=0){
-      setShowPopup(true);
-    }
-    setShowConfetti(true);
-    // Fetch saved places again to update the map
-    fetchSavedPlaces();
-    setIsDropdownVisible(false);
-
-    setTimeout(() => {
-      setShowPopup(false);
-    }, 5000);
-
-  } catch (error) {
-    console.error(error);
+  } else{
+      setCityName('');
+      setFilteredData([]);
+      setIsDropdownVisible(false);
   }
 };
 
@@ -236,11 +246,13 @@ const handleCityKeyDown = (e, selectedCity) => {
 const handleClosePopup = () => {
   setShowPopup(false);
 };
+
+console.log(user)
   return (
     <div>
           <Banner />
           {/* <div>Marathons Done so far: {marathonsDone}</div> */}
-          <div className={styles.welcomeName}> Welcome, {user.nickname}! </div>
+          {/* <div className={styles.welcomeName}> Welcome, {user.nickname}! </div> */}
           <br />
             <div className={styles.search}>
                 <div className={styles.searchInput}>
