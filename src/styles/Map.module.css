@@ -20,6 +20,7 @@
     display: flex;
     justify-content: center;
     position: relative;
+    margin-top: 1rem;
 }
 .search input{
     width: 700px;
@@ -27,7 +28,7 @@
 }
 .dropdown{
     position: absolute;
-    margin-left: 11rem;
+    margin-left: 6rem;
     margin-top: 3px;
     width: 700px;
     height: 380px;
@@ -66,7 +67,7 @@ p:hover{
     margin: 8px;
 }
 .listCheckbox{
-    margin-left: 30rem;
+    margin-left: 34rem;
     font-family: sans-serif;
 }
 .listCheckbox h3{
@@ -118,22 +119,11 @@ p:hover{
     font-family: sans-serif;
     color: rgb(14, 142, 14);
 }
-/* .card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    width: 30rem;
-    height: 15rem;
-    margin-left: 3rem;
-    margin-top: 4rem;
-    box-shadow: 0 0 10px rgb(40 173 57 / 70%);
-} */
   
 .marathonCount {
     font-size: 48px;
     font-weight: bold;
-    color: #333;
+    color: #268610;
     margin-top: 10px;
     text-align: center;
 }
@@ -147,9 +137,36 @@ p:hover{
     height: 15rem;
     margin-left: 3rem;
     margin-top: 4rem;
+    transition: background-color 0.3s ease;
+}
+.card:hover{
+    background-color: #a8f2b03e;
+}
+.secondCard:hover{
+    background-color: #a8f2b03e;
 }
 
 .cardContainer {
     display: flex;
     justify-content: space-between;
-  }
+}
+.cardSentence{
+    color: #05bb17;
+    /* color:#16a925; */
+}
+.buttonAddRun{
+    display: flex;
+    justify-content: center;
+    margin-left: 46rem;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgb(40 173 57 / 70%);
+    width: 6rem;
+    align-items: center;
+    justify-content: center;
+}
+@media (min-width: 840px) {
+    .buttonAddRun {
+      font-size: 1rem;
+    }
+}

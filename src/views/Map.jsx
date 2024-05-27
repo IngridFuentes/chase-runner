@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Select from 'react-select';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
@@ -15,6 +15,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import Checkbox from '@mui/material/Checkbox';
 import Banner from "../components/Banner";
 import { useAuth0 } from "@auth0/auth0-react";
+import AddRun from './AddRun';
 
 
 const Map = () => {
@@ -53,13 +54,49 @@ const Map = () => {
   const [isDropdownVisible, setIsDropdownVisible] = useState(true);
   const [marathonsDone, setMarathonsDone] = useState(0);
   const [targetMarathons, setTargetMarathons] = useState(0);
+  const [statesCount, setStatesCount] = useState(0);
+  const inputRef = useRef(null);
+  // const [geoJsonData, setGeoJsonData] = useState(null);
 
 
   const [showPopup, setShowPopup] = useState(false);
+  const [showComponent, setShowComponent] = useState(false);
 
+// console.log(data.features.map(k => k.properties.state) , 'data')
 
   const { user, isAuthenticated } = useAuth0();
   const userId = isAuthenticated ? user?.sub : null;
+
+// ----------------------------------
+// const style = (feature) => ({
+//   fillColor: getColor(feature.properties.raceType),
+//   weight: 2,
+//   opacity: 1,
+//   color: 'white',
+//   dashArray: '3',
+//   fillOpacity: 0.7,
+// });
+
+// // Function to determine color based on race type
+// const getColor = (raceType) => {
+//   switch (raceType) {
+//     case 'full marathon':
+//       return '#800026';
+//     case 'half marathon':
+//       return '#BD0026';
+//     case '10k':
+//       return '#E31A1C';
+//     case '5k':
+//       return '#FC4E2A';
+//     default:
+//       return '#FFEDA0';
+//   }
+// };
+
+// ----------------------------------
+
+
+
 
   useEffect(() => {
     // Retrieve the count of completed marathons from local storage when the component mounts
@@ -72,7 +109,13 @@ const Map = () => {
     if (storedTargetMarathons) {
       setTargetMarathons(parseInt(storedTargetMarathons));
     }
+
+    const statesCount = localStorage.getItem('statesCount');
+    if (statesCount) {
+      setStatesCount(parseInt(statesCount));
+    }
   }, []);
+
 
   const handleToggle = (index, type) => () => {
     if (type === 'done') {
@@ -92,25 +135,25 @@ const Map = () => {
   };
 
 
-  const marathonTypeOptions = [
-    { value: '5K', label: '5K'},
-    { value: '10K', label: '10K'},
-    { value: 'full', label: 'Full'},
-    { value: 'half', label: 'Half'},
-    { value: 'ultra', label: 'Ultra'},
-  ];
+  // const marathonTypeOptions = [
+  //   { value: '5K', label: '5K'},
+  //   { value: '10K', label: '10K'},
+  //   { value: 'full', label: 'Full'},
+  //   { value: 'half', label: 'Half'},
+  //   { value: 'ultra', label: 'Ultra'},
+  // ];
 
-  const handleMarathonType = (index, value, type) => {
-    const selectedOption = marathonTypeOptions.find((option) => option.value === value.value);
-    setSelectedMarathonType((prevSelections) => {
-      const updatedSelections = { ...prevSelections };
-      updatedSelections[index] = { value: value.value };
-      return updatedSelections;
+  // const handleMarathonType = (index, value, type) => {
+  //   const selectedOption = marathonTypeOptions.find((option) => option.value === value.value);
+  //   setSelectedMarathonType((prevSelections) => {
+  //     const updatedSelections = { ...prevSelections };
+  //     updatedSelections[index] = { value: value.value };
+  //     return updatedSelections;
 
-    });
-    setSelectedRaceType(value.value);
+  //   });
+  //   setSelectedRaceType(value.value);
 
-  };
+  // };
 
 const blueIcon = new L.Icon({ iconUrl: blue });
 const redIcon = new L.Icon({ iconUrl: red });
@@ -151,98 +194,117 @@ const customIcon = (selectedRaceType) => {
   });
 };
 
-const handleChange = (e) => {
-  // e.preventDefault();
-  const searchWord = e.target.value;
-    setCityName(e.target.value);
-    if(data && data.features && data.features.length > 0){ 
-    const newFilter = data.features.filter((value) => {
-    return (
+// const handleChange = (e) => {
+//   // e.preventDefault();
+//   const searchWord = e.target.value;
+//     setCityName(e.target.value);
+//     if(data && data.features && data.features.length > 0){ 
+//     const newFilter = data.features.filter((value) => {
+//     return (
   
-      value.properties.city?.toLowerCase().includes(searchWord.toLowerCase()) &&
-      value.properties.state?.toLowerCase().includes(searchWord.toLowerCase()) &&
-      value.properties.country?.toLowerCase().includes(searchWord.toLowerCase())
+//       value.properties.city?.toLowerCase().includes(searchWord.toLowerCase()) &&
+//       value.properties.state?.toLowerCase().includes(searchWord.toLowerCase()) &&
+//       value.properties.country?.toLowerCase().includes(searchWord.toLowerCase())
 
-    )
-    });
-  setFilteredData(newFilter);
-  }
-}
+//     )
+//     });
+//   setFilteredData(newFilter);
+//   }
+// }
 
-const handleCitySelection = async (selectedCity) => {
-  if (selectedCity && selectedCity.properties) { 
-  // Handle the city selection, e.g., saving it to the backend or updating other state
-    const {city, state, country } = selectedCity.properties;
-    const selectedRaceType = selectedMarathonType[0]?.value;
-    setMarathonsDone((prevCount) => prevCount + 1);
+// const handleCitySelection = async (selectedCity) => {
+//   if (selectedCity && selectedCity.properties) { 
+//   // Handle the city selection, e.g., saving it to the backend or updating other state
+//     const {city, state, country } = selectedCity.properties;
+//     const selectedRaceType = selectedMarathonType[0]?.value;
 
-      // Save the count of completed marathons to local storage
-    localStorage.setItem('marathonsDone', marathonsDone + 1);
+//     setMarathonsDone((prevCount) => prevCount + 1);
 
-    // Clear the search input and filtered data
-    setCityName('');
-    setFilteredData([]);
+//       // Save the count of completed marathons to local storage
+//     localStorage.setItem('marathonsDone', marathonsDone + 1);
 
-    const userId = user.sub
+//     setStatesCount((prevCount) => prevCount + 1);
+//     localStorage.setItem('statesCount', statesCount + 1);
+//     // Clear the search input and filtered data
+//     setCityName('');
+//     setFilteredData([]);
 
-    try {
-      // Call the backend to save the marker with the raceType and color
-      const response = await fetch('http://localhost:3000/api/places', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          lat: selectedCity.geometry.coordinates[1],
-          lon: selectedCity.geometry.coordinates[0],
-          name: city,
-          country,
-          state,
-          selectedracetype: selectedRaceType,
-          user_id: userId,
-        }),
-      });
+//     const userId = user.sub
 
-      if (!response.ok) {
-        throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
-      }
-      setSelectedRaceType(selectedRaceType);
-      if (doneChecked >=0){
-        setShowPopup(true);
-      }
-      setShowConfetti(true);
-      // Fetch saved places again to update the map
-      fetchSavedPlaces();
-      setIsDropdownVisible(false);
+//     try {
+//       // Call the backend to save the marker with the raceType and color
+//       const response = await fetch('http://localhost:3000/api/places', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           lat: selectedCity.geometry.coordinates[1],
+//           lon: selectedCity.geometry.coordinates[0],
+//           name: city,
+//           country,
+//           state,
+//           selectedracetype: selectedRaceType,
+//           user_id: userId,
+//         }),
+//       });
 
-      setTimeout(() => {
-        setShowPopup(false);
-      }, 5000);
+//       if (!response.ok) {
+//         throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
+//       }
+//       setSelectedRaceType(selectedRaceType);
+//       if (doneChecked >=0){
+//         setShowPopup(true);
+//       }
+//       setShowConfetti(true);
+//       // Fetch saved places again to update the map
+//       fetchSavedPlaces();
+//       setIsDropdownVisible(false);
 
-    } catch (error) {
-      console.error(error);
-    }
-  } else{
-      setCityName('');
-      setFilteredData([]);
-      setIsDropdownVisible(false);
-  }
-};
+//       setTimeout(() => {
+//         setShowPopup(false);
+//       }, 5000);
 
-const handleCityKeyDown = (e, selectedCity) => {
-  // Trigger the city selection logic when the Enter key is pressed
-  console.log(e.key)
- if(e.key === "ArrowUp" && selectedCity > 0 ){
-   setSelectedCity(prev => prev -1)
- }
- else if ( e.key === "ArrowDown" && selectedCity < data.length - 1)
- {
-  setSelectedCity(prev => prev + 1)
- }
- else if(e.key === "Enter" && selectedCity >=0){
+//     } catch (error) {
+//       console.error(error);
+//     }
+//   } else{
+//       setCityName('');
+//       setFilteredData([]);
+//       setIsDropdownVisible(false);
+//   }
+// };
 
- }
-};
+// const handleCityKeyDown = (e, selectedCity) => {
+//   // Trigger the city selection logic when the Enter key is pressed
+//   console.log(e.key)
+//  if(e.key === "ArrowUp" && selectedCity > 0 ){
+//    setSelectedCity(prev => prev -1)
+//  }
+//  else if ( e.key === "ArrowDown" && selectedCity < data.length - 1)
+//  {
+//   setSelectedCity(prev => prev + 1)
+//  }
+//  else if(e.key === "Enter" && selectedCity >=0){
+
+//  }
+// };
+
+
+// const handleCityKeyDown = (e) => {
+//   // Trigger the city selection logic when the Enter key is pressed
+//   console.log(e.key)
+//   if (e.key === "ArrowUp" && selectedCityIndex > 0) {
+//     setSelectedCity((prevIndex) => prevIndex - 1);
+//   } else if (e.key === "ArrowDown" && selectedCityIndex < data.length - 1) {
+//     setSelectedCity((prevIndex) => prevIndex + 1);
+//   } else if (e.key === "Enter" && selectedCityIndex >= 0) {
+//     // Handle selection when Enter key is pressed
+//     handleCitySelection(data[selectedCityIndex]);
+//   }
+//   inputRef.current.focus();
+// };
+
 const handleClosePopup = () => {
   setShowPopup(false);
 };
@@ -254,10 +316,16 @@ console.log(user)
           {/* <div>Marathons Done so far: {marathonsDone}</div> */}
           {/* <div className={styles.welcomeName}> Welcome, {user.nickname}! </div> */}
           <br />
-            <div className={styles.search}>
+          <div>
+              <button className={styles.buttonAddRun} onClick={() => setShowComponent(!showComponent)}>Add Run</button>
+              {showComponent && <AddRun />}
+          </div>
+            {/* <div className={styles.search}>
                 <div className={styles.searchInput}>
                   <input
+                    ref={inputRef}
                     type="text"
+                    className={styles.inputField}
                     placeholder="Search by City"
                     value={cityName}
                     onChange={handleChange}
@@ -271,10 +339,10 @@ console.log(user)
                     )}
                   </div>
                 </div>
-              </div> 
+              </div>  */}
             {/* <button onClick={handleSubmit}> Search </button> */}
 
-            {data.features !== undefined && isDropdownVisible && ( 
+            {/* {data.features !== undefined && isDropdownVisible && ( 
             <div className={styles.dropdown}>
                     <div className={styles.listCheckbox}>
                       <h3>Done </h3>
@@ -284,12 +352,15 @@ console.log(user)
                 {data.features.map((d, index) => (
                   <div
                   key={index} 
-                  className={styles.dropdownRow}
-                  // style={{ backgroundColor: `${selectedMarathonType[index]?.color} !important`  }}
+                  className={styles.dropdownRow} */}
+
+                  {/* ---------------- */}
+                  {/* // style={{ backgroundColor: `${selectedMarathonType[index]?.color} !important`  }}
                   // onClick={() => handleCitySelection(d)}
                   // onKeyDown={(e) => handleCityKeyDown(e, d)}
-                  >
-                    <div 
+                  > */}
+                  {/* ---------------- */}
+                    {/* <div 
                       onClick={() => { 
                         if(doneChecked >=0) {
                           handleCitySelection(d); 
@@ -324,7 +395,7 @@ console.log(user)
                   </div>
                 ))}
             </div>
-            )}
+            )} */}
 
           {showPopup && (
                       <div className={styles.popup}>
@@ -338,17 +409,17 @@ console.log(user)
 
           {showConfetti && <ConfettiExplosion 
                 force={0.8}
-                duration={3000}
+                duration={5000}
                 particleCount={400}
                 width={2000}
                 angle={180} 
-                gravity={0.5}
+                gravity={2}
                 zIndex={5000} 
           />}
           
           {showConfetti && <ConfettiExplosion 
                 force={0.8}
-                duration={3000}
+                duration={2000}
                 particleCount={400}
                 width={3000}
                 angle={90} 
@@ -389,7 +460,7 @@ console.log(user)
             />} */}
             
             <div className={styles.mapBackground}>      
-              <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', marginTop: '5rem', margin: '5rem auto auto', boxShadow: '0 0 10px rgb(40 173 57 / 70%)'}}>
+              <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', margin: '3rem auto auto', boxShadow: '0 0 10px rgb(40 173 57 / 70%)'}}>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url= 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -411,12 +482,12 @@ console.log(user)
             </div>
             <div className={styles.cardContainer}> 
                 <div className={styles.card}>
-                    <h2>Marathons Run So Far</h2>
+                    <h2 className={styles.cardSentence}>Marathons Run So Far</h2>
                     <div className={styles.marathonCount}>{marathonsDone}</div>
                 </div>
                 <div className={styles.secondCard}>
-                    <h2>Marathons you'll be running in the future</h2>
-                    <div className={styles.marathonCount}>{targetMarathons}</div>
+                    <h2 className={styles.cardSentence}>Number of States</h2>
+                    <div className={styles.marathonCount}>{statesCount}</div>
                 </div>
             </div>
       </div>

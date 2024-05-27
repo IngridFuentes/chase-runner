@@ -1,79 +1,371 @@
-import { useState, useRef, useEffect } from "react";
-import L from "leaflet";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
-// import { SearchControl,  OpenStreetMapProvider } from 'leaflet-search';
-import image from '../image/pin.png';
+// import { useState, useRef, useEffect } from "react";
+// import L from "leaflet";
+// import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+// import { GeoSearchControl, OpenStreetMapProvider } from 'leaflet-geosearch';
+// // import { SearchControl,  OpenStreetMapProvider } from 'leaflet-search';
+// import image from '../image/pin.png';
+// import 'leaflet/dist/leaflet.css';
+// import styles from '../styles/NewRun.module.css';
+
+// const states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
+// const eventTypes = ['5K', '10K', 'Marathon', 'Fun Run', 'Road', 'Trail']
+
+// const stateCoordinates = { 
+//     AL: { latitude: 32.806671, longitude: -86.791130 },
+//     AK: { latitude: 61.370716, longitude: -152.404419 },
+//     NY: { latitude: 40.7128, longitude: -74.0060 }, // Coordinates for New York (NY)
+//     // { lat: 34.0522, lng: -118.2437 }, // Coordinates for Los Angeles (CA)
+//     // ... Add coordinates for other states
+// };
+
+
+// const AddRun = () => {
+//     const [stateLocation, setStateLocation] = useState('');
+//     const [marker, setMarker] = useState(null);
+
+
+//     const handleSelectChange = (e) => {
+//         e.preventDefault();
+//       const selectedState = e.target.value;
+//       setStateLocation(selectedState);
+//       console.log(stateCoordinates[selectedState])
+//       if (stateCoordinates[selectedState]) {
+//           setMarker({ ...stateCoordinates[selectedState], city: selectedState });
+//         }
+//     };
+      
+//     const defaultIcon = L.icon({
+//       iconUrl: image, // Specify the path to your marker icon
+//       iconSize: [25, 41],
+//       iconAnchor: [12, 41],
+//       popupAnchor: [1, -34],
+//     });
+//   console.log(marker, 'marker')
+//     return (
+//       <div className={styles.newrunSearch}>
+//         <form onSubmit={handleSelectChange}>
+//           <label>
+//             Select your State:
+//             <select value={stateLocation} onChange={handleSelectChange}>
+//               <option value="">Select your State</option>
+//               {states.map((state) => (
+//                 <option key={state} value={state}>
+//                   {state}
+//                 </option>
+//               ))}
+//             </select>
+//           </label>
+//         </form>
+  
+  
+//         <MapContainer center={[37.7749, -122.4194]} zoom={13} style={{ height: '400px', width: '100%' }}
+//         >
+//           <TileLayer
+//             attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+//             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//           />
+//           {marker && (
+//             <Marker position={[marker.latitude, marker.longitude]} icon={defaultIcon}>
+//               <Popup>{marker.city}</Popup>
+//             </Marker>
+//           )}
+
+//         </MapContainer>
+     
+//       </div>
+//       )
+// }
+
+// export default AddRun;
+
+import React, { useState, useEffect, useRef } from 'react';
+import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import styles from '../styles/NewRun.module.css';
 
-const states = ['AL','AK','AZ','AR','CA','CO','CT','DE','FL','GA','HI','ID','IL','IN','IA','KS','KY','LA','ME','MD','MA','MI','MN','MS','MO','MT','NE','NV','NH','NJ','NM','NY','NC','ND','OH','OK','OR','PA','RI','SC','SD','TN','TX','UT','VT','VA','WA','WV','WI','WY'];
-const eventTypes = ['5K', '10K', 'Marathon', 'Fun Run', 'Road', 'Trail']
-
-const stateCoordinates = { 
-    AL: { latitude: 32.806671, longitude: -86.791130 },
-    AK: { latitude: 61.370716, longitude: -152.404419 },
-    NY: { latitude: 40.7128, longitude: -74.0060 }, // Coordinates for New York (NY)
-    // { lat: 34.0522, lng: -118.2437 }, // Coordinates for Los Angeles (CA)
-    // ... Add coordinates for other states
-};
+import Select from 'react-select';
+import useMapData from '../hooks/useMapData';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import styles from '../styles/Map.module.css';
+import ConfettiExplosion from 'react-confetti-explosion';
+import { useAuth0 } from "@auth0/auth0-react";
 
 
 const AddRun = () => {
-    const [stateLocation, setStateLocation] = useState('');
-    const [marker, setMarker] = useState(null);
+
+  const {cityName, setCityName, data, fetchSavedPlaces, setSelectedCity, selectedCityIndex, showConfetti,
+    setShowConfetti} = useMapData();
+
+  const [filteredData, setFilteredData] = useState([]);
+  const [selectedMarathonType, setSelectedMarathonType] = useState({});
+  const [marathonsDone, setMarathonsDone] = useState(0);
+  const [statesCount, setStatesCount] = useState(0);
+  const [selectedRaceType, setSelectedRaceType] = useState(null);
+  const [isDropdownVisible, setIsDropdownVisible] = useState(true);
+  const [doneChecked, setDoneChecked] = useState(-1);
+  const [showPopup, setShowPopup] = useState(false);
+  const inputRef = useRef(null);
+  const [geoJsonData, setGeoJsonData] = useState(null);
+
+  const { user, isAuthenticated } = useAuth0();
+  const userId = isAuthenticated ? user?.sub : null;
 
 
-    const handleSelectChange = (e) => {
-        e.preventDefault();
-      const selectedState = e.target.value;
-      setStateLocation(selectedState);
-      console.log(stateCoordinates[selectedState])
-      if (stateCoordinates[selectedState]) {
-          setMarker({ ...stateCoordinates[selectedState], city: selectedState });
+  const marathonTypeOptions = [
+    { value: '5K', label: '5K'},
+    { value: '10K', label: '10K'},
+    { value: 'full', label: 'Full'},
+    { value: 'half', label: 'Half'},
+    { value: 'ultra', label: 'Ultra'},
+  ];
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const data = await response.json();
+        setGeoJsonData(data);
+      } catch (error) {
+        console.error('Error fetching GeoJSON data:', error);
+      }
     };
-      
-    const defaultIcon = L.icon({
-      iconUrl: image, // Specify the path to your marker icon
-      iconSize: [25, 41],
-      iconAnchor: [12, 41],
-      popupAnchor: [1, -34],
-    });
-  console.log(marker, 'marker')
-    return (
-      <div className={styles.newrunSearch}>
-        <form onSubmit={handleSelectChange}>
-          <label>
-            Select your State:
-            <select value={stateLocation} onChange={handleSelectChange}>
-              <option value="">Select your State</option>
-              {states.map((state) => (
-                <option key={state} value={state}>
-                  {state}
-                </option>
-              ))}
-            </select>
-          </label>
-        </form>
-  
-  
-        <MapContainer center={[37.7749, -122.4194]} zoom={13} style={{ height: '400px', width: '100%' }}
-        >
-          <TileLayer
-            attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-          {marker && (
-            <Marker position={[marker.latitude, marker.longitude]} icon={defaultIcon}>
-              <Popup>{marker.city}</Popup>
-            </Marker>
-          )}
 
-        </MapContainer>
-     
-      </div>
+    fetchData();
+  }, []);
+  const style = (feature) => ({
+    fillColor: getColor(feature.properties.raceType),
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7,
+  });
+
+  // Function to determine color based on race type
+  const getColor = (raceType) => {
+    switch (raceType) {
+      case 'full marathon':
+        return '#800026';
+      case 'half marathon':
+        return '#BD0026';
+      case '10k':
+        return '#E31A1C';
+      case '5k':
+        return '#FC4E2A';
+      default:
+        return '#FFEDA0';
+    }
+  };
+
+  const handleChange = (e) => {
+    // e.preventDefault();
+    const searchWord = e.target.value;
+      setCityName(e.target.value);
+      if(data && data.features && data.features.length > 0){ 
+      const newFilter = data.features.filter((value) => {
+      return (
+    
+        value.properties.city?.toLowerCase().includes(searchWord.toLowerCase()) &&
+        value.properties.state?.toLowerCase().includes(searchWord.toLowerCase()) &&
+        value.properties.country?.toLowerCase().includes(searchWord.toLowerCase())
+  
       )
-}
+      });
+    setFilteredData(newFilter);
+    }
+  };
+
+  const handleMarathonType = (index, value, type) => {
+    const selectedOption = marathonTypeOptions.find((option) => option.value === value.value);
+    setSelectedMarathonType((prevSelections) => {
+      const updatedSelections = { ...prevSelections };
+      updatedSelections[index] = { value: value.value };
+      return updatedSelections;
+
+    });
+    setSelectedRaceType(value.value);
+
+  };
+
+  const handleCitySelection = async (selectedCity) => {
+    if (selectedCity && selectedCity.properties) { 
+    // Handle the city selection, e.g., saving it to the backend or updating other state
+      const {city, state, country } = selectedCity.properties;
+      const selectedRaceType = selectedMarathonType[0]?.value;
+  
+      setMarathonsDone((prevCount) => prevCount + 1);
+  
+        // Save the count of completed marathons to local storage
+      localStorage.setItem('marathonsDone', marathonsDone + 1);
+  
+      setStatesCount((prevCount) => prevCount + 1);
+      localStorage.setItem('statesCount', statesCount + 1);
+      // Clear the search input and filtered data
+      setCityName('');
+      setFilteredData([]);
+  
+      const userId = user.sub
+  
+      try {
+        // Call the backend to save the marker with the raceType and color
+        const response = await fetch('http://localhost:3000/api/places', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            lat: selectedCity.geometry.coordinates[1],
+            lon: selectedCity.geometry.coordinates[0],
+            name: city,
+            country,
+            state,
+            selectedracetype: selectedRaceType,
+            user_id: userId,
+          }),
+        });
+  
+        if (!response.ok) {
+          throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
+        }
+        setSelectedRaceType(selectedRaceType);
+        if (doneChecked >=0){
+          setShowPopup(true);
+        }
+        setShowConfetti(true);
+        // Fetch saved places again to update the map
+        fetchSavedPlaces();
+        setIsDropdownVisible(false);
+  
+        setTimeout(() => {
+          setShowPopup(false);
+        }, 5000);
+
+        const updatedGeoJsonData = { ...geoJsonData };
+        updatedGeoJsonData.features = updatedGeoJsonData.features.map((feature) => {
+          if (feature.properties.NAME === state) {
+            feature.properties.raceType = selectedRaceType;
+            console.log(feature.properties.raceType, "????????")
+          }
+          return feature;
+        });
+        setGeoJsonData(updatedGeoJsonData);
+      } catch (error) {
+        console.error(error);
+      }
+  
+      // } catch (error) {
+      //   console.error(error);
+      // }
+    } else{
+        setCityName('');
+        setFilteredData([]);
+        setIsDropdownVisible(false);
+    }
+  };
+
+  const handleCityKeyDown = (e) => {
+    // Trigger the city selection logic when the Enter key is pressed
+    console.log(e.key)
+    if (e.key === "ArrowUp" && selectedCityIndex > 0) {
+      setSelectedCity((prevIndex) => prevIndex - 1);
+    } else if (e.key === "ArrowDown" && selectedCityIndex < data.length - 1) {
+      setSelectedCity((prevIndex) => prevIndex + 1);
+    } else if (e.key === "Enter" && selectedCityIndex >= 0) {
+      // Handle selection when Enter key is pressed
+      handleCitySelection(data[selectedCityIndex]);
+    }
+    inputRef.current.focus();
+  };
+return(
+  <> 
+  <div className={styles.search}>
+                <div className={styles.searchInput}>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    className={styles.inputField}
+                    placeholder="Search by City"
+                    value={cityName}
+                    onChange={handleChange}
+                    onKeyDown={handleCityKeyDown}
+                  />
+                  <div className={styles.searchIcon}>
+                    { cityName === "" ? ( 
+                        <SearchIcon className={styles.searchIcon}/> 
+                    ) : ( 
+                        <CloseIcon onClick={handleCitySelection} className={styles.closeIcon} />
+                    )}
+                  </div>
+                </div>
+              </div> 
+            {/* <button onClick={handleSubmit}> Search </button> */}
+
+            {data.features !== undefined && isDropdownVisible && ( 
+            <div className={styles.dropdown}>
+                    <div className={styles.listCheckbox}>
+                      {/* <h3>Done </h3>
+                      <h3>Target</h3> */}
+                      <h3>Race Type</h3>
+                    </div>
+                {data.features.map((d, index) => (
+                  <div
+                  key={index} 
+                  className={styles.dropdownRow}
+                  // style={{ backgroundColor: `${selectedMarathonType[index]?.color} !important`  }}
+                  // onClick={() => handleCitySelection(d)}
+                  // onKeyDown={(e) => handleCityKeyDown(e, d)}
+                  >
+                    <div 
+                      onClick={() => { 
+                        if(doneChecked >=0) {
+                          handleCitySelection(d); 
+                        }
+                        setIsDropdownVisible(false)}} 
+                        className={styles.list}
+                    >
+                      {d.properties.city}, {d.properties.state}, {d.properties.country}, {d.properties.formatted}
+                    </div>
+                    {/* <Checkbox
+                      edge="end"
+                      onChange={handleToggle(index, 'done')}
+                      checked={doneChecked === index}
+                      className={styles.checkbox}
+                    /> 
+                    <Checkbox
+                        edge="end"
+                        onChange={handleToggle(index, 'target')}
+                        checked={targetChecked === index}
+                        className={styles.checkbox}
+                      /> */}
+
+                    <div className={styles.marathonTypeDropdown}>
+                    <Select
+                        options={marathonTypeOptions}
+                        isSearchable={false}
+                        value={selectedMarathonType[index]}
+                        onChange={(value) => handleMarathonType(index, value) }
+                        onClick={(value) => handleMarathonType(index, value) }
+                    />
+                    </div>
+                  </div>
+                ))}
+
+{/* {geoJsonData && ( */}
+        <MapContainer center={[37.8, -96]} zoom={4} style={{ height: '400px', width: '100%', margin: '5rem auto auto' }}>
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+          />
+          <GeoJSON data={geoJsonData} style={style} />
+        </MapContainer>
+      {/* )} */}
+            </div>
+            )}
+</>
+)
+};
 
 export default AddRun;
