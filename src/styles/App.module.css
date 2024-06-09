@@ -1,7 +1,23 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
 .mainContainer {
-    background: #a7d1890d;
+    background-color: rgba(167, 209, 137, 0.05); 
     min-height: 310px;
-}
+    -webkit-background-clip: padding-box; 
+    -moz-background-clip: padding-box; 
+    background-clip: padding-box; 
+  }
+  
+  body {
+    background-color: #ffffff; 
+    color: #3f41b5; 
+    font-family: Arial, sans-serif; 
+  }
+
 .footer {
     text-align: center;
     font-size: 18px;

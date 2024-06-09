@@ -79,7 +79,7 @@
 // export default AddRun;
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MapContainer, TileLayer, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
 
 import Select from 'react-select';
@@ -89,12 +89,18 @@ import CloseIcon from '@mui/icons-material/Close';
 import styles from '../styles/Map.module.css';
 import ConfettiExplosion from 'react-confetti-explosion';
 import { useAuth0 } from "@auth0/auth0-react";
+import L from 'leaflet';
+import red from '../image/pin.png';
+import purple from '../image/purple.png';
+import blue from '../image/blue.png';
+import yellow from '../image/yellow.png';
+import green from '../image/green.png';
 
 
 const AddRun = () => {
 
   const {cityName, setCityName, data, fetchSavedPlaces, setSelectedCity, selectedCityIndex, showConfetti,
-    setShowConfetti} = useMapData();
+    setShowConfetti, cityCoordinates, savedPlaces} = useMapData();
 
   const [filteredData, setFilteredData] = useState([]);
   const [selectedMarathonType, setSelectedMarathonType] = useState({});
@@ -111,6 +117,10 @@ const AddRun = () => {
   const userId = isAuthenticated ? user?.sub : null;
 
 
+  // console.log(geoJsonData.features.map((f => f.properties.name)), 'geo data')
+
+
+
   const marathonTypeOptions = [
     { value: '5K', label: '5K'},
     { value: '10K', label: '10K'},
@@ -120,6 +130,7 @@ const AddRun = () => {
   ];
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
       try {
         const response = await fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json');
@@ -127,43 +138,135 @@ const AddRun = () => {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const data = await response.json();
-        setGeoJsonData(data);
+        if (isMounted) {
+          // Add raceType property to each feature
+          const updatedData = {
+            ...data,
+            features: data.features.map(feature => ({
+              ...feature,
+              properties: {
+                ...feature.properties,
+                raceType: null, // Initialize with null or default value
+              }
+            }))
+          };
+          setGeoJsonData(updatedData);
+        }
       } catch (error) {
-        console.error('Error fetching GeoJSON data:', error);
+        if (isMounted) {
+          console.error('Error fetching GeoJSON data:', error);
+        }
       }
     };
-
     fetchData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
-  const style = (feature) => ({
-    fillColor: getColor(feature.properties.raceType),
-    weight: 2,
-    opacity: 1,
-    color: 'white',
-    dashArray: '3',
-    fillOpacity: 0.7,
-  });
 
-  // Function to determine color based on race type
-  const getColor = (raceType) => {
-    switch (raceType) {
-      case 'full marathon':
-        return '#800026';
-      case 'half marathon':
-        return '#BD0026';
-      case '10k':
-        return '#E31A1C';
-      case '5k':
-        return '#FC4E2A';
+
+
+  // const style = (feature) => ({
+  //   fillColor: getColor(feature.properties.raceType),
+  //   weight: 2,
+  //   opacity: 1,
+  //   color: 'white',
+  //   dashArray: '3',
+  //   fillOpacity: 0.7,
+  // });
+
+  // // Function to determine color based on race type
+  // const getColor = (raceType) => {
+  //   switch (raceType) {
+  //     case 'full marathon':
+  //       return '#800026';
+  //     case 'half marathon':
+  //       return '#BD0026';
+  //     case '10k':
+  //       return '#E31A1C';
+  //     case '5k':
+  //       return '#FC4E2A';
+  //     default:
+  //       return '#FFEDA0';
+  //   }
+  // };
+
+const blueIcon = new L.Icon({ iconUrl: blue });
+const redIcon = new L.Icon({ iconUrl: red });
+const greenIcon = new L.Icon({ iconUrl: green });
+const purpleIcon = new L.Icon({ iconUrl: purple });
+const yellowIcon = new L.Icon({ iconUrl: yellow });
+
+
+const customIcon = (selectedRaceType) => {
+  let iconUrl;
+  // const raceType = selectedMarathonType[0]?.value;
+  // console.log(raceType, 'race type')
+  switch (selectedRaceType) {
+    case '5K':
+      iconUrl = yellowIcon.options.iconUrl;
+      break;
+      case '10K':
+        iconUrl = greenIcon.options.iconUrl;
+          break;
+      case 'full':
+          iconUrl = blueIcon.options.iconUrl;
+          break;
+      case 'half':
+          iconUrl = purpleIcon.options.iconUrl;
+          break;
+      case 'ultra':
+          iconUrl = redIcon.options.iconUrl;
+          break;
       default:
-        return '#FFEDA0';
-    }
+          // Default to blue icon if race type is not recognized
+          iconUrl = blueIcon.options.iconUrl;
+          break;
+  }
+
+  return new L.Icon({
+      iconUrl: iconUrl,
+      iconSize: [25, 25],
+  });
+};
+
+
+const getColor = (raceType) => {
+  console.log(raceType, 'selected??????');
+  const color = {
+    '5K': '#FFEDA0',
+    '10K': '#800026',
+    'half': '#BD0026',
+    'full': '#008000',
+    'ultra': '#E31A1C',
+  }[raceType] || '#FFEDA0';
+  console.log(`Race type: ${raceType}, Color: ${color}`);
+  return color;
+};
+  
+  // Define the GeoJSON style
+  const style = (feature) => {
+    console.log(`Styling feature:`, feature.properties); // Debug line
+    return {
+      fillColor: getColor(feature.properties.raceType),
+      weight: 2,
+      opacity: 1,
+      color: 'white',
+      dashArray: '3',
+      fillOpacity: 0.7,
+    };
   };
 
   const handleChange = (e) => {
     // e.preventDefault();
     const searchWord = e.target.value;
       setCityName(e.target.value);
+      if (searchWord.trim() === '') {
+        setFilteredData([]);
+        setIsDropdownVisible(false);
+        return;
+      }
+
       if(data && data.features && data.features.length > 0){ 
       const newFilter = data.features.filter((value) => {
       return (
@@ -175,6 +278,9 @@ const AddRun = () => {
       )
       });
     setFilteredData(newFilter);
+    setIsDropdownVisible(true);
+    } else {
+      setIsDropdownVisible(false);
     }
   };
 
@@ -184,18 +290,33 @@ const AddRun = () => {
       const updatedSelections = { ...prevSelections };
       updatedSelections[index] = { value: value.value };
       return updatedSelections;
-
     });
     setSelectedRaceType(value.value);
-
+    setGeoJsonData((prevData) => {
+      console.log(prevData, 'prevData')
+      if (!prevData) return prevData;
+      const updatedFeatures = prevData.features.map((feature, i) => {
+        if (i === index) {
+          return {
+            ...feature,
+            properties: {
+              ...feature.properties,
+              raceType: value.value,
+            },
+          };
+        }
+        return feature;
+      });
+      return { ...prevData, features: updatedFeatures };
+    });
   };
+  
 
   const handleCitySelection = async (selectedCity) => {
     if (selectedCity && selectedCity.properties) { 
     // Handle the city selection, e.g., saving it to the backend or updating other state
       const {city, state, country } = selectedCity.properties;
       const selectedRaceType = selectedMarathonType[0]?.value;
-  
       setMarathonsDone((prevCount) => prevCount + 1);
   
         // Save the count of completed marathons to local storage
@@ -206,7 +327,7 @@ const AddRun = () => {
       // Clear the search input and filtered data
       setCityName('');
       setFilteredData([]);
-  
+      setIsDropdownVisible(false);
       const userId = user.sub
   
       try {
@@ -243,19 +364,26 @@ const AddRun = () => {
           setShowPopup(false);
         }, 5000);
 
-        const updatedGeoJsonData = { ...geoJsonData };
-        updatedGeoJsonData.features = updatedGeoJsonData.features.map((feature) => {
-          if (feature.properties.NAME === state) {
-            feature.properties.raceType = selectedRaceType;
-            console.log(feature.properties.raceType, "????????")
-          }
-          return feature;
-        });
-        setGeoJsonData(updatedGeoJsonData);
       } catch (error) {
         console.error(error);
       }
   
+      setGeoJsonData((prevData) => {
+        if (!prevData) return prevData;
+        const updatedFeatures = prevData.features.map((feature) => {
+          if (feature.properties.name === state) {
+            return {
+              ...feature,
+              properties: {
+                ...feature.properties,
+                raceType: selectedRaceType,
+              },
+            };
+          }
+          return feature;
+        });
+        return { ...prevData, features: updatedFeatures };
+      });
       // } catch (error) {
       //   console.error(error);
       // }
@@ -354,13 +482,28 @@ return(
                 ))}
 
 {/* {geoJsonData && ( */}
-        <MapContainer center={[37.8, -96]} zoom={4} style={{ height: '400px', width: '100%', margin: '5rem auto auto' }}>
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-          />
-          <GeoJSON data={geoJsonData} style={style} />
-        </MapContainer>
+<MapContainer center={[37.8, -96]} zoom={4} style={{ height: '400px', width: '100%', margin: '5rem auto auto' }}>
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      />
+       {geoJsonData && <GeoJSON data={geoJsonData} style={style} />}
+      
+      {cityCoordinates && (
+        <Marker position={[cityCoordinates.lat, cityCoordinates.lon]} icon={customIcon(cityCoordinates.selectedracetype)}>
+          <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup>
+        </Marker>
+      )}
+      
+      {isAuthenticated && savedPlaces
+        .filter(place => place.user_id === userId)
+        .map((place, index) => (
+          <Marker key={index} position={[place.lat, place.lon]} icon={customIcon(place.selectedracetype)}>
+            <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedracetype}`}</Popup>
+          </Marker>
+        ))
+      }
+    </MapContainer>
       {/* )} */}
             </div>
             )}
@@ -369,3 +512,6 @@ return(
 };
 
 export default AddRun;
+
+
+

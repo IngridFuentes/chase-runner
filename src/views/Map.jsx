@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Select from 'react-select';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
 import red from '../image/pin.png';
 import purple from '../image/purple.png';
@@ -56,7 +57,7 @@ const Map = () => {
   const [targetMarathons, setTargetMarathons] = useState(0);
   const [statesCount, setStatesCount] = useState(0);
   const inputRef = useRef(null);
-  // const [geoJsonData, setGeoJsonData] = useState(null);
+  const [geoJsonData, setGeoJsonData] = useState(null);
 
 
   const [showPopup, setShowPopup] = useState(false);
@@ -309,6 +310,10 @@ const handleClosePopup = () => {
   setShowPopup(false);
 };
 
+
+
+
+
 console.log(user)
   return (
     <div>
@@ -460,7 +465,7 @@ console.log(user)
             />} */}
             
             <div className={styles.mapBackground}>      
-              <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', margin: '3rem auto auto', boxShadow: '0 0 10px rgb(40 173 57 / 70%)'}}>
+              {/* <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', margin: '3rem auto auto', boxShadow: '0 0 10px rgb(40 173 57 / 70%)'}}>
                 <TileLayer
                   attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                   url= 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
@@ -477,7 +482,7 @@ console.log(user)
                     <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedracetype}`}</Popup>
                   </Marker>
                 ))}
-              </MapContainer>
+              </MapContainer> */}
 
             </div>
             <div className={styles.cardContainer}> 

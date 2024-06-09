@@ -1,7 +1,11 @@
+:root {
+  --background-color: #ffffff;
+}
+
 .mainHeader{
     display: flex;
     align-items: center;
-    background-color: #ffffff;
+    background-color: var(--background-color);
     color: rgb(63 65 181);
   }
   
