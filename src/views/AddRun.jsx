@@ -81,7 +81,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { MapContainer, TileLayer, GeoJSON, Marker, Popup } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-
 import Select from 'react-select';
 import useMapData from '../hooks/useMapData';
 import SearchIcon from '@mui/icons-material/Search';
@@ -95,6 +94,7 @@ import purple from '../image/purple.png';
 import blue from '../image/blue.png';
 import yellow from '../image/yellow.png';
 import green from '../image/green.png';
+import { useDebounce } from 'use-debounce'; 
 
 
 const AddRun = () => {
@@ -139,14 +139,13 @@ const AddRun = () => {
         }
         const data = await response.json();
         if (isMounted) {
-          // Add raceType property to each feature
           const updatedData = {
             ...data,
             features: data.features.map(feature => ({
               ...feature,
               properties: {
                 ...feature.properties,
-                raceType: null, // Initialize with null or default value
+                selectedRaceType: null,
               }
             }))
           };
@@ -191,64 +190,127 @@ const AddRun = () => {
   //   }
   // };
 
-const blueIcon = new L.Icon({ iconUrl: blue });
-const redIcon = new L.Icon({ iconUrl: red });
-const greenIcon = new L.Icon({ iconUrl: green });
-const purpleIcon = new L.Icon({ iconUrl: purple });
-const yellowIcon = new L.Icon({ iconUrl: yellow });
+// const blueIcon = new L.Icon({ iconUrl: blue });
+// const redIcon = new L.Icon({ iconUrl: red });
+// const greenIcon = new L.Icon({ iconUrl: green });
+// const purpleIcon = new L.Icon({ iconUrl: purple });
+// const yellowIcon = new L.Icon({ iconUrl: yellow });
 
 
-const customIcon = (selectedRaceType) => {
-  let iconUrl;
-  // const raceType = selectedMarathonType[0]?.value;
-  // console.log(raceType, 'race type')
+// const customIcon = (selectedRaceType) => {
+//   let iconUrl;
+//   switch (selectedRaceType) {
+//     case '5K':
+//       iconUrl = yellowIcon.options.iconUrl;
+//       break;
+//       case '10K':
+//         iconUrl = greenIcon.options.iconUrl;
+//           break;
+//       case 'full':
+//           iconUrl = blueIcon.options.iconUrl;
+//           break;
+//       case 'half':
+//           iconUrl = purpleIcon.options.iconUrl;
+//           break;
+//       case 'ultra':
+//           iconUrl = redIcon.options.iconUrl;
+//           break;
+//       default:
+//           iconUrl = blueIcon.options.iconUrl;
+//           break;
+//   }
+
+//   return new L.Icon({
+//       iconUrl: iconUrl,
+//       iconSize: [25, 25],
+//   });
+// };
+
+
+// const getColor = (raceType) => {
+//   console.log(raceType, 'selected??????');
+//   const color = {
+//     '5K': '#FFEDA0',
+//     '10K': '#800026',
+//     'half': '#BD0026',
+//     'full': '#008000',
+//     'ultra': '#E31A1C',
+//   }[raceType] || '#FFEDA0';
+//   console.log(`Race type: ${raceType}, Color: ${color}`);
+//   return color;
+// };
+
+const getColor = () => {
+  console.log(selectedRaceType, 'race type');
+  let color;
   switch (selectedRaceType) {
     case '5K':
-      iconUrl = yellowIcon.options.iconUrl;
+      color = '#FFEDA0';
       break;
       case '10K':
-        iconUrl = greenIcon.options.iconUrl;
+      color = '#800026';
           break;
       case 'full':
-          iconUrl = blueIcon.options.iconUrl;
+        color = '#008000';
           break;
       case 'half':
-          iconUrl = purpleIcon.options.iconUrl;
+        color = '#BD0026';
           break;
       case 'ultra':
-          iconUrl = redIcon.options.iconUrl;
+        color = '#E31A1C';
           break;
       default:
-          // Default to blue icon if race type is not recognized
-          iconUrl = blueIcon.options.iconUrl;
+        color = '#ffffff';
           break;
   }
-
-  return new L.Icon({
-      iconUrl: iconUrl,
-      iconSize: [25, 25],
-  });
-};
-
-
-const getColor = (raceType) => {
-  console.log(raceType, 'selected??????');
-  const color = {
-    '5K': '#FFEDA0',
-    '10K': '#800026',
-    'half': '#BD0026',
-    'full': '#008000',
-    'ultra': '#E31A1C',
-  }[raceType] || '#FFEDA0';
-  console.log(`Race type: ${raceType}, Color: ${color}`);
   return color;
-};
+}
+
+
   
   // Define the GeoJSON style
+  // const style = (feature) => {
+  //   console.log(`Styling feature:`, feature.properties);
+  //   return {
+  //     fillColor: getColor(feature.properties.selectedRaceType),
+  //     weight: 2,
+  //     opacity: 1,
+  //     color: 'white',
+  //     dashArray: '3',
+  //     fillOpacity: 0.7,
+  //   };
+  // };
+
   const style = (feature) => {
-    console.log(`Styling feature:`, feature.properties); // Debug line
+    // Get the race type from GeoJSON properties
+    const selectedRaceType = feature.properties.selectedRaceType;
+  
+    // console.log(selectedRaceType, 'selected race')
+    // Assign color based on race type
+    let fillColor;
+    switch (selectedRaceType) {
+      case '5K':
+        fillColor = '#FFEDA0';
+        break;
+      case '10K':
+        fillColor = '#800026';
+        break;
+      case 'full':
+        fillColor = '#008000';
+        break;
+      case 'half':
+        fillColor = '#BD0026';
+        break;
+      case 'ultra':
+        fillColor = '#E31A1C';
+        break;
+      default:
+        fillColor = '#ffffff';
+        break;
+    }
+  
     return {
-      fillColor: getColor(feature.properties.raceType),
+      fillColor: fillColor,
       weight: 2,
       opacity: 1,
       color: 'white',
@@ -256,7 +318,8 @@ const getColor = (raceType) => {
       fillOpacity: 0.7,
     };
   };
-
+ 
+  
   const handleChange = (e) => {
     // e.preventDefault();
     const searchWord = e.target.value;
@@ -286,28 +349,33 @@ const getColor = (raceType) => {
 
   const handleMarathonType = (index, value, type) => {
     const selectedOption = marathonTypeOptions.find((option) => option.value === value.value);
+    console.log(marathonTypeOptions, 'options')
     setSelectedMarathonType((prevSelections) => {
       const updatedSelections = { ...prevSelections };
       updatedSelections[index] = { value: value.value };
       return updatedSelections;
     });
     setSelectedRaceType(value.value);
+    //find the state name from data
+
+    const selectedState = data.features.map(feature => feature.properties.state);
+
+    // console.log(selectedState.find(state => state === state), 'state');
+    const stateName = selectedState.find(state => state === state)
+    console.log(stateName, 'state name');
+
+
     setGeoJsonData((prevData) => {
-      console.log(prevData, 'prevData')
       if (!prevData) return prevData;
-      const updatedFeatures = prevData.features.map((feature, i) => {
-        if (i === index) {
-          return {
-            ...feature,
-            properties: {
-              ...feature.properties,
-              raceType: value.value,
-            },
-          };
-        }
-        return feature;
+
+      const selectedRunType = value.value;
+
+      prevData.features.map((feature) => {
+          if(feature.properties.name === stateName) 
+            feature.properties.selectedRaceType = selectedRunType;
       });
-      return { ...prevData, features: updatedFeatures };
+
+      return { ...prevData };
     });
   };
   
@@ -343,7 +411,7 @@ const getColor = (raceType) => {
             name: city,
             country,
             state,
-            selectedracetype: selectedRaceType,
+            selectedRaceType: selectedRaceType,
             user_id: userId,
           }),
         });
@@ -376,10 +444,11 @@ const getColor = (raceType) => {
               ...feature,
               properties: {
                 ...feature.properties,
-                raceType: selectedRaceType,
+                selectedRaceType: selectedRaceType,
               },
             };
           }
+          console.log(feature, 'feature 2');
           return feature;
         });
         return { ...prevData, features: updatedFeatures };
@@ -407,6 +476,7 @@ const getColor = (raceType) => {
     }
     inputRef.current.focus();
   };
+
 return(
   <> 
   <div className={styles.search}>
@@ -428,7 +498,7 @@ return(
                     )}
                   </div>
                 </div>
-              </div> 
+  </div> 
             {/* <button onClick={handleSubmit}> Search </button> */}
 
             {data.features !== undefined && isDropdownVisible && ( 
@@ -443,7 +513,7 @@ return(
                   key={index} 
                   className={styles.dropdownRow}
                   // style={{ backgroundColor: `${selectedMarathonType[index]?.color} !important`  }}
-                  // onClick={() => handleCitySelection(d)}
+                  onClick={() => handleCitySelection(d)}
                   // onKeyDown={(e) => handleCityKeyDown(e, d)}
                   >
                     <div 
@@ -490,19 +560,19 @@ return(
        {geoJsonData && <GeoJSON data={geoJsonData} style={style} />}
       
       {cityCoordinates && (
-        <Marker position={[cityCoordinates.lat, cityCoordinates.lon]} icon={customIcon(cityCoordinates.selectedracetype)}>
+        <Marker position={[cityCoordinates.lat, cityCoordinates.lon]}>
           <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup>
         </Marker>
       )}
       
-      {isAuthenticated && savedPlaces
+      {/* {isAuthenticated && savedPlaces
         .filter(place => place.user_id === userId)
         .map((place, index) => (
-          <Marker key={index} position={[place.lat, place.lon]} icon={customIcon(place.selectedracetype)}>
-            <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedracetype}`}</Popup>
+          <Marker key={index} position={[place.lat, place.lon]}>
+            <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedRaceType}`}</Popup>
           </Marker>
         ))
-      }
+      } */}
     </MapContainer>
       {/* )} */}
             </div>
@@ -512,6 +582,5 @@ return(
 };
 
 export default AddRun;
-
 
 

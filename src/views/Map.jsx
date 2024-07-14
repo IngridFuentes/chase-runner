@@ -17,6 +17,7 @@ import Checkbox from '@mui/material/Checkbox';
 import Banner from "../components/Banner";
 import { useAuth0 } from "@auth0/auth0-react";
 import AddRun from './AddRun';
+import SearchInput from './SearchInput';
 
 
 const Map = () => {
@@ -96,6 +97,145 @@ const Map = () => {
 
 // ----------------------------------
 
+const marathonTypeOptions = [
+  { value: '5K', label: '5K'},
+  { value: '10K', label: '10K'},
+  { value: 'full', label: 'Full'},
+  { value: 'half', label: 'Half'},
+  { value: 'ultra', label: 'Ultra'},
+];
+
+useEffect(() => {
+  let isMounted = true;
+  const fetchData = async () => {
+    try {
+      const response = await fetch('https://raw.githubusercontent.com/PublicaMundi/MappingAPI/master/data/geojson/us-states.json');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      if (isMounted) {
+        const updatedData = {
+          ...data,
+          features: data.features.map(feature => ({
+            ...feature,
+            properties: {
+              ...feature.properties,
+              selectedRaceType: null,
+            }
+          }))
+        };
+        setGeoJsonData(updatedData);
+      }
+    } catch (error) {
+      if (isMounted) {
+        console.error('Error fetching GeoJSON data:', error);
+      }
+    }
+  };
+  fetchData();
+  return () => {
+    isMounted = false;
+  };
+}, []);
+
+
+const handleMarathonType = (index, value, type) => {
+  const selectedOption = marathonTypeOptions.find((option) => option.value === value.value);
+  console.log(marathonTypeOptions, 'options')
+  setSelectedMarathonType((prevSelections) => {
+    const updatedSelections = { ...prevSelections };
+    updatedSelections[index] = { value: value.value };
+    return updatedSelections;
+  });
+  setSelectedRaceType(value.value);
+  //find the state name from data
+
+  const selectedState = data.features.map(feature => feature.properties.state);
+
+  // console.log(selectedState.find(state => state === state), 'state');
+  const stateName = selectedState.find(state => state === state)
+  console.log(stateName, 'state name');
+
+
+  setGeoJsonData((prevData) => {
+    if (!prevData) return prevData;
+
+    const selectedRunType = value.value;
+
+    prevData.features.map((feature) => {
+        if(feature.properties.name === stateName) 
+          feature.properties.selectedRaceType = selectedRunType;
+    });
+
+    return { ...prevData };
+  });
+};
+
+
+const getColor = () => {
+  console.log(selectedRaceType, 'race type');
+  let color;
+  switch (selectedRaceType) {
+    case '5K':
+      color = '#FFEDA0';
+      break;
+      case '10K':
+      color = '#800026';
+          break;
+      case 'full':
+        color = '#008000';
+          break;
+      case 'half':
+        color = '#BD0026';
+          break;
+      case 'ultra':
+        color = '#E31A1C';
+          break;
+      default:
+        color = '#ffffff';
+          break;
+  }
+  return color;
+}
+
+const style = (feature) => {
+  // Get the race type from GeoJSON properties
+  const selectedRaceType = feature.properties.selectedRaceType;
+
+  // console.log(selectedRaceType, 'selected race')
+  // Assign color based on race type
+  let fillColor;
+  switch (selectedRaceType) {
+    case '5K':
+      fillColor = '#0000FF'; //blue
+      break;
+    case '10K':
+      fillColor = '#FFFF00'; //yellow
+      break;
+    case 'full':
+      fillColor = '#008000'; //green
+      break;
+    case 'half':
+      fillColor = '#800080'; //purple
+      break;
+    case 'ultra':
+      fillColor = '#EC0003'; //red
+      break;
+    default:
+      fillColor = '#ffffff';
+      break;
+  }
+
+  return {
+    fillColor: fillColor,
+    weight: 2,
+    opacity: 1,
+    color: 'white',
+    dashArray: '3',
+    fillOpacity: 0.7,
+  };
+};
 
 
 
@@ -135,6 +275,32 @@ const Map = () => {
     }
   };
 
+  const handleChange = (e) => {
+    // e.preventDefault();
+    const searchWord = e.target.value;
+      setCityName(e.target.value);
+      if (searchWord.trim() === '') {
+        setFilteredData([]);
+        setIsDropdownVisible(false);
+        return;
+      }
+
+      if(data && data.features && data.features.length > 0){ 
+      const newFilter = data.features.filter((value) => {
+      return (
+    
+        value.properties.city?.toLowerCase().includes(searchWord.toLowerCase()) &&
+        value.properties.state?.toLowerCase().includes(searchWord.toLowerCase()) &&
+        value.properties.country?.toLowerCase().includes(searchWord.toLowerCase())
+  
+      )
+      });
+    setFilteredData(newFilter);
+    setIsDropdownVisible(true);
+    } else {
+      setIsDropdownVisible(false);
+    }
+  };
 
   // const marathonTypeOptions = [
   //   { value: '5K', label: '5K'},
@@ -156,44 +322,44 @@ const Map = () => {
 
   // };
 
-const blueIcon = new L.Icon({ iconUrl: blue });
-const redIcon = new L.Icon({ iconUrl: red });
-const greenIcon = new L.Icon({ iconUrl: green });
-const purpleIcon = new L.Icon({ iconUrl: purple });
-const yellowIcon = new L.Icon({ iconUrl: yellow });
+// const blueIcon = new L.Icon({ iconUrl: blue });
+// const redIcon = new L.Icon({ iconUrl: red });
+// const greenIcon = new L.Icon({ iconUrl: green });
+// const purpleIcon = new L.Icon({ iconUrl: purple });
+// const yellowIcon = new L.Icon({ iconUrl: yellow });
 
 
-const customIcon = (selectedRaceType) => {
-  let iconUrl;
-  // const raceType = selectedMarathonType[0]?.value;
-  // console.log(raceType, 'race type')
-  switch (selectedRaceType) {
-    case '5K':
-      iconUrl = yellowIcon.options.iconUrl;
-      break;
-      case '10K':
-        iconUrl = greenIcon.options.iconUrl;
-          break;
-      case 'full':
-          iconUrl = blueIcon.options.iconUrl;
-          break;
-      case 'half':
-          iconUrl = purpleIcon.options.iconUrl;
-          break;
-      case 'ultra':
-          iconUrl = redIcon.options.iconUrl;
-          break;
-      default:
-          // Default to blue icon if race type is not recognized
-          iconUrl = blueIcon.options.iconUrl;
-          break;
-  }
+// const customIcon = (selectedRaceType) => {
+//   let iconUrl;
+//   // const raceType = selectedMarathonType[0]?.value;
+//   // console.log(raceType, 'race type')
+//   switch (selectedRaceType) {
+//     case '5K':
+//       iconUrl = yellowIcon.options.iconUrl;
+//       break;
+//       case '10K':
+//         iconUrl = greenIcon.options.iconUrl;
+//           break;
+//       case 'full':
+//           iconUrl = blueIcon.options.iconUrl;
+//           break;
+//       case 'half':
+//           iconUrl = purpleIcon.options.iconUrl;
+//           break;
+//       case 'ultra':
+//           iconUrl = redIcon.options.iconUrl;
+//           break;
+//       default:
+//           // Default to blue icon if race type is not recognized
+//           iconUrl = blueIcon.options.iconUrl;
+//           break;
+//   }
 
-  return new L.Icon({
-      iconUrl: iconUrl,
-      iconSize: [25, 25],
-  });
-};
+//   return new L.Icon({
+//       iconUrl: iconUrl,
+//       iconSize: [25, 25],
+//   });
+// };
 
 // const handleChange = (e) => {
 //   // e.preventDefault();
@@ -306,15 +472,108 @@ const customIcon = (selectedRaceType) => {
 //   inputRef.current.focus();
 // };
 
+const handleCitySelection = async (selectedCity) => {
+  if (selectedCity && selectedCity.properties) { 
+  // Handle the city selection, e.g., saving it to the backend or updating other state
+    const {city, state, country } = selectedCity.properties;
+
+    const selectedRaceType = selectedMarathonType[0]?.value;
+    setMarathonsDone((prevCount) => prevCount + 1);
+
+      // Save the count of completed marathons to local storage
+    localStorage.setItem('marathonsDone', marathonsDone + 1);
+
+    setStatesCount((prevCount) => prevCount + 1);
+    localStorage.setItem('statesCount', statesCount + 1);
+    // Clear the search input and filtered data
+    setCityName('');
+    setFilteredData([]);
+    setIsDropdownVisible(false);
+    const userId = user.sub
+
+    try {
+      // Call the backend to save the marker with the raceType and color
+      const response = await fetch('http://localhost:3000/api/places', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          lat: selectedCity.geometry.coordinates[1],
+          lon: selectedCity.geometry.coordinates[0],
+          name: city,
+          country,
+          state,
+          selectedRaceType: selectedRaceType,
+          user_id: userId,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`${response.status} ${response.statusText}: ${await response.text()}`);
+      }
+      setSelectedRaceType(selectedRaceType);
+      if (doneChecked >=0){
+        setShowPopup(true);
+      }
+      setShowConfetti(true);
+      // Fetch saved places again to update the map
+      fetchSavedPlaces();
+      setIsDropdownVisible(false);
+
+      setTimeout(() => {
+        setShowPopup(false);
+      }, 5000);
+
+    } catch (error) {
+      console.error(error);
+    }
+
+    setGeoJsonData((prevData) => {
+      if (!prevData) return prevData;
+      const updatedFeatures = prevData.features.map((feature) => {
+        if (feature.properties.name === state) {
+          return {
+            ...feature,
+            properties: {
+              ...feature.properties,
+              selectedRaceType: selectedRaceType,
+            },
+          };
+        }
+        console.log(feature, 'feature 2');
+        return feature;
+      });
+      return { ...prevData, features: updatedFeatures };
+    });
+    // } catch (error) {
+    //   console.error(error);
+    // }
+  } else{
+      setCityName('');
+      setFilteredData([]);
+      setIsDropdownVisible(false);
+  }
+};
+
+const handleCityKeyDown = (e) => {
+  // Trigger the city selection logic when the Enter key is pressed
+  // console.log(e.key)
+  if (e.key === "ArrowUp" && selectedCityIndex > 0) {
+    setSelectedCity((prevIndex) => prevIndex - 1);
+  } else if (e.key === "ArrowDown" && selectedCityIndex < data.length - 1) {
+    setSelectedCity((prevIndex) => prevIndex + 1);
+  } else if (e.key === "Enter" && selectedCityIndex >= 0) {
+    // Handle selection when Enter key is pressed
+    handleCitySelection(data[selectedCityIndex]);
+  }
+  inputRef.current.focus();
+};
+
 const handleClosePopup = () => {
   setShowPopup(false);
 };
 
-
-
-
-
-console.log(user)
   return (
     <div>
           <Banner />
@@ -401,6 +660,83 @@ console.log(user)
                 ))}
             </div>
             )} */}
+{/* ------------------------------------------------------------------------------------------------------- */}
+<div className={styles.search}>
+                <div className={styles.searchInput}>
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    className={styles.inputField}
+                    placeholder="Search by City"
+                    value={cityName}
+                    onChange={handleChange}
+                    onKeyDown={handleCityKeyDown}
+                  />
+                  <div className={styles.searchIcon}>
+                    { cityName === "" ? ( 
+                        <SearchIcon className={styles.searchIcon}/> 
+                    ) : ( 
+                        <CloseIcon onClick={handleCitySelection} className={styles.closeIcon} />
+                    )}
+                  </div>
+                </div>
+</div> 
+
+{data.features !== undefined && isDropdownVisible && ( 
+            <div className={styles.dropdown}>
+                    <div className={styles.listCheckbox}>
+                      {/* <h3>Done </h3>
+                      <h3>Target</h3> */}
+                      <h3>Race Type</h3>
+                    </div>
+                {data.features.map((d, index) => (
+                  <div
+                  key={index} 
+                  className={styles.dropdownRow}
+                  // style={{ backgroundColor: `${selectedMarathonType[index]?.color} !important`  }}
+                  // onClick={() => handleCitySelection(d)}
+                  // onKeyDown={(e) => handleCityKeyDown(e, d)}
+                  >
+                    <div 
+                      onClick={() => { 
+                        if(doneChecked >=0) {
+                          handleCitySelection(d); 
+                        }
+                        setIsDropdownVisible(false)}} 
+                        className={styles.list}
+                    >
+                      {d.properties.city}, {d.properties.state}, {d.properties.country}, {d.properties.formatted}
+                    </div>
+                    {/* <Checkbox
+                      edge="end"
+                      onChange={handleToggle(index, 'done')}
+                      checked={doneChecked === index}
+                      className={styles.checkbox}
+                    /> 
+                    <Checkbox
+                        edge="end"
+                        onChange={handleToggle(index, 'target')}
+                        checked={targetChecked === index}
+                        className={styles.checkbox}
+                      /> */}
+
+                    <div className={styles.marathonTypeDropdown}>
+                    <Select
+                        options={marathonTypeOptions}
+                        isSearchable={false}
+                        value={selectedMarathonType[index]}
+                        onChange={(value) => handleMarathonType(index, value) }
+                        onClick={(value) => handleMarathonType(index, value) }
+                    />
+                    </div>
+                  </div>
+                ))}
+
+            </div>
+)}
+
+{/* ----------------------------------------------------------------------------------------------------- */}
+
 
           {showPopup && (
                       <div className={styles.popup}>
@@ -483,6 +819,29 @@ console.log(user)
                   </Marker>
                 ))}
               </MapContainer> */}
+
+    <MapContainer center={[37.8, -96]} zoom={4} style={{ height: '400px', width: '100%', margin: '5rem auto auto' }}>
+      <TileLayer
+        attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        url='https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+      />
+       {geoJsonData && <GeoJSON data={geoJsonData} style={style} />}
+      
+      {cityCoordinates && (
+        <Marker position={[cityCoordinates.lat, cityCoordinates.lon]}>
+          <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup>
+        </Marker>
+      )}
+      
+      {/* {isAuthenticated && savedPlaces
+        .filter(place => place.user_id === userId)
+        .map((place, index) => (
+          <Marker key={index} position={[place.lat, place.lon]}>
+            <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedRaceType}`}</Popup>
+          </Marker>
+        ))
+      } */}
+    </MapContainer>
 
             </div>
             <div className={styles.cardContainer}> 
