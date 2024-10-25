@@ -31,6 +31,7 @@ const Map = () => {
     cityCoordinates,
     mapCenter,
     savedPlaces,
+    setSavedPlaces,
     showConfetti,
     setShowConfetti,
     handleInputSearch,
@@ -85,7 +86,6 @@ const Map = () => {
         }
         const data = await response.json();
 
-        // console.log(data, 'geo data ')
         if (isMounted) {
           const updatedData = {
             ...data,
@@ -775,6 +775,22 @@ const Map = () => {
   };
   getData().then((response) => console.log(response));
 
+  const handleDeletePlace = async (id) => {
+    try {
+      await fetch(`http://localhost:3000/geojson/${id}`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const updatedPlaces = savedPlaces.filter((place) => place.id !== id);
+      setSavedPlaces(updatedPlaces);
+    } catch (error) {
+      console.error("Failed to delete the place:", error);
+    }
+  };
+
   if (loading) {
     return <RunningShoesSpinner />;
   }
@@ -925,18 +941,6 @@ const Map = () => {
                 {d.properties.city}, {d.properties.state},{" "}
                 {d.properties.country}, {d.properties.formatted}
               </div>
-              {/* <Checkbox
-                      edge="end"
-                      onChange={handleToggle(index, 'done')}
-                      checked={doneChecked === index}
-                      className={styles.checkbox}
-                    /> 
-                    <Checkbox
-                        edge="end"
-                        onChange={handleToggle(index, 'target')}
-                        checked={targetChecked === index}
-                        className={styles.checkbox}
-                      /> */}
 
               <div className={styles.marathonTypeDropdown}>
                 <Select
@@ -1029,25 +1033,6 @@ const Map = () => {
       )}
 
       <div className={styles.mapBackground}>
-        {/* <MapContainer center={mapCenter} zoom={3} style={{ height: '400px', width: '90%', margin: '3rem auto auto', boxShadow: '0 0 10px rgb(40 173 57 / 70%)'}}>
-                <TileLayer
-                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                  url= 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
-                />
-                {cityCoordinates && (
-                  <Marker position={[cityCoordinates.lat, cityCoordinates.lon]} icon={customIcon(cityCoordinates.selectedracetype)}>
-                    <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup>
-                  </Marker>
-                )}
-                {isAuthenticated && savedPlaces
-                .filter(place => place.user_id === userId)
-                .map((place, index) => (
-                  <Marker key={index} position={[place.lat, place.lon, place.name]} icon={customIcon(place.selectedracetype)}>
-                    <Popup>{`Saved Place ${index + 1}: Coordinates - ${place.lat}, ${place.lon}, ${place.name}, ${place.country}, ${place.selectedracetype}`}</Popup>
-                  </Marker>
-                ))}
-              </MapContainer> */}
-
         <MapContainer
           center={[37.8, -96]}
           zoom={4}
@@ -1057,7 +1042,6 @@ const Map = () => {
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
-          {/* {geoJsonData && <GeoJSON data={geoJsonData} style={style} />} */}
           {savedPlaces.map((place) => (
             <GeoJSON
               key={place.id}
@@ -1066,25 +1050,15 @@ const Map = () => {
             >
               <Popup>
                 {place.name}: {place.description}
+                <button
+                  onClick={() => handleDeletePlace(place.id)}
+                  style={{ marginLeft: "10px", color: "red", border: "none" }}
+                >
+                  Delete
+                </button>
               </Popup>
             </GeoJSON>
           ))}
-
-          {/* {cityCoordinates && (
-        // <GeoJSON data={geoJsonData} style={style}>
-        <Marker position={[cityCoordinates.lat, cityCoordinates.lon]} icon={customIcon(cityCoordinates.selectedracetype)}>
-          {/* <Popup>{`Coordinates: ${cityCoordinates.lat}, ${cityCoordinates.lon}`}</Popup> */}
-          {/* </Marker> */}
-          {/* // <GeoJSON /> */}
-          {/* )} */}
-          {/* {isAuthenticated && savedPlaces
-        .filter(place => place.user_id === userId)
-        .map((place, index) => (
-          <Marker key={index} position={[place.lat, place.lon]} icon={customIcon(place.selectedracetype)}>
-            <Popup>{`Saved Place ${index + 1}: ${place.name}, ${place.state}, ${place.country}, ${place.selectedracetype}`}</Popup>
-          </Marker>
-        ))
-      } */}
         </MapContainer>
       </div>
       <div className={styles.cardContainer}>

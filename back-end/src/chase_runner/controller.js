@@ -1,13 +1,6 @@
 const pool = require('../../db');
 const queries = require('./queries');
 
-// const getMarkers = (req, res) => {
-//     pool.query(queries.getMarkers, (error, results) => {
-//     if(error) throw error;
-//     res.status(200).json(results.rows);
-// })
-// };
-
 const getGeojson = (req, res) => {
     pool.query(queries.getGeojson, (error, results) => {
     if(error) throw error;
@@ -28,13 +21,11 @@ const geojson_data = async (req, res) => {
     const { lat, lon, name, geojson, race_type, color, description, user_id } = req.body;
   
     try {
-        // SQL query to insert the data into the PostgreSQL database
+ 
         const result = await pool.query(
           queries.geojson_data,
           [lat, lon, name, description, geojson, race_type, color, user_id]
         );
-
-        console.log(result, 'rsult')
         res.status(201).json({
           message: 'Data inserted successfully!',
           data: result.rows[0],

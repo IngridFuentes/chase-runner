@@ -302,6 +302,7 @@ const useMapData = () => {
         cityCoordinates,
         mapCenter,
         savedPlaces,
+        setSavedPlaces,
         showConfetti,
         setShowConfetti,
         handleCitySearch,

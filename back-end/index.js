@@ -125,31 +125,6 @@ app.post('/login', async (req, res) => {
 app.use("/", userRoutes);
 // app.use("/api/places", runnerRoutes);
 app.use("/geojson", runnerRoutes);
-// app.post('/geojson', async (req, res) => {
-//   const { name, description, geojson } = req.body;
-//   try {
-//       const result = await pool.query(
-//           'INSERT INTO geojson_data (name, description, geojson) VALUES ($1, $2, $3) RETURNING *',
-//           [name, description, geojson]
-//       );
-//       res.status(201).json(result.rows[0]);
-//   } catch (error) {
-//       res.status(500).json({ error: error.message });
-//   }
-// });
-
-
-
-
-// Get all GeoJSON entries
-// app.get('/geojson', async (req, res) => {
-//   try {
-//       const result = await pool.query('SELECT * FROM geojson_data');
-//       res.status(200).json(result.rows);
-//   } catch (error) {
-//       res.status(500).json({ error: error.message });
-//   }
-// });
 
 // Get a specific GeoJSON entry
 app.get('/geojson/:id', async (req, res) => {
@@ -165,6 +140,22 @@ app.get('/geojson/:id', async (req, res) => {
       res.status(500).json({ error: error.message });
   }
 });
+
+// DELETE an entry
+
+app.delete('/geojson/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const result = await pool.query('DELETE FROM geojson_data WHERE id = $1 RETURNING *', [id]);
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: 'GeoJSON not found' });
+    }
+    res.status(204).send(console.log("State was deleted"));
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 
 
   const client = new Client({
