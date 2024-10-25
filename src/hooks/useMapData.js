@@ -47,7 +47,7 @@ const useMapData = () => {
         }
       }, [cityName])
 
-console.log(data, 'data 2')
+// console.log(data, 'data 2')
 
     // const handleCitySearch = async (cityName) => {
     //   try {
@@ -222,7 +222,7 @@ console.log(data, 'data 2')
         //Fetch saved places from the backend
     const fetchSavedPlaces = async () => {
           try {
-              const response = await fetch('http://localhost:3000/api/places');
+              const response = await fetch('http://localhost:3000/geojson');
               if(response.ok) {
                 const data = await response.json();
                 setSavedPlaces(data);
@@ -237,10 +237,42 @@ console.log(data, 'data 2')
             console.error(error);
           }
         };
-
     useEffect(() => {
         fetchSavedPlaces();
       }, []);
+
+
+      async function saveGeoJsonData(geojson) {
+        try {
+            const response = await fetch('http://localhost:3000/geojson', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    name: 'My GeoJSON',
+                    description: 'Description of the GeoJSON',
+                    geojson,
+                }),
+            });
+            const data = await response.json();
+            console.log('GeoJSON data saved:', data);
+        } catch (error) {
+            console.error('Error saving GeoJSON data:', error);
+        }
+    }
+    
+    // Fetch GeoJSON data
+    async function fetchGeoJsonData() {
+        try {
+            const response = await fetch('http://localhost:3000/geojson');
+            const data = await response.json();
+            console.log('GeoJSON data fetched:', data);
+            return data;
+        } catch (error) {
+            console.error('Error fetching GeoJSON data:', error);
+        }
+    }
 
   //   useEffect(()=> {
   //     const search = async () => {
@@ -283,6 +315,8 @@ console.log(data, 'data 2')
         // saveCityToBackend
         // fetchCitiesFromAPI,
         fetchSavedPlaces,
+        saveGeoJsonData,
+        fetchGeoJsonData,
       }
 
 }

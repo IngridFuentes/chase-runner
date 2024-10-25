@@ -435,27 +435,6 @@ const getColor = () => {
       } catch (error) {
         console.error(error);
       }
-  
-      setGeoJsonData((prevData) => {
-        if (!prevData) return prevData;
-        const updatedFeatures = prevData.features.map((feature) => {
-          if (feature.properties.name === state) {
-            return {
-              ...feature,
-              properties: {
-                ...feature.properties,
-                selectedRaceType: selectedRaceType,
-              },
-            };
-          }
-          console.log(feature, 'feature 2');
-          return feature;
-        });
-        return { ...prevData, features: updatedFeatures };
-      });
-      // } catch (error) {
-      //   console.error(error);
-      // }
     } else{
         setCityName('');
         setFilteredData([]);

@@ -15,16 +15,15 @@
 //                 width: '700px',
 //                 height: '700px'
 //             }}
-//             alt=''/>          
-//            <button className={styles.buttonLogin}> 
-//                 <Link to="/login" className={styles.link}> Log in </Link> 
+//             alt=''/>
+//            <button className={styles.buttonLogin}>
+//                 <Link to="/login" className={styles.link}> Log in </Link>
 //             </button>
 
 //         </div>
 //      );
 //  }
 //  export default Login;
-
 
 // import React, { useState } from 'react';
 // import { useNavigate } from 'react-router-dom';
@@ -69,7 +68,7 @@
 //   };
 
 //   return (
-    
+
 //     <div className={styles.formContainer}>
 //         <div className={styles.formHeader}>
 //         <h2>Login</h2>
@@ -117,41 +116,40 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React, { useState } from "react";
 import { useEffect } from "react";
-import styles from '../styles/Login.module.css';
-import { useNavigate } from 'react-router-dom';
-import { ClipLoader } from "react-spinners";
+import styles from "../styles/Login.module.css";
+import { useNavigate } from "react-router-dom";
+import RunningShoesSpinner from "./RunningShoesSpinner";
 
 const Login = () => {
   const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
   const navigate = useNavigate();
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  console.log(isAuthenticated, '?????')
   useEffect(() => {
     // Check if user is already authenticated and redirect them
     if (isAuthenticated) {
+      setIsLoggingIn(true);
       navigate("/map");
     }
   }, [isAuthenticated, navigate]);
 
   const handleLogin = async () => {
-
     await loginWithRedirect({
       appState: {
         returnTo: "/map",
       },
     });
-
   };
 
-  // if (isLoading) {
-  //   console.log("it is loading");
-  // }
-
+  if (isLoading || isLoggingIn) {
+    console.log("load??");
+    return <RunningShoesSpinner />;
+  }
 
   return (
     <>
       <button className={styles.buttonLogin} onClick={handleLogin}>
-         <h3 className={styles.link}> Login </h3>
+        <h3 className={styles.link}> Login </h3>
       </button>
     </>
   );

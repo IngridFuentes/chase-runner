@@ -4,8 +4,10 @@ import './index.css';
 import App from './App';
 import { BrowserRouter as Router } from "react-router-dom";
 import { Auth0Provider } from "@auth0/auth0-react";
+import { UserProvider }from "./context/UserContext.jsx";
 
 ReactDOM.render(
+  <UserProvider>
       <Router>
         <Auth0Provider
           domain={process.env.REACT_APP_AUTH0_DOMAIN}
@@ -16,6 +18,7 @@ ReactDOM.render(
         > 
             <App />
         </Auth0Provider>
-      </Router>,
+      </Router>
+    </UserProvider>,
       document.getElementById('root')
 );

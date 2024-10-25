@@ -1,69 +1,99 @@
-.input{
+/* .input {
     margin-bottom: 1rem;
     text-align: center;
     margin-top: -12rem;
 }
-.inputBox{
+
+.inputBox {
     width: 400px;
 }
-.btn{
+
+.btn {
     margin-left: 0.5rem;
 }
-.selected{
+
+.selected {
     background-color: lightgray;
 }
-.search{
+
+.search {
     position: relative;
+    margin: 0 auto;
+    width: 100%;
 }
-.searchInput{
-    align-items: center;
+
+.searchInput {
     display: flex;
-    justify-content: center;
-    position: relative;
+    align-items: center;
+    justify-content: space-between;
     margin-top: 1rem;
-}
-.search input{
-    width: 700px;
-    height: 30px;
-}
-.dropdown{
     position: absolute;
-    margin-left: 6rem;
-    margin-top: 3px;
-    width: 700px;
-    height: 380px;
+    left: 22.6rem;
+    width: 49%; 
+}
+
+.searchInput input {
+    width: 100%; 
+    height: 30px;
+    padding-right: 30px;
+}
+
+.dropdown {
+    position: absolute;
+    left: 22.6rem;
+    width: 49%;
     background-color: white;
-    box-shadow: rgba(0,0,0,0.35) 0px 5px 15px;
-    overflow: hidden;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     overflow-y: auto;
     z-index: 1000;
+    height: 380px;
+    top: 24.5%;
 }
-.dropdown::-webkit-scrollbar{
+.dropdown div {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+
+.dropdown div:hover {
+    background-color: #f0f0f0;
+  }
+
+.dropdown::-webkit-scrollbar {
     display: none;
 }
-.dropdown .dropdownRow{
-    width: 670px;
+
+.dropdown .dropdownRow {
+    width: 100%;
     height: 50px;
     display: flex;
     align-items: center;
+    padding: 0 10px;
     color: black;
 }
-.dropdownRow p{
+
+.dropdownRow p {
     margin-left: 10px;
 }
-p:hover{
+
+p:hover {
     background-color: rgb(233, 233, 233);
-    width: 300px;
     margin: 0;
 }
-.searchIcon{
-    margin-left: -20px;
+
+.searchIcon, .closeIcon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
 }
-.closeIcon{
-    margin-left: -20px;
+.raceTypeSentence{
+    margin-left: 65px;
 }
+
 .list{
-    width: 460px;
+    /* width: 520px;
+    width: 100%;
     margin: 8px;
 }
 .listCheckbox{
@@ -76,12 +106,7 @@ p:hover{
     margin-right: 6px;
     color: green;
 }
-.react-select-container{
-    margin-right: -10rem;
-}
-.marathonTypeDropdown{
-    margin: auto;
-}
+  
 .popup {
     position: fixed;
     top: 50%;
@@ -120,41 +145,7 @@ p:hover{
     color: rgb(14, 142, 14);
 }
   
-.marathonCount {
-    font-size: 48px;
-    font-weight: bold;
-    color: #268610;
-    margin-top: 10px;
-    text-align: center;
-}
-.card,
-.secondCard {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgb(40 173 57 / 70%);
-    padding: 20px;
-    width: calc(50% - 20px);
-    height: 15rem;
-    margin-left: 3rem;
-    margin-top: 4rem;
-    transition: background-color 0.3s ease;
-}
-.card:hover{
-    background-color: #a8f2b03e;
-}
-.secondCard:hover{
-    background-color: #a8f2b03e;
-}
-
-.cardContainer {
-    display: flex;
-    justify-content: space-between;
-}
-.cardSentence{
-    color: #05bb17;
-    /* color:#16a925; */
-}
-.buttonAddRun{
+/* .buttonAddRun{
     display: flex;
     justify-content: center;
     margin-left: 46rem;
@@ -164,9 +155,358 @@ p:hover{
     width: 6rem;
     align-items: center;
     justify-content: center;
+} */
+
+/* .buttonContainer {
+    display: grid;
+    place-items: center;
 }
+
+.buttonAddRun {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(40, 173, 57, 0.7);
+    width: 6rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: #28af39;
+    cursor: pointer;
+    font-weight: bold;
+}
+.buttonAddRun:hover{
+    background-color: #a8f2b03e;
+}
+
 @media (min-width: 840px) {
     .buttonAddRun {
       font-size: 1rem;
+    }
+}
+.cardContainer {
+    display: flex;
+    justify-content: space-between; 
+    padding: 0 1rem; 
+    gap: 1rem;
+}
+
+.card, .secondCard {
+    flex: 1; 
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    margin-top: 1rem;
+    height: 15rem;
+}
+
+.card {
+    margin-left: 1rem;
+}
+
+.secondCard {
+    margin-right: 1rem;
+}
+
+.cardSentence {
+    color: #05bb17; 
+    font-size: 2rem;
+    font-weight: bold; 
+    margin: 0 0 1rem;
+}
+
+.marathonCount {
+    font-size: 48px;
+    color: #268610;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.card:hover, .secondCard:hover {
+    background-color: #a8f2b03e;
+}  */
+
+
+/* Base styles for larger screens (e.g., MacBook Pro 13") */
+.input {
+    margin-bottom: 1rem;
+    text-align: center;
+    margin-top: -12rem;
+}
+
+.inputBox {
+    width: 400px;
+}
+
+.btn {
+    margin-left: 0.5rem;
+}
+
+.selected {
+    background-color: lightgray;
+}
+
+.search {
+    position: relative;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.searchInput {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 1rem;
+    position: absolute;
+    left: 22.6rem;
+    width: 49%; 
+}
+
+.searchInput input {
+    width: 100%; 
+    height: 30px;
+    padding-right: 30px;
+}
+
+.dropdown {
+    position: absolute;
+    left: 22.6rem;
+    width: 49%;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    overflow-y: auto;
+    z-index: 1000;
+    height: 380px;
+    top: 24.5%;
+}
+
+.dropdown div {
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.dropdown div:hover {
+    background-color: #f0f0f0;
+}
+
+.dropdown::-webkit-scrollbar {
+    display: none;
+}
+
+.dropdown .dropdownRow {
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    padding: 0 10px;
+    color: black;
+}
+
+.dropdownRow p {
+    margin-left: 10px;
+}
+
+p:hover {
+    background-color: rgb(233, 233, 233);
+    margin: 0;
+}
+
+.searchIcon, .closeIcon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+.raceTypeSentence{
+    margin-left: 65px;
+}
+
+.list {
+    width: 100%;
+    margin: 8px;
+}
+
+.listCheckbox {
+    margin-left: 34rem;
+    font-family: sans-serif;
+}
+
+.listCheckbox h3 {
+    font-size: small;
+    display: inline-block;
+    margin-right: 6px;
+    color: green;
+}
+
+.popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    padding: 20px;
+    border: 2px solid #1bb75a;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    z-index: 9999;
+    width: 30rem;
+    height: 10rem;
+}
+
+.popupContent {
+    text-align: center;
+    margin-top: 2rem;
+}
+
+.close {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    cursor: pointer;
+    font-size: 20px;
+    color: #1bb75a;
+}
+
+.close:hover {
+    color: #ff0000;
+}
+
+.welcomeName {
+    margin-left: 3rem;
+    font-size: larger;
+    font-family: sans-serif;
+    color: rgb(14, 142, 14);
+}
+
+.buttonContainer {
+    display: grid;
+    place-items: center;
+}
+
+.buttonAddRun {
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(40, 173, 57, 0.7);
+    width: 6rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    color: #28af39;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.buttonAddRun:hover {
+    background-color: #a8f2b03e;
+}
+
+.cardContainer {
+    display: flex;
+    justify-content: space-between; 
+    padding: 0 1rem; 
+    gap: 1rem;
+}
+
+.card, .secondCard {
+    flex: 1; 
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    background-color: #fff;
+    margin-top: 1rem;
+    height: 15rem;
+}
+
+.card {
+    margin-left: 1rem;
+}
+
+.secondCard {
+    margin-right: 1rem;
+}
+
+.cardSentence {
+    color: #05bb17; 
+    font-size: 2rem;
+    font-weight: bold; 
+    margin: 0 0 1rem;
+}
+
+.marathonCount {
+    font-size: 48px;
+    color: #268610;
+    font-weight: bold;
+    margin-top: 10px;
+    text-align: center;
+}
+
+.card:hover, .secondCard:hover {
+    background-color: #a8f2b03e;
+}
+
+/* Responsive styles for smaller screens (e.g., phones) */
+@media (max-width: 768px) {
+    .inputBox {
+        width: 90%;
+    }
+
+    .searchInput {
+        position: static;
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
+    }
+
+    .dropdown {
+        width: 100%;
+        left: 0;
+    }
+
+    .cardContainer {
+        flex-direction: column; 
+        gap: 1rem; 
+        margin-top: 20px;
+    }
+
+    .card, .secondCard {
+        margin: 0;
+        width: 100%;
+    }
+
+    .searchIcon, .closeIcon {
+        right: 20px;
+    }
+
+    .popup {
+        width: 90%;
+        height: auto;
+    }
+
+    .buttonAddRun {
+        width: 100%;
+        height: auto; 
+        font-size: 1rem;
+    }
+
+    .welcomeName {
+        margin-left: 0;
+        text-align: center;
+    }
+
+    .listCheckbox {
+        margin-left: 0;
+    }
+    .buttonContainer{
+        width: 90%;
+        margin-left: auto;
+        margin-right: auto;
     }
 }

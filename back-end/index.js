@@ -4,7 +4,6 @@ const userRoutes = require('./routers/authRouter');
 const bodyParser = require('body-parser');
 const { Client } = require('pg');
 const { auth } = require('express-openid-connect');
-// const Passage = require("@passageidentity/passage-node");
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -13,6 +12,7 @@ const salt = 10;
 const PORT = 3000;
 const CLIENT_URL = "http://localhost:3001";
 require("dotenv").config();
+const pool = require('./db');
 
 
 const config = {
@@ -42,63 +42,6 @@ app.use(
 app.use(auth(config));
 app.use(cookieParser());
 
-// app.get('/', (req, res) => {
-//   res.send(req.oidc.isAuthenticated() ? 'Logged in' : 'Logged out');
-// });
-
-// app.post('/signup', async (req, res) => {
-//   const { email, username, password } = req.body;
-
-//   try {
-//     // Hash the password
-//     const hash = await bcrypt.hash(password, salt);
-
-//     // Insert user data into the database
-//     const postgres = "INSERT INTO users (email, username, password) VALUES ($1, $2, $3)";
-//     await client.query(postgres, [email, username, hash]);
-
-//     // Send success response
-//     return res.json({ status: "Success" });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     return res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-
-// Middleware to verify JWT and extract user ID
-// const authenticateUser = (req, res, next) => {
-//   // Extract JWT from request headers
-//   const token = req.headers.authorization.split(' ')[1];
-
-//   console.log(token, 'token')
-
-//   // Verify JWT
-//   jwt.verify(token, process.env.JWT_SECRET, (err, decodedToken) => {
-//     if (err) {
-//       return res.status(401).json({ error: 'Unauthorized' });
-//     }
-//     // Extract user ID from decoded token
-//     req.userId = decodedToken.userId;
-//     next();
-//   });
-// };
-
-// // Example route handler that requires authentication
-// app.get('/protected-route', authenticateUser, (req, res) => {
-//   const userId = req.userId; // User ID extracted from JWT token
-
-//   // Example: Query the database for user-specific data
-//   const query = 'SELECT * FROM users WHERE user_id = $1';
-//   client.query(query, [userId], (err, result) => {
-//     if (err) {
-//       return res.status(500).json({ error: 'Database error' });
-//     }
-//     // Handle successful database query and return user-specific data
-//     return res.status(200).json({ userData: result.rows });
-//   });
-// });
-
 // Middleware to authenticate incoming requests
 const authenticate = (req, res, next) => {
   // Check if the user is authenticated (e.g., validate authentication token)
@@ -123,9 +66,6 @@ app.get('/user/:userId', authenticate, (req, res) => {
 });
 
 
-
-
-
 app.post('/signup', async (req, res) => {
   const { username, email, password } = req.body;
 
@@ -148,42 +88,6 @@ app.post('/signup', async (req, res) => {
     return res.status(500).json({ error: "Internal server error" });
   }
 });
-
-
-
-// app.post('/login', async (req, res) => {
-//   const { email, password } = req.body;
-
-//   try {
-//     // Query to retrieve user data based on email
-//     const query = 'SELECT * FROM users WHERE email = $1';
-//     const result = await client.query(query, [email]);
-
-//     // Check if a user with the provided email exists
-//     if (result.rows.length === 0) {
-//       return res.status(404).json({ error: 'User not found' });
-//     }
-
-//     // Retrieve the hashed password from the query result
-//     const hashedPassword = result.rows[0].password;
-
-//     // Compare the provided password with the hashed password
-//     const match = await bcrypt.compare(password, hashedPassword);
-
-//     // Check if the passwords match
-//     if (!match) {
-//       return res.status(401).json({ error: 'Invalid password' });
-//     }
-
-//     // Passwords match, login successful
-//     return res.status(200).json({ status: 'Success' });
-//   } catch (error) {
-//     console.error("Error:", error);
-//     return res.status(500).json({ error: "Internal server error" });
-//   }
-// });
-
-
 
 
 app.post('/login', async (req, res) => {
@@ -218,40 +122,51 @@ app.post('/login', async (req, res) => {
   }
 });
 
-
-
-// const passage = new Passage({
-//     appID: process.env.PASSAGE_APP_ID,
-//     apiKey: process.env.PASSAGE_API_KEY,
-//     authStrategy: "HEADER"
-// });
 app.use("/", userRoutes);
-app.use("/api/places", runnerRoutes);
+// app.use("/api/places", runnerRoutes);
+app.use("/geojson", runnerRoutes);
+// app.post('/geojson', async (req, res) => {
+//   const { name, description, geojson } = req.body;
+//   try {
+//       const result = await pool.query(
+//           'INSERT INTO geojson_data (name, description, geojson) VALUES ($1, $2, $3) RETURNING *',
+//           [name, description, geojson]
+//       );
+//       res.status(201).json(result.rows[0]);
+//   } catch (error) {
+//       res.status(500).json({ error: error.message });
+//   }
+// });
 
 
 
-// app.post("/auth", async (req, res) => {
-//     try {
-//       const userID = await passage.authenticateRequest(req);
-//       if (userID) {
-//         // user is authenticated
-//         const { email, phone } = await passage.user.get(userID);
-//         const identifier = email ? email : phone;
-  
-//         res.json({
-//           authStatus: "success",
-//           identifier,
-//         });
-//       }
-//     } catch (e) {
-//       // authentication failed
-//       console.log(e);
-//       res.json({
-//         authStatus: "failure",
-//       });
-//     }
-//   });
-  
+
+// Get all GeoJSON entries
+// app.get('/geojson', async (req, res) => {
+//   try {
+//       const result = await pool.query('SELECT * FROM geojson_data');
+//       res.status(200).json(result.rows);
+//   } catch (error) {
+//       res.status(500).json({ error: error.message });
+//   }
+// });
+
+// Get a specific GeoJSON entry
+app.get('/geojson/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      const result = await pool.query('SELECT * FROM geojson_data WHERE id = $1', [id]);
+      if (result.rows.length === 0) {
+          res.status(404).json({ error: 'GeoJSON not found' });
+      } else {
+          res.status(200).json(result.rows[0]);
+      }
+  } catch (error) {
+      res.status(500).json({ error: error.message });
+  }
+});
+
+
   const client = new Client({
     user: process.env.DATABASE_USER,
     password: process.env.DATABASE_PASSWORD,
@@ -271,4 +186,3 @@ app.use("/api/places", runnerRoutes);
   const routes = expressListEndpoints(app);
 console.log(routes);
 
-// module.exports = app;

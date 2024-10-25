@@ -45,7 +45,7 @@ button{
 .imageProfile{
   background-image: url('../image/avatar.jpeg');
   background-size: 3rem;
-  border: solid 1px grey;
+  border: solid 1px rgb(206, 205, 205);
   margin-left: 5px;
   width: 3rem;
   height: 3rem;
@@ -76,8 +76,8 @@ button{
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   padding: 8px 0;
   min-width: 150px;
-  margin-top: -30px;
-
+  margin-right: 10px !important;
+  margin-top: -25px !important;
 }
 
 .dropdownMenu div {
