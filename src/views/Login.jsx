@@ -128,6 +128,7 @@ const Login = () => {
   useEffect(() => {
     // Check if user is already authenticated and redirect them
     if (isAuthenticated) {
+      console.log("here???");
       setIsLoggingIn(true);
       navigate("/map");
     }

@@ -6,6 +6,7 @@ import styles from './styles/App.module.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import Goals from "./views/Goals";
 import Profile from "./views/Profile";
+// import Callback from "./views/Callback";
 import { useAuth0 } from "@auth0/auth0-react";
 import RunningShoesSpinner from "./views/RunningShoesSpinner";
 
@@ -21,6 +22,8 @@ function App() {
             <div>
               <div className={styles.mainContainer} >
                   <Routes>
+                  <Route path="/" element={<Home />} />
+                      {/* <Route path="/callback" element={<Callback />} /> */}
                       <Route path="/" element={isAuthenticated ? <Navigate to="/map" /> : <Home />} />
                       <Route path="/map" element={isAuthenticated ? <Map /> : <Navigate to="/" />} />
                       <Route path="/profile" element={isAuthenticated ? <Profile /> : <Navigate to="/" />} />

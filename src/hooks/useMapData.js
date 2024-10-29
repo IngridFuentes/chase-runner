@@ -13,7 +13,6 @@ const useMapData = () => {
     // const [filteredData, setFilteredData] = useState(null)
     const [data, setData] = useState({});
 
-
       const debounce = (func, delay) => {
         let timeoutId;
         return function() {
@@ -47,88 +46,6 @@ const useMapData = () => {
         }
       }, [cityName])
 
-// console.log(data, 'data 2')
-
-    // const handleCitySearch = async (cityName) => {
-    //   try {
-    //   //   if (cityName.trim() === '') {
-    //   //     throw new Error('Text value cannot be empty!');
-    //   //   }
-    //     const response = await fetch(
-    //       `https://api.geoapify.com/v1/geocode/search?text=${cityName}&lang=en&limit=10&type=city&apiKey=63f9e025a41e4c2eb7b9fea7f557a9b5`
-    //     );
-    //     const data = await response.json();
-    //     console.log(data, 'data 1')
-    //     const filteredData = data.features
-    //     .map((d, i) => (
-    //       <li key={i}>
-    //         {d.properties.name !== undefined && d.properties.name !== "" ? d.properties.name : d.properties.city}, {d.properties.state}, {d.properties.country}
-    //       </li>
-    //     ));
-        
-    //     const latLonCountryArray = extractCityInfo(data.features);
-    
-    //     await Promise.all(
-    //       latLonCountryArray.map(async ({ lat, lon, country, cityName }) => {
-    //         try {
-    //           const res = await fetch('http://localhost:3000/api/places', {
-    //             method: 'POST',
-    //             headers: {
-    //               'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({ lat, lon, name: cityName, country }),
-    //           });
-    
-    //           if (!res.ok) {
-    //             throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`);
-    //           }
-    //         } catch (error) {
-    //           console.error('Error in fetch:', error);
-    //           // Handle the error as needed
-    //         }
-    //       })
-    //     );
-    
-    //     setCityName('');
-    //     setFilteredData(filteredData);
-    //     // setShowConfetti(true);
-    
-    //     setTimeout(() => {
-    //       setShowConfetti(false);
-    //       fetchSavedPlaces();
-    //     }, 2000);
-    //     return filteredData.length > 0 ? filteredData : [<li key={0}>No matching cities</li>];
-    //   } catch (error) {
-    //     console.error(error);
-    //     throw error;
-    //   }
-    // };
-    // useEffect(() => {
-    //   handleCitySearch();
-    // }, [cityName]);
-
-
-    
-  //   const saveCityToBackend = async (cityData) => {
-  //     const { lat, lon, country, cityName } = extractCityInfo(selectedCity);
-
-  // try {
-  //   const res = await fetch('http://localhost:3000/api/places', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ lat, lon, name: cityName, country }),
-  //   });
-
-  //   if (!res.ok) {
-  //     throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`);
-  //   }
-  // } catch (error) {
-  //   console.error('Error in saveCityToBackend:', error);
-  //   // Handle the error as needed
-  // }
-  //   };
     const extractCityInfo = (cityData) => {
       console.log(cityData, 'city')
       return cityData.map(({ properties }) => {
@@ -141,72 +58,6 @@ const useMapData = () => {
         };
       });
     };    
-
-    // const handleSuggestionClick = (city) => {
-    //   setSelectedCity(city);
-    //   setCityName(''); // Clear the cityName to reset the search input
-    //   setSuggestions([]); // Clear the suggestions
-    //   // saveCityToBackend(city);
-    // };
-  
-        // try {
-        //   const response = await fetch(
-        //     `https://api.geoapify.com/v1/geocode/search?text=${cityName}&lang=en&limit=10&type=city&apiKey=63f9e025a41e4c2eb7b9fea7f557a9b5`
-        //   );
-        //   const data = await response.json();
-        //   const filteredData = data.features.filter((d) => d.properties.name !== undefined)
-        //                     .map((d, i) =>
-        //                     // console.log(d.properties)
-        //                         <li key={i}>
-        //                            {d.properties.name}, 
-        //                             {d.properties.country}
-        //                         </li>
-        //                     );
-        //   const latLonCountryArray = data.features.map((d, i) => ({
-        //                       lat: d.properties.lat,
-        //                       lon: d.properties.lon,
-        //                       country: d.properties.country,
-        //                       cityName: d.properties.name
-        //                     }));
-
-        //   await Promise.all(
-        //                       latLonCountryArray.map(async ({ lat, lon, country, cityName }) => {
-        //                         console.log('Lat:', lat, 'Lon:', lon, 'Country:', country, 'name:', cityName);
-                        
-        //                         // Use try-catch to handle errors in each fetch separately
-        //                         try {
-        //                           const res = await fetch('http://localhost:3000/api/places', {
-        //                             method: 'POST',
-        //                             headers: {
-        //                               'Content-Type': 'application/json',
-        //                             },
-        //                             body: JSON.stringify({ lat, lon, name: cityName, country }),
-        //                           });
-                        
-        //                           if (!res.ok) {
-        //                             throw new Error(`${res.status} ${res.statusText}: ${await res.text()}`);
-        //                           }
-        //                         } catch (error) {
-        //                           console.error('Error in fetch:', error);
-        //                           // Handle the error as needed
-        //                         }
-        //                       })
-        //                     );
-        //                     setCityName('');
-        //                     setShowConfetti(true);
-                        
-        //                     setTimeout(() => {
-        //                       setShowConfetti(false);
-        //                       fetchSavedPlaces();
-        //                     }, 2000);
-                        
-        //                     return filteredData.length > 0 ? filteredData : <li>No matching cities</li>;
-        //                   } catch (error) {
-        //                     console.error(error);
-        //                     throw error;
-        //                   }
-        //                 };
-
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -273,24 +124,6 @@ const useMapData = () => {
             console.error('Error fetching GeoJSON data:', error);
         }
     }
-
-  //   useEffect(()=> {
-  //     const search = async () => {
-  //       try {
-  //         const result = await handleCitySearch(cityName);
-  //         setSuggestions(result);
-  //         // setSuggestions([]);
-  //       } catch (error) {
-  //         console.error('Error:', error.message);
-  //       }
-  //     };
-  //     const timeoutId = setTimeout(() => {
-  //       search();
-  //     }, 300);
-  //     return () => clearTimeout(timeoutId);
-  // }, [cityName]);
-
- 
 
       return{
         cityName,

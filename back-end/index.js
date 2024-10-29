@@ -3,7 +3,7 @@ const runnerRoutes = require('./src/chase_runner/routes');
 const userRoutes = require('./routers/authRouter');
 const bodyParser = require('body-parser');
 const { Client } = require('pg');
-const { auth } = require('express-openid-connect');
+const { auth, requiresAuth } = require('express-openid-connect');
 const cors = require("cors");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -16,12 +16,12 @@ const pool = require('./db');
 
 
 const config = {
-  authRequired: false,
+  authRequired: false, //set to true to enforce authentication globally
   auth0Logout: true,
   secret: process.env.SECRET,
   baseURL: process.env.BASEURL,
   clientID: process.env.CLIENTID,
-  issuerBaseURL:process.env.ISSUER
+  issuerBaseURL:process.env.ISSUER,
 };
 
 const app = express();
@@ -33,16 +33,16 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(
     cors({
       origin: CLIENT_URL,
+      // methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
       credentials: true,
     })
   );
   console.log("Debugging middleware initialization - Configuration Object:");
-  console.log(config);
+  // console.log(config);
 
 app.use(auth(config));
 app.use(cookieParser());
 
-// Middleware to authenticate incoming requests
 const authenticate = (req, res, next) => {
   // Check if the user is authenticated (e.g., validate authentication token)
   if (req.isAuthenticated()) {
@@ -51,8 +51,6 @@ const authenticate = (req, res, next) => {
     return res.status(401).json({ error: 'Unauthorized' }); // User is not authenticated, send 401 Unauthorized status
   }
 };
-
-// Route for a specific user
 app.get('/user/:userId', authenticate, (req, res) => {
   const { userId } = req.params;
   // Check if the authenticated user is authorized to access this route
@@ -64,6 +62,51 @@ app.get('/user/:userId', authenticate, (req, res) => {
     res.status(403).json({ error: 'Forbidden' });
   }
 });
+
+
+// The /profile route will show the user profile as JSON
+// app.get('/profile', requiresAuth(), (req, res) => {
+//   res.send(JSON.stringify(req.oidc.user, null, 2));
+// });
+
+
+
+
+// Only enforces authentication on this specific route
+// app.get("/protected", auth(config), (req, res) => {
+//   console.log(req.oidc, 'what???????')
+//   if (req.oidc.isAuthenticated()) {
+//     res.send(req.oidc.user);
+//   } else {
+//     res.status(403).json({ error: 'Forbidden' });
+//   }
+// });
+
+
+
+// Middleware to authenticate incoming requests
+// const authenticate = (req, res, next) => {
+// console.log('authen????')
+//   // Check if the user is authenticated (e.g., validate authentication token)
+//   if (req.isAuthenticated()) {
+//     return next(); // User is authenticated, proceed to the next middleware
+//   } else {
+//     return res.status(401).json({ error: 'Unauthorized' }); // User is not authenticated, send 401 Unauthorized status
+//   }
+// };
+
+// Route for a specific user
+// app.get('/user/:userId', authenticate, (req, res) => {
+//   const { userId } = req.params;
+//   // Check if the authenticated user is authorized to access this route
+//   if (req.user.id === userId) {
+//     // User is authorized, return user-specific data
+//     res.json({ userId, data: 'User-specific data' });
+//   } else {
+//     // User is not authorized, send 403 Forbidden status
+//     res.status(403).json({ error: 'Forbidden' });
+//   }
+// });
 
 
 app.post('/signup', async (req, res) => {
@@ -81,6 +124,7 @@ app.post('/signup', async (req, res) => {
     const userId = result.rows[0].id;
 
     console.log(userId, "user id backend")
+
     // Return the user ID in the response
     return res.status(201).json({ userId });
   } catch (error) {
@@ -129,8 +173,9 @@ app.use("/geojson", runnerRoutes);
 // Get a specific GeoJSON entry
 app.get('/geojson/:id', async (req, res) => {
   const { id } = req.params;
+  const userId = req.oidc.user.sub;
   try {
-      const result = await pool.query('SELECT * FROM geojson_data WHERE id = $1', [id]);
+      const result = await pool.query('SELECT * FROM geojson_data WHERE id = $1', [id], [userId]);
       if (result.rows.length === 0) {
           res.status(404).json({ error: 'GeoJSON not found' });
       } else {

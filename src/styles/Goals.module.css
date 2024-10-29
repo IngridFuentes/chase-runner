@@ -1,0 +1,32 @@
+.goalsSentence{
+    color: rgb(91, 162, 75);
+    font-size: x-large;
+    font-family: sans-serif;
+    text-align: center;
+    font-weight: bold;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 30vh;
+}
+.registerSentence{
+    font-size: large;
+    text-align: center;
+}
+
+.registerSentence a{
+    text-decoration: none;
+    color: green;
+}
+
+.registerSentence:hover{
+    background: none;
+}
+.backButton {
+    position: fixed;
+    top: 30px;
+    left: 30px;
+    cursor: pointer;
+    z-index: 1000;
+    color: #4CAF50;
+}

@@ -66,6 +66,7 @@ const Map = () => {
   const [loading, setLoading] = useState(true);
 
   const { user, isAuthenticated } = useAuth0();
+
   const marathonTypeOptions = [
     { value: "5K", label: "5K" },
     { value: "10K", label: "10K" },

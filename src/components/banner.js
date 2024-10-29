@@ -35,6 +35,9 @@ const Banner = () => {
                         <Link to="/profile" className={styles.profile}>My Profile</Link>
                     </div>
                     <div>
+                        <Link to="/goals" className={styles.profile}> Goals </Link>
+                    </div>
+                    <div>
                         Settings
                     </div>
                     <div>

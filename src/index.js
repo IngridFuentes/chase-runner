@@ -18,7 +18,7 @@ ReactDOM.render(
         > 
             <App />
         </Auth0Provider>
-      </Router>
+      </Router>,
     </UserProvider>,
-      document.getElementById('root')
+    document.getElementById('root')
 );
