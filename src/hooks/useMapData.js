@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth0 } from '@auth0/auth0-react';
 
 const useMapData = () => {
     const [cityName, setCityName] = useState('');
@@ -9,9 +10,22 @@ const useMapData = () => {
     const [showConfetti, setShowConfetti] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [selectedCity, setSelectedCity] = useState(null);
-    const [selectedCityIndex, setSelectedCityIndex] = useState(-1);
+    // const [selectedCityIndex, setSelectedCityIndex] = useState(-1);
     // const [filteredData, setFilteredData] = useState(null)
     const [data, setData] = useState({});
+    // const [isAuthenticated, setIsAuthenticated] = useState(false);
+    // const [user, setUser] = useState(null);
+
+
+    const { isAuthenticated, user } = useAuth0();
+
+  useEffect(() => {
+    // This will be called when user is authenticated
+    if (isAuthenticated) {
+      console.log("User authenticated:", user);
+    }
+  }, [isAuthenticated, user]);
+
 
       const debounce = (func, delay) => {
         let timeoutId;
@@ -72,21 +86,30 @@ const useMapData = () => {
 
         //Fetch saved places from the backend
     const fetchSavedPlaces = async () => {
-          try {
-              const response = await fetch('http://localhost:3000/geojson');
-              if(response.ok) {
-                const data = await response.json();
-                setSavedPlaces(data);
-                console.log(data, 'hi');
-              } else{
-                throw new Error('Network response was not ok.');
-              }
-            // const data = await response.json();
-            // console.log(data, 'backend data')
-            // setSavedPlaces(data);
-          } catch (error) {
-            console.error(error);
+
+      console.log(user, 'user on useMapData')
+      console.log(isAuthenticated, 'USE MAP DATA')
+
+      if (isAuthenticated && user) {
+        try {
+          const response = await fetch('http://localhost:3000/user/id/runs', {
+            method: 'GET',
+            credentials: 'include', // Ensures cookies are sent with the request
+          });
+  
+          if (response.ok) {
+            const data = await response.json();
+            console.log(data, 'data')
+            const filteredData = data.filter(item => item.user_id === user.sub);
+            console.log(filteredData, 'data that belongs to user')
+            setSavedPlaces(filteredData);
+          } else {
+            console.error('Failed to fetch runs');
           }
+        } catch (error) {
+          console.error('Error fetching runs:', error);
+        }
+      }
         };
     useEffect(() => {
         fetchSavedPlaces();

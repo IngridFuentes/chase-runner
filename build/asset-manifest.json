@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/static/css/main.d554dd44.css",
+    "main.js": "/static/js/main.d9c21fc1.js",
+    "static/media/logoImage.png": "/static/media/logoImage.ce3b395172a29634f8fa.png",
+    "static/media/runnerLogo.jpg": "/static/media/runnerLogo.4ccad9b31ee7147558a0.jpg",
+    "index.html": "/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.d554dd44.css",
+    "static/js/main.d9c21fc1.js"
+  ]
+}

@@ -121,18 +121,18 @@ import { useNavigate } from "react-router-dom";
 import RunningShoesSpinner from "./RunningShoesSpinner";
 
 const Login = () => {
-  const { loginWithRedirect, isAuthenticated, isLoading } = useAuth0();
+  const { loginWithRedirect, isAuthenticated, isLoading, user } = useAuth0();
   const navigate = useNavigate();
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   useEffect(() => {
     // Check if user is already authenticated and redirect them
     if (isAuthenticated) {
-      console.log("here???");
+      console.log("User is authenticated:", user);
       setIsLoggingIn(true);
       navigate("/map");
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, navigate, user]);
 
   const handleLogin = async () => {
     await loginWithRedirect({

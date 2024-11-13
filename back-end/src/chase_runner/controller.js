@@ -1,12 +1,32 @@
 const pool = require('../../db');
 const queries = require('./queries');
+const util = require('util');
+
+// const getGeojson = (req, res) => {
+//   if (!req.user) {
+//     return res.status(401).json({ error: 'Unauthorized: No user found.' });
+//   }
+//   const userId = req.user.sub;
+//   console.log(userId, 'user?')
+//   pool.query(queries.getGeojson, [userId], (error, results) => {
+//     if (error) {
+//       // Log only relevant error information
+//       console.error('Error fetching GeoJSON data:', {
+//         message: error.message,
+//         code: error.code,
+//         stack: error.stack
+//       });
+//       return res.status(500).json({ error: 'Internal server error' });
+//     }
+//     res.json({ message: 'CORS is working!' });
+//   res.status(200).json(results.rows);
+// })
+// };
+
 
 const getGeojson = (req, res) => {
-  pool.query(queries.getGeojson, (error, results) => {
-  if(error) throw error;
-  res.status(200).json(results.rows);
-})
-};
+  console.log('here good')
+}
 
 // const getGeojson = async (req, res) => {
 //   const userId = result.rows[0].id;

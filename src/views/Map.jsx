@@ -19,6 +19,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import AddRun from "./AddRun";
 import SearchInput from "./SearchInput";
 import RunningShoesSpinner from "./RunningShoesSpinner";
+import Cookies from "js-cookie";
 
 const Map = () => {
   const {
@@ -66,6 +67,13 @@ const Map = () => {
   const [loading, setLoading] = useState(true);
 
   const { user, isAuthenticated } = useAuth0();
+
+  useEffect(() => {
+    // This will be called when user is authenticated
+    if (isAuthenticated) {
+      console.log("User authenticated:", user);
+    }
+  }, [isAuthenticated, user]);
 
   const marathonTypeOptions = [
     { value: "5K", label: "5K" },
@@ -215,21 +223,6 @@ const Map = () => {
   };
 
   useEffect(() => {
-    //   const savedGeoJsonData = localStorage.getItem('geoJsonData');
-    // if (savedGeoJsonData) {
-    //   setGeoJsonData(JSON.parse(savedGeoJsonData));
-    // }
-    //   // Retrieve the count of completed marathons from local storage when the component mounts
-    //   const storedMarathonsDone = localStorage.getItem('marathonsDone');
-    //   if (storedMarathonsDone) {
-    //     setMarathonsDone(parseInt(storedMarathonsDone));
-    //   }
-
-    //   const statesCount = localStorage.getItem('statesCount');
-    //   if (statesCount) {
-    //     setStatesCount(parseInt(statesCount));
-    //   }
-
     localStorage.setItem("marathonsDone", 0);
     localStorage.setItem("statesCount", 0);
     const savedGeoJsonData = localStorage.getItem("geoJsonData");
@@ -611,6 +604,9 @@ const Map = () => {
   // };
   // }
 
+  // console.log(user.sub, "user map.js");
+  // const userId = user.sub;
+
   const handleCitySelection = async (selectedCity, selectedRunType) => {
     if (
       selectedCity &&
@@ -621,7 +617,15 @@ const Map = () => {
       const { city, state, country } = selectedCity.properties;
       const selectedRaceType = selectedRunType;
       const description = `Event ${selectedRaceType}`;
+
       const userId = user.sub;
+
+      console.log(userId, "user id");
+
+      if (!userId) {
+        console.error("User not authenticated");
+        return;
+      }
 
       setMarathonsDone((prevCount) => prevCount + 1);
       localStorage.setItem("marathonsDone", marathonsDone + 1);
@@ -673,12 +677,12 @@ const Map = () => {
               break;
           }
 
-          // Send only the selected state's data to the backend
-          const response = await fetch("http://localhost:3000/geojson/", {
+          const response = await fetch("http://localhost:3000/runs", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
               lat: selectedCity.geometry.coordinates[1],
               lon: selectedCity.geometry.coordinates[0],
@@ -707,7 +711,7 @@ const Map = () => {
           setShowConfetti(true);
 
           fetchSavedPlaces();
-          fetchGeoJsonData();
+          // fetchGeoJsonData();
           setCityName("");
           setFilteredData([]);
           setIsDropdownVisible(false);

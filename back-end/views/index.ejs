@@ -3,14 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
 </head>
 <body>
     <nav>
         <ul>
-            <li><a href="/login">Login</a></li>
-            <li><a href="/logout">Logout</a></li>
+            <% if(!isAuthenticated) { %>
+            <li><a href="/login/"> Login</a></li>
+            <% } else { %> 
+            <li> <a href="/logout/">Logout </a></li>
+            <% } %> 
         </ul>
     </nav>
+    <h1><%= title %></h1>
+    <pre> <%= JSON.stringify(user, null, 2) %></pre>
 </body>
 </html>
