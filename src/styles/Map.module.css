@@ -260,10 +260,9 @@ p:hover {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 1rem;
     position: absolute;
     left: 22.6rem;
-    width: 49%; 
+    width: 50%; 
 }
 
 .searchInput input {
