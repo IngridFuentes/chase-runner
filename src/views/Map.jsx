@@ -14,7 +14,7 @@ import useMapData from "../hooks/useMapData";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
 import Checkbox from "@mui/material/Checkbox";
-import Banner from "../components/Banner";
+import Banner from "../components/Banner.js";
 import { useAuth0 } from "@auth0/auth0-react";
 import AddRun from "./AddRun";
 import SearchInput from "./SearchInput";
