@@ -18,6 +18,7 @@ const useMapData = () => {
 
 
     const { isAuthenticated, user } = useAuth0();
+    const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     // This will be called when user is authenticated
@@ -92,7 +93,7 @@ const useMapData = () => {
 
       if (isAuthenticated && user) {
         try {
-          const response = await fetch('http://localhost:3000/user/id/runs', {
+          const response = await fetch(`${backendUrl}/user/id/runs`, {
             method: 'GET',
             credentials: 'include', // Ensures cookies are sent with the request
           });

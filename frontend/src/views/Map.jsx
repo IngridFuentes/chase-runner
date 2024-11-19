@@ -67,6 +67,7 @@ const Map = () => {
   const [loading, setLoading] = useState(true);
 
   const { user, isAuthenticated } = useAuth0();
+  const backendUrl = process.env.REACT_APP_BACKEND_URL;
 
   useEffect(() => {
     // This will be called when user is authenticated
@@ -677,7 +678,7 @@ const Map = () => {
               break;
           }
 
-          const response = await fetch("http://localhost:3000/runs", {
+          const response = await fetch(`${backendUrl}/runs`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
