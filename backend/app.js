@@ -24,7 +24,7 @@ app.use(express.static("public"))
 app.use(auth(config));
 
 app.use(cors({
-  origin: 'http://localhost:3001',
+  origin: 'https://chase-runner.vercel.app/',
   credentials: true,
 }));
 
