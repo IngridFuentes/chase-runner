@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require('cors');
-const indexRouter = require("./routes/index.js");
+const indexRouter = require("../routes/index.js");
 
 const { auth } = require('express-openid-connect');
 require("dotenv").config();
@@ -29,8 +29,8 @@ app.use(cors({
 }));
 
 app.use("/", indexRouter);
-app.use("/runs", indexRouter);
-app.use("/user/id/runs", indexRouter);
+app.use("/api/runs", indexRouter);
+app.use("/api/user/id/runs", indexRouter);
 
 
 

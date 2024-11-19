@@ -93,7 +93,7 @@ const useMapData = () => {
 
       if (isAuthenticated && user) {
         try {
-          const response = await fetch(`${backendUrl}/user/id/runs`, {
+          const response = await fetch(`${backendUrl}/api/user/id/runs`, {
             method: 'GET',
             credentials: 'include', // Ensures cookies are sent with the request
           });

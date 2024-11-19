@@ -16,7 +16,7 @@ router.get("/", (req, res) => {
 
 //route to see user ID
 
-router.get("/user/id", async (req, res) => {
+router.get("/api/user/id", async (req, res) => {
     if (!req.oidc || !req.oidc.user) {
         return res.status(401).send('User not authenticated');
     }
@@ -33,7 +33,7 @@ router.get("/user/id", async (req, res) => {
 
 // route to POST runs after user authenticate
 
-router.post('/runs', async (req, res) => {
+router.post('/api/runs', async (req, res) => {
     if (!req.oidc || !req.oidc.user) {
         return res.status(401).send("User not authenticated");
       }
@@ -50,7 +50,7 @@ router.post('/runs', async (req, res) => {
 
 
 // route to get all runs for a user
-router.get("/user/id/runs", async (req, res) => {
+router.get("/api/user/id/runs", async (req, res) => {
 
     if (!req.oidc.isAuthenticated()) {
       return res.status(401).send('User not authenticated');

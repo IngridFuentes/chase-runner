@@ -678,7 +678,7 @@ const Map = () => {
               break;
           }
 
-          const response = await fetch(`${backendUrl}/runs`, {
+          const response = await fetch(`${backendUrl}/api/runs`, {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
