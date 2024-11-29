@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
 
 const useMapData = () => {
@@ -17,8 +17,9 @@ const useMapData = () => {
     // const [user, setUser] = useState(null);
 
 
-    const { isAuthenticated, user } = useAuth0();
-    const backendUrl = process.env.REACT_APP_BACKEND_URL;
+    const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
+    // const backendUrl = process.env.REACT_APP_BACKEND_URL;
+    const backendUrl = 'http://localhost:3000'
 
   useEffect(() => {
     // This will be called when user is authenticated
@@ -26,7 +27,6 @@ const useMapData = () => {
       console.log("User authenticated:", user);
     }
   }, [isAuthenticated, user]);
-
 
       const debounce = (func, delay) => {
         let timeoutId;
@@ -86,36 +86,38 @@ const useMapData = () => {
     }
 
         //Fetch saved places from the backend
-    const fetchSavedPlaces = async () => {
-
-      console.log(user, 'user on useMapData')
-      console.log(isAuthenticated, 'USE MAP DATA')
-
-      if (isAuthenticated && user) {
-        try {
-          const response = await fetch(`${backendUrl}/api/user/id/runs`, {
-            method: 'GET',
-            credentials: 'include', // Ensures cookies are sent with the request
-          });
-  
-          if (response.ok) {
-            const data = await response.json();
-            console.log(data, 'data')
-            const filteredData = data.filter(item => item.user_id === user.sub);
-            console.log(filteredData, 'data that belongs to user')
-            setSavedPlaces(filteredData);
-          } else {
-            console.error('Failed to fetch runs');
+        const fetchSavedPlaces = useCallback(async () => {
+          console.log(isAuthenticated, "fetch places authenticated?");
+          console.log('User authenticated:', user?.sub);
+        
+          try {
+            const token = await getAccessTokenSilently();
+            console.log(token, 'token fetch');
+            const response = await fetch(`${backendUrl}/user/id/runs`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
+        
+            if (response.ok) {
+              const data = await response.json();
+              console.log(data, 'data');
+              const filteredData = data.filter(item => item.user_id === user.sub);
+              console.log(filteredData, 'data that belongs to user')
+              setSavedPlaces(filteredData);
+            } else {
+              console.error('Failed to fetch runs');
+            }
+          } catch (error) {
+            console.error('Error fetching runs:', error);
           }
-        } catch (error) {
-          console.error('Error fetching runs:', error);
-        }
-      }
-        };
-    useEffect(() => {
-        fetchSavedPlaces();
-      }, []);
-
+        }, [getAccessTokenSilently, isAuthenticated, user?.sub]);
+        
+        useEffect(() => {
+          if (isAuthenticated) {
+            fetchSavedPlaces();
+          }
+        }, [fetchSavedPlaces, isAuthenticated]);
 
       async function saveGeoJsonData(geojson) {
         try {

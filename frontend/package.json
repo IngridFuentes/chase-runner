@@ -44,7 +44,8 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "dev": "concurrently \"npm start\" \"cd ../backend && npm start\"",
+    "start": "PORT=3001 react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -71,6 +72,7 @@
     "@babel/core": "7.22.5",
     "@babel/eslint-parser": "7.22.5",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/plugin-transform-private-property-in-object": "^7.22.11"
+    "@babel/plugin-transform-private-property-in-object": "^7.22.11",
+    "concurrently": "^9.1.0"
   }
 }

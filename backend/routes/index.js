@@ -5,41 +5,37 @@ const storeOrUpdateRun = require('../utils/storeOrUpdateRun');
 const getRunsForUser = require('../utils/getRunsForUser');
 
 router.get("/", (req, res) => {
-    console.log(req.oidc.isAuthenticated());
-    res.render("index", { 
-        title: "Express Auth", 
-        isAuthenticated: req.oidc.isAuthenticated(),
-        user: req.oidc.user,
-    })
-    // console.log(req.oidc.user, "user 2")
+    // console.log(req.oidc.isAuthenticated());
+    // res.send('Welcome to the backend!');
+    console.log('Hey')
 })
 
 //route to see user ID
 
-router.get("/api/user/id", async (req, res) => {
-    if (!req.oidc || !req.oidc.user) {
+router.get("/user/id", async (req, res) => {
+    if (!req.auth.sub || !req.auth.sub) {
         return res.status(401).send('User not authenticated');
     }
 
-    const user = req.oidc.user;
+    const user = req.auth.sub;
     await storeOrUpdateUser(user); // Call the function to store or update user data
 
     res.render("index", {
         title: "Express Auth User Id", 
-        isAuthenticated: req.oidc.isAuthenticated(),
-        user: `${user.sub} ${user.name}`
+        // isAuthenticated: req.oidc.isAuthenticated(),
+        user: `${req.auth.sub} ${req.auth.name}`
     });
 });
 
 // route to POST runs after user authenticate
 
-router.post('/api/runs', async (req, res) => {
-    if (!req.oidc || !req.oidc.user) {
+router.post('/runs', async (req, res) => {
+    if (!req.auth.sub || !req.auth.sub) {
         return res.status(401).send("User not authenticated");
       }
     
     const runData = req.body;
-
+      console.log('run data post?')
     try {
       await storeOrUpdateRun(runData);
       res.status(201).send('Run added successfully');
@@ -50,19 +46,16 @@ router.post('/api/runs', async (req, res) => {
 
 
 // route to get all runs for a user
-router.get("/api/user/id/runs", async (req, res) => {
-
-    if (!req.oidc.isAuthenticated()) {
-      return res.status(401).send('User not authenticated');
-    }
-  
-    const userId = req.oidc.user.sub;
+router.get("/user/id/runs", async (req, res) => {
+console.log('here user/id/runs')
+    const userId = req.auth.sub;
     console.log('Fetching runs for user: ', userId);
   
+    console.log(userId, "user?")
     try {
       // Use the imported function to fetch runs
       const runs = await getRunsForUser(userId);
-  
+      console.log(runs, 'runs backend')
       // Check if the user has any runs
       if (runs.length === 0) {
         return res.status(404).send('No runs found for this user');

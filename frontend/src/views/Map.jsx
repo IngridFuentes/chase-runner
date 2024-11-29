@@ -66,12 +66,12 @@ const Map = () => {
   const [debouncedSearchWord, setDebouncedSearchWord] = useState(cityName);
   const [loading, setLoading] = useState(true);
 
-  const { user, isAuthenticated } = useAuth0();
-  const backendUrl = process.env.REACT_APP_BACKEND_URL;
+  const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
   useEffect(() => {
     // This will be called when user is authenticated
     if (isAuthenticated) {
+      console.log(isAuthenticated, "authenticated? on map");
       console.log("User authenticated:", user);
     }
   }, [isAuthenticated, user]);
@@ -621,7 +621,7 @@ const Map = () => {
 
       const userId = user.sub;
 
-      console.log(userId, "user id");
+      // console.log(userId, "user id");
 
       if (!userId) {
         console.error("User not authenticated");
@@ -677,13 +677,14 @@ const Map = () => {
               color = "#ffffff";
               break;
           }
-
-          const response = await fetch(`${backendUrl}/api/runs`, {
+          const token = await getAccessTokenSilently();
+          console.log("runs route frontend");
+          const response = await fetch("http://localhost:3000/runs", {
             method: "POST",
             headers: {
+              Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-            credentials: "include",
             body: JSON.stringify({
               lat: selectedCity.geometry.coordinates[1],
               lon: selectedCity.geometry.coordinates[0],
