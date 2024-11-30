@@ -15,7 +15,7 @@ const useMapData = () => {
     const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
     // const backendUrl = process.env.REACT_APP_BACKEND_URL;
     // const backendUrl = 'http://localhost:3000'
-    const backendUrl = 'https://chase-runner-backend.vercel.app/'
+    const backendUrl = 'https://chase-runner-backend.vercel.app'
 
   useEffect(() => {
     // This will be called when user is authenticated
