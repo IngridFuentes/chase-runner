@@ -19,7 +19,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import AddRun from "./AddRun.jsx";
 import SearchInput from "./SearchInput.jsx";
 import RunningShoesSpinner from "./RunningShoesSpinner.jsx";
-import Cookies from "js-cookie";
 
 const Map = () => {
   const {
@@ -679,26 +678,29 @@ const Map = () => {
           }
           const token = await getAccessTokenSilently();
           console.log("runs route frontend");
-          const response = await fetch("http://localhost:3000/runs", {
-            method: "POST",
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              lat: selectedCity.geometry.coordinates[1],
-              lon: selectedCity.geometry.coordinates[0],
-              name: selectedStateData.properties.name,
-              description: description,
-              geojson: {
-                type: selectedStateData.geometry.type,
-                coordinates: selectedStateData.geometry.coordinates,
+          const response = await fetch(
+            "https://chase-runner-backend.vercel.app/runs",
+            {
+              method: "POST",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
               },
-              race_type: selectedRaceType,
-              color: color,
-              user_id: userId,
-            }),
-          });
+              body: JSON.stringify({
+                lat: selectedCity.geometry.coordinates[1],
+                lon: selectedCity.geometry.coordinates[0],
+                name: selectedStateData.properties.name,
+                description: description,
+                geojson: {
+                  type: selectedStateData.geometry.type,
+                  coordinates: selectedStateData.geometry.coordinates,
+                },
+                race_type: selectedRaceType,
+                color: color,
+                user_id: userId,
+              }),
+            }
+          );
 
           if (!response.ok) {
             throw new Error(
