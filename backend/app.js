@@ -16,7 +16,14 @@ app.use(express.json());
 app.use(express.urlencoded( { extended:true }))
 app.use(express.static("public"))
 
-app.use(cors());
+const corsOptions = {
+  origin: 'https://chase-runner.vercel.app',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, 
+};
+
+app.use(cors(corsOptions));
 
 // const port = process.env.PORT || 3000;
 const port = "https://chase-runner-backend.vercel.app"
