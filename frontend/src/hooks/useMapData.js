@@ -10,16 +10,12 @@ const useMapData = () => {
     const [showConfetti, setShowConfetti] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
     const [selectedCity, setSelectedCity] = useState(null);
-    // const [selectedCityIndex, setSelectedCityIndex] = useState(-1);
-    // const [filteredData, setFilteredData] = useState(null)
     const [data, setData] = useState({});
-    // const [isAuthenticated, setIsAuthenticated] = useState(false);
-    // const [user, setUser] = useState(null);
-
 
     const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
     // const backendUrl = process.env.REACT_APP_BACKEND_URL;
-    const backendUrl = 'http://localhost:3000'
+    // const backendUrl = 'http://localhost:3000'
+    const backendUrl = 'chase-runner-backend.vercel.app'
 
   useEffect(() => {
     // This will be called when user is authenticated
