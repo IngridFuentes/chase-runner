@@ -1,10 +1,13 @@
 import React, { createContext, useState, useEffect } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
+  const { user } = useAuth0();
+
   const [profilePic, setProfilePic] = useState(
-    localStorage.getItem("profilePic") || ""
+    localStorage.getItem("profilePic") || user.picture
   );
 
   const [token, setToken] = useState(localStorage.getItem("authToken") || "");
