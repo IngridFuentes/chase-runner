@@ -520,11 +520,7 @@ p:hover {
         margin-right: auto;
     }
 }
-/* @media (max-width: 800px) { /* For smaller screens */
-    /* .searchInput input { */
-        /* width: 70%; Slightly smaller height for compact screens */
-    /* } */
-/* } */ 
+
 @media (max-width: 768px) {
     .leafletContainer {
       width: 90%; 

@@ -5,7 +5,7 @@ import styles from "../styles/Home.module.css";
 
 const Home = () => {
   return (
-    <div>
+    <div className={styles.container}>
       <img
         loading="lazy"
         src="https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/hasini-dibf1m/assets/1bew6og46zuv/chaserunner.jpg"
