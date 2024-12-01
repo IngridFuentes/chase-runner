@@ -88,7 +88,7 @@ const useMapData = () => {
         
           try {
             const token = await getAccessTokenSilently();
-            console.log(token, 'token fetch');
+            // console.log(token, 'token fetch');
             const response = await fetch(`${backendUrl}/user/id/runs`, {
               headers: {
                 Authorization: `Bearer ${token}`,

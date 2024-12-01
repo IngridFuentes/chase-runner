@@ -38,13 +38,17 @@ const verifyJwt = jwt({
   algorithms: ['RS256'],
   audience: 'https://api.chaserunner.com',
   issuer: 'https://dev-mqo01gfd3el6ls61.us.auth0.com/',
-}).unless({path: ['/']});
+}).unless({path: ['/', '/favicon.ico']});
 
 app.use(verifyJwt);
 
 app.use((req, res, next) => {
   console.log(req.auth);
   next();
+});
+
+app.get("/", (req, res) => {
+  res.send("Welcome to the backend!");
 });
 
 app.get("/user/id/runs", async (req, res) => {
