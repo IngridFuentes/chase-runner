@@ -1043,7 +1043,7 @@ const Map = () => {
 
       <div className={styles.mapBackground}>
         <MapContainer
-          center={[37.8, -96]}
+          center={[39.8283, -98.5795]}
           zoom={4}
           // style={{ height: "500px", width: "50%", margin: "3rem auto auto" }}
           className={styles.leafletContainer}

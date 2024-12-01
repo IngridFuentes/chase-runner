@@ -470,7 +470,7 @@ p:hover {
 
     .searchInput {
         position: static;
-        width: 70%;
+        width: 90%;
         margin-left: auto;
         margin-right: auto;
     }
@@ -520,7 +520,7 @@ p:hover {
         margin-right: auto;
     }
 }
-@media (max-width: 600px) { /* For smaller screens */
+@media (max-width: 800px) { /* For smaller screens */
     .searchInput input {
         width: 70%; /* Slightly smaller height for compact screens */
     }
