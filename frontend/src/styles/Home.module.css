@@ -18,10 +18,14 @@
   }
   
   @media (max-width: 768px) {
-    .container {
-        padding: 20px;
+
+    .container{
+        margin-top: 8rem;
+    }
+    button{
+        margin-top: auto;
       }
     .responsive-img {
-      max-width: 90%;
+        max-width: 90%;
     }
   }
