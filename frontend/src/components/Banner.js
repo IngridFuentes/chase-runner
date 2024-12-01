@@ -7,6 +7,8 @@ import Logout from '../views/Logout';
 import { UserContext } from '../context/UserContext';
 
 
+const fallbackImage = '../image/avatar.jpeg';
+
 const Banner = () => {
 
     const [isPopupOpen, setPopupOpen] = useState(false);
@@ -15,6 +17,7 @@ const Banner = () => {
     const handleOpenPopup = () => {
         setPopupOpen(true);
     };
+
     return ( 
         <div className={styles.mainHeader}>
             <div className={styles.projectLogo}></div>
@@ -24,7 +27,7 @@ const Banner = () => {
                 <Dropdown.Toggle variant="success" id="dropdown-basic" style={{borderStyle:'none', backgroundColor:'white', borderRadius:'0', width: 'auto'}}>
                 <div>
                         <img 
-                            src={profilePic} 
+                            src={profilePic || fallbackImage} 
                             alt="Profile" 
                             className={styles.imageProfile} 
                         />
