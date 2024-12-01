@@ -23,9 +23,3 @@
     font-size: 18px;
     margin-top: 0;
 }
-@media (max-width: 768px) {
-  .footer {
-    font-size: 14px;
-    margin-top: 2rem;
-  }
-}
