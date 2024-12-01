@@ -19,8 +19,10 @@ const Home = () => {
         // }}
         alt=""
       />
-      <Login />
-      <Signup />
+      <div className={styles.buttonGroup}>
+        <Login />
+        <Signup />
+      </div>
     </div>
   );
 };

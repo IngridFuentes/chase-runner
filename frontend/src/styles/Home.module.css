@@ -13,7 +13,7 @@
     height: auto;
     object-fit: contain;
   }
-  button{
+  .buttonGroup{
         margin-top: 10px;
   }
   
@@ -22,7 +22,7 @@
     .container{
         margin-top: 8rem;
     }
-    button{
+    .buttonGroup{
         margin-top: auto;
       }
     .responsive-img {
