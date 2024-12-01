@@ -7,7 +7,7 @@ export const UserProvider = ({ children }) => {
   const { user } = useAuth0();
 
   const [profilePic, setProfilePic] = useState(
-    localStorage.getItem("profilePic") || user.picture
+    localStorage.getItem("profilePic") || (user ? user.picture : "")
   );
 
   const [token, setToken] = useState(localStorage.getItem("authToken") || "");
