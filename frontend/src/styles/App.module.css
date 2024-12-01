@@ -21,5 +21,11 @@
 .footer {
     text-align: center;
     font-size: 18px;
-    margin-top: 14rem;
+    margin-top: 0;
+}
+@media (max-width: 768px) {
+  .footer {
+    font-size: 14px;
+    margin-top: 2rem;
+  }
 }
