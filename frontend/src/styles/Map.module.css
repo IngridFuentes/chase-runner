@@ -451,6 +451,17 @@ p:hover {
     background-color: #a8f2b03e;
 }
 
+.mapBackground {
+    width: 100%; /* Ensures the parent div takes full width */
+  }
+  
+.leafletContainer{
+        width: 50%; /* Default width for larger screens */
+        height: 500px; /* Default height */
+        margin: 3rem auto; /* Centers the map */
+        transition: all 0.3s ease; /* Smooth resizing */
+}
+
 /* Responsive styles for smaller screens (e.g., phones) */
 @media (max-width: 768px) {
     .inputBox {
@@ -459,7 +470,7 @@ p:hover {
 
     .searchInput {
         position: static;
-        width: 80%;
+        width: 70%;
         margin-left: auto;
         margin-right: auto;
     }
@@ -511,6 +522,12 @@ p:hover {
 }
 @media (max-width: 600px) { /* For smaller screens */
     .searchInput input {
-        width: 80%; /* Slightly smaller height for compact screens */
+        width: 70%; /* Slightly smaller height for compact screens */
     }
 }
+@media (max-width: 768px) {
+    .leafletContainer {
+      width: 90%; /* Smaller width for devices like iPhone 14 Pro Max */
+      height: 400px; /* Reduced height for smaller screens */
+    }
+  }

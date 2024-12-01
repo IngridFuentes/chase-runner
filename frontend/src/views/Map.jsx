@@ -1045,7 +1045,8 @@ const Map = () => {
         <MapContainer
           center={[37.8, -96]}
           zoom={4}
-          style={{ height: "500px", width: "50%", margin: "3rem auto auto" }}
+          // style={{ height: "500px", width: "50%", margin: "3rem auto auto" }}
+          className={styles.leafletContainer}
         >
           <TileLayer
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
