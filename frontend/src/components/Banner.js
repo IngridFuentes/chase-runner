@@ -5,12 +5,13 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import { Link } from "react-router-dom";
 import Logout from '../views/Logout';
 import { UserContext } from '../context/UserContext';
+import { useAuth0 } from "@auth0/auth0-react";
 
-
-const fallbackImage = '../image/avatar.jpeg';
+// const fallbackImage = '../image/avatar.jpeg';
 
 const Banner = () => {
 
+    const { user, isAuthenticated } = useAuth0();
     const [isPopupOpen, setPopupOpen] = useState(false);
     const { profilePic } = useContext(UserContext);
 
@@ -27,9 +28,9 @@ const Banner = () => {
                 <Dropdown.Toggle variant="success" id="dropdown-basic" style={{borderStyle:'none', backgroundColor:'white', borderRadius:'0', width: 'auto'}}>
                 <div>
                         <img 
-                            src={profilePic || fallbackImage} 
-                            alt="Profile" 
                             className={styles.imageProfile} 
+                            src={profilePic || user.picture} 
+                            alt="Profile" 
                         />
                 </div>
                 </Dropdown.Toggle>
