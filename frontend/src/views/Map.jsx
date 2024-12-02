@@ -70,8 +70,8 @@ const Map = () => {
   useEffect(() => {
     // This will be called when user is authenticated
     if (isAuthenticated) {
-      console.log(isAuthenticated, "authenticated? on map");
-      console.log("User authenticated:", user);
+      // console.log(isAuthenticated, "authenticated? on map");
+      // console.log("User authenticated:", user);
     }
   }, [isAuthenticated, user]);
 
@@ -125,7 +125,7 @@ const Map = () => {
     const selectedOption = marathonTypeOptions.find(
       (option) => option.value === value.value
     );
-    console.log(marathonTypeOptions, "options");
+    // console.log(marathonTypeOptions, "options");
     setSelectedMarathonType((prevSelections) => {
       const updatedSelections = { ...prevSelections };
       updatedSelections[index] = { value: value.value };
@@ -140,7 +140,7 @@ const Map = () => {
 
     // console.log(selectedState.find(state => state === state), 'state');
     const stateName = selectedState.find((state) => state === state);
-    console.log(stateName, "state name");
+    // console.log(stateName, "state name");
 
     setGeoJsonData((prevData) => {
       if (!prevData) return prevData;
@@ -159,7 +159,7 @@ const Map = () => {
   };
 
   const getColor = () => {
-    console.log(selectedRaceType, "race type");
+    // console.log(selectedRaceType, "race type");
     let color;
     switch (selectedRaceType) {
       case "5K":
@@ -652,7 +652,7 @@ const Map = () => {
           ],
         };
 
-        console.log("Updated GeoJSON Data:", updatedGeoJsonData);
+        // console.log("Updated GeoJSON Data:", updatedGeoJsonData);
 
         try {
           let color;
@@ -677,7 +677,7 @@ const Map = () => {
               break;
           }
           const token = await getAccessTokenSilently();
-          console.log("runs route frontend");
+          // console.log("runs route frontend");
           const response = await fetch(
             "https://chase-runner-backend.vercel.app/runs",
             {
@@ -747,11 +747,11 @@ const Map = () => {
             />
           );
         } else {
-          console.error("Invalid geojson data:", place.geojson);
+          // console.error("Invalid geojson data:", place.geojson);
           return null;
         }
       } catch (error) {
-        console.error("Error rendering GeoJSON:", error, place.geojson);
+        // console.error("Error rendering GeoJSON:", error, place.geojson);
         return null;
       }
     });
@@ -759,7 +759,7 @@ const Map = () => {
 
   const handleCityKeyDown = (e) => {
     // Trigger the city selection logic when the Enter key is pressed
-    console.log(e.key);
+    // console.log(e.key);
     if (e.key === "ArrowUp" && selectedCityIndex > 0) {
       setSelectedCity((prevIndex) => prevIndex - 1);
     } else if (e.key === "ArrowDown" && selectedCityIndex < data.length - 1) {
