@@ -17,8 +17,8 @@ function App() {
   useEffect(() => {
     // This will be called when user is authenticated
     if (isAuthenticated) {
-      console.log(isAuthenticated, '????????')
-      console.log("User authenticated on app.js react:", user);
+      // console.log(isAuthenticated, '????????')
+      // console.log("User authenticated on app.js react:", user);
     }
   }, [isAuthenticated, user]);
 

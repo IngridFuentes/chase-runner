@@ -19,7 +19,7 @@ export const UserProvider = ({ children }) => {
   }, [profilePic]);
 
   useEffect(() => {
-    console.log("token?");
+    // console.log("token?");
     if (token) {
       localStorage.setItem("authToken", token);
     } else {

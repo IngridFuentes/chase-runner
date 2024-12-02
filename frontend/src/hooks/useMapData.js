@@ -20,7 +20,7 @@ const useMapData = () => {
   useEffect(() => {
     // This will be called when user is authenticated
     if (isAuthenticated) {
-      console.log("User authenticated:", user);
+      // console.log("User authenticated:", user);
     }
   }, [isAuthenticated, user]);
 
@@ -83,8 +83,8 @@ const useMapData = () => {
 
         //Fetch saved places from the backend
         const fetchSavedPlaces = useCallback(async () => {
-          console.log(isAuthenticated, "fetch places authenticated?");
-          console.log('User authenticated:', user?.sub);
+          // console.log(isAuthenticated, "fetch places authenticated?");
+          // console.log('User authenticated:', user?.sub);
         
           try {
             const token = await getAccessTokenSilently();
@@ -97,9 +97,9 @@ const useMapData = () => {
         
             if (response.ok) {
               const data = await response.json();
-              console.log(data, 'data');
+              // console.log(data, 'data');
               const filteredData = data.filter(item => item.user_id === user.sub);
-              console.log(filteredData, 'data that belongs to user')
+              // console.log(filteredData, 'data that belongs to user')
               setSavedPlaces(filteredData);
             } else {
               console.error('Failed to fetch runs');
