@@ -266,8 +266,8 @@ p:hover {
     /* width: 50%;  */
     left: 50%; /* new */
     transform: translateX(-50%); /* new */
-    width: 90%; /* new */
-    max-width: 600px; /* new */
+    width: 100%; /* new */
+    max-width: 50%; /* new */
 }
 
 .searchInput input {
@@ -570,7 +570,7 @@ p:hover {
       width: 90%; 
       height: 400px;
     }
-    .searchInput {
+    /* .searchInput {
         width: 90%;
         flex-direction: column;
       }
@@ -578,7 +578,7 @@ p:hover {
       .dropdown {
         width: 100%;
         top: 5rem;
-      }
+      } */
     
       .raceTypeSentence {
         margin: 1rem 0;
