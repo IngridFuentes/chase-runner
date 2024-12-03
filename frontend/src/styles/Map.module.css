@@ -300,8 +300,8 @@ p:hover {
     overflow-y: auto;
     z-index: 1000;
     max-height: 380px;
-    position: absolute; /* Keep it positioned relative to the container */
-    top: 4rem;
+    /* position: absolute; */
+    /* top: 4rem; */
   }
 /* .dropdown {
     position: absolute;
@@ -362,11 +362,11 @@ p:hover {
 }
 
 /* Race Type Sentence */
-.raceTypeSentence {
-    margin-left: auto;
-    margin-right: auto;
-    text-align: center; /* Center text on smaller screens */
-  }
+/* .raceTypeSentence { */
+    /* margin-left: auto; */
+    /* margin-right: auto; */
+    /* text-align: center; Center text on smaller screens */
+  /* } */
 
 /* .raceTypeSentence{
     margin-left: 65px;
@@ -391,10 +391,10 @@ p:hover {
   .listCheckbox h3 {
     font-size: small;
     display: inline-block;
-    margin-right: 6px;
+    margin-right: -30rem;
     color: green;
   }
-  
+
 /* .listCheckbox h3 {
     font-size: small;
     display: inline-block;
@@ -579,10 +579,36 @@ p:hover {
         margin-right: auto;
     }
 }
+.leaflet-top .leaflet-control {
+    margin-top: 26rem;
+}
 
 @media (max-width: 768px) {
     .leafletContainer {
       width: 90%; 
       height: 400px;
+    }
+    .searchInput {
+        width: 100%;
+        flex-direction: column;
+      }
+    
+      .dropdown {
+        width: 100%;
+        top: 5rem;
+      }
+    
+      .raceTypeSentence {
+        margin: 1rem 0;
+      }
+    
+      .listCheckbox h3 {
+        margin-right: -18rem;
+      }
+      .leaflet-top .leaflet-control {
+        margin-top: 20rem;
+    }
+    .searchIcon, .closeIcon {
+        top: auto;
     }
   }
