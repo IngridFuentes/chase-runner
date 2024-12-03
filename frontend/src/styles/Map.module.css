@@ -492,9 +492,7 @@ p:hover {
 .card:hover, .secondCard:hover {
     background-color: #a8f2b03e;
 }
-.leafletContainer .leaflet-top .leaflet-control {
-    margin-top: 26rem !important;
-}
+
 /* Responsive styles for smaller screens (e.g., phones) */
 @media (max-width: 768px) {
     .inputBox {
