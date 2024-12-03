@@ -323,7 +323,8 @@ p:hover {
 }
 
 .raceTypeSentence{
-    margin-left: 65px;
+    float: right;
+    margin-right: 1.5rem;
 }
 
 .list {
@@ -332,8 +333,8 @@ p:hover {
 }
 
 .listCheckbox {
-    margin-left: 34rem;
     font-family: sans-serif;
+    margin-top: 5px;
 }
 
 .listCheckbox h3 {
@@ -525,6 +526,6 @@ p:hover {
         height: 50vh;
     }
     .raceTypeSentence{
-        margin-left: 17rem;
+        margin-left: 0;
     }
 }
