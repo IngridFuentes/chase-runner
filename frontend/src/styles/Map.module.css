@@ -286,8 +286,9 @@ p:hover {
 
 .dropdown {
     position: absolute;
-    left: 22.6rem;
+    left: 25%;
     width: 50%;
+    max-width: 90%;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     overflow-y: auto;
@@ -351,7 +352,7 @@ p:hover {
 
 .raceTypeSentence{
     /* margin-left: 65px; */
-    margin-left: -2rem;
+    margin-left: 5rem;
 }
 
 .list {
@@ -360,7 +361,7 @@ p:hover {
 }
 
 .listCheckbox {
-    margin-left: 34rem;
+    /* margin-left: 34rem; */
     font-family: sans-serif;
 }
 
@@ -373,7 +374,7 @@ p:hover {
   .listCheckbox h3 {
     font-size: small;
     display: inline-block;
-    margin-right: -30rem;
+    /* margin-right: -30rem; */
     color: green;
   }
 
@@ -502,7 +503,9 @@ p:hover {
         margin: 3rem auto; /* Centers the map */
         transition: all 0.3s ease; /* Smooth resizing */
 }
-
+.leafletContainer .leaflet-top .leaflet-control {
+    margin-top: 26rem !important;
+}
 /* Responsive styles for smaller screens (e.g., phones) */
 @media (max-width: 768px) {
     .inputBox {
@@ -510,15 +513,17 @@ p:hover {
     }
 
     .searchInput {
-        position: static;
-        width: 90%;
+        position: absolute;
+        max-width: 90%;
         margin-left: auto;
         margin-right: auto;
     }
 
     .dropdown {
-        width: 100%;
         left: 0;
+        right: 0;
+        margin-left: 5%;
+        max-width: 90%;
     }
 
     .cardContainer {
@@ -534,6 +539,7 @@ p:hover {
 
     .searchIcon, .closeIcon {
         right: 20px;
+        top: 7px;
     }
 
     .popup {
@@ -560,39 +566,11 @@ p:hover {
         margin-left: auto;
         margin-right: auto;
     }
-}
-.leafletContainer .leaflet-top .leaflet-control {
-    margin-top: 26rem !important;
-}
-
-@media (max-width: 768px) {
-    .leafletContainer {
-      width: 90%; 
-      height: 400px;
-    }
-    .searchInput {
-        width: 100%;
-        max-width: 50%;
-        flex-direction: column;
-      }
-/*     
-      .dropdown {
-        width: 100%;
-        top: 5rem;
-      } */
-    
-      .raceTypeSentence {
-        margin: 1rem 0;
-      }
-    
-      .listCheckbox h3 {
-        margin-right: 2px;
-      }
-
     .leafletContainer .leaflet-top .leaflet-control {
         margin-top: 20rem !important;
     }
-    .searchIcon, .closeIcon {
-        top: 7px;
-    }
-  }
+    .raceTypeSentence {
+        margin: 1rem 0;
+        margin-left: 19rem;
+      }
+}
