@@ -451,6 +451,17 @@ p:hover {
     background-color: #a8f2b03e;
 }
 
+.mapBackground {
+    width: 100%; /* Ensures the parent div takes full width */
+  }
+
+.leafletContainer{
+        width: 50%; /* Default width for larger screens */
+        height: 500px; /* Default height */
+        margin: 3rem auto; /* Centers the map */
+        transition: all 0.3s ease; /* Smooth resizing */
+}
+
 /* Responsive styles for smaller screens (e.g., phones) */
 @media (max-width: 768px) {
     .inputBox {
