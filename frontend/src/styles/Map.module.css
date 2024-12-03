@@ -383,10 +383,10 @@ p:hover {
 }
 
 /* List Checkbox */
-.listCheckbox {
+/* .listCheckbox {
     margin: 0 auto;
     text-align: center;
-  }
+  } */
 
   .listCheckbox h3 {
     font-size: small;
@@ -579,8 +579,8 @@ p:hover {
         margin-right: auto;
     }
 }
-.leaflet-top .leaflet-control {
-    margin-top: 26rem;
+.leafletContainer .leaflet-top .leaflet-control {
+    margin-top: 26rem !important;
 }
 
 @media (max-width: 768px) {
@@ -605,8 +605,9 @@ p:hover {
       .listCheckbox h3 {
         margin-right: -18rem;
       }
-      .leaflet-top .leaflet-control {
-        margin-top: 20rem;
+
+    .leafletContainer .leaflet-top .leaflet-control {
+        margin-top: 20rem !important;
     }
     .searchIcon, .closeIcon {
         top: auto;
