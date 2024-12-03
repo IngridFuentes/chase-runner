@@ -250,60 +250,36 @@ p:hover {
     background-color: lightgray;
 }
 
-/* .search {
+.search {
     position: relative;
     margin: 0 auto;
     width: 100%;
-} */
+}
 
-/* .searchInput {
+.searchInput {
     display: flex;
     align-items: center;
     justify-content: space-between;
     position: absolute;
     left: 22.6rem;
     width: 50%; 
-} */
+}
 
-/* Search Input Container */
-.searchInput {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 90%; /* Adjust to take full width on smaller screens */
-    max-width: 600px; /* Limit width on larger screens */
-    margin: 0 auto; /* Center horizontally */
-    position: relative; /* Avoid using absolute unless necessary */
-  }
-
-/* .searchInput input {
+.searchInput input {
     width: 100%; 
     height: 30px;
     padding-right: 30px;
-} */
+}
 
 /* Input Styles */
-.searchInput input {
+/* .searchInput input {
     width: 100%;
     height: 30px;
     padding-right: 30px;
     box-sizing: border-box;
-  }
+  } */
 
-  /* Dropdown Menu */
 .dropdown {
-    width: 90%;
-    max-width: 600px;
-    margin: 0 auto; /* Center the dropdown */
-    background-color: white;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    overflow-y: auto;
-    z-index: 1000;
-    max-height: 380px;
-    /* position: absolute; */
-    /* top: 4rem; */
-  }
-/* .dropdown {
     position: absolute;
     left: 22.6rem;
     width: 50%;
@@ -313,7 +289,7 @@ p:hover {
     z-index: 1000;
     height: 380px;
     top: 8.6rem;
-} */
+}
 
 .dropdown div {
     cursor: pointer;
@@ -368,9 +344,10 @@ p:hover {
     /* text-align: center; Center text on smaller screens */
   /* } */
 
-/* .raceTypeSentence{
-    margin-left: 65px;
-} */
+.raceTypeSentence{
+    /* margin-left: 65px; */
+    margin-left: -2rem;
+}
 
 .list {
     width: 100%;
