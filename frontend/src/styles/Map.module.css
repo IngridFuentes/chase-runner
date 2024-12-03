@@ -273,14 +273,14 @@ p:hover {
 
 .dropdown {
     position: absolute;
-    left: 22.6rem;
-    width: 49%;
+    left: 25%;
+    width: 50%;
     background-color: white;
     box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
     overflow-y: auto;
     z-index: 1000;
     height: 380px;
-    top: 24.5%;
+    top: 8.6rem;
 }
 
 .dropdown div {
@@ -476,8 +476,8 @@ p:hover {
     }
 
     .dropdown {
-        width: 100%;
-        left: 0;
+        left: 5%;
+        width: 90%;
     }
 
     .cardContainer {
@@ -523,5 +523,8 @@ p:hover {
         width: auto;
         max-width: 90%;
         height: 50vh;
+    }
+    .raceTypeSentence{
+        margin-left: 17rem;
     }
 }
