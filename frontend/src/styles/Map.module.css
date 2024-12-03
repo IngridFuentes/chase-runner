@@ -254,6 +254,7 @@ p:hover {
     position: relative;
     margin: 0 auto;
     width: 100%;
+    padding: 0 1rem; /* new */
 }
 
 .searchInput {
@@ -261,8 +262,12 @@ p:hover {
     align-items: center;
     justify-content: space-between;
     position: absolute;
-    left: 22.6rem;
-    width: 50%; 
+    /* left: 22.6rem; */
+    /* width: 50%;  */
+    left: 50%; /* new */
+    transform: translateX(-50%); /* new */
+    width: 90%; /* new */
+    max-width: 600px; /* new */
 }
 
 .searchInput input {
@@ -566,7 +571,7 @@ p:hover {
       height: 400px;
     }
     .searchInput {
-        width: 100%;
+        width: 90%;
         flex-direction: column;
       }
     
@@ -587,6 +592,6 @@ p:hover {
         margin-top: 20rem !important;
     }
     .searchIcon, .closeIcon {
-        top: auto;
+        top: 7px;
     }
   }
