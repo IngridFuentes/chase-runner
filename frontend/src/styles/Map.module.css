@@ -570,11 +570,12 @@ p:hover {
       width: 90%; 
       height: 400px;
     }
-    /* .searchInput {
-        width: 90%;
+    .searchInput {
+        width: 100%;
+        max-width: 50%;
         flex-direction: column;
       }
-    
+/*     
       .dropdown {
         width: 100%;
         top: 5rem;
@@ -585,7 +586,7 @@ p:hover {
       }
     
       .listCheckbox h3 {
-        margin-right: -18rem;
+        margin-right: 2px;
       }
 
     .leafletContainer .leaflet-top .leaflet-control {
