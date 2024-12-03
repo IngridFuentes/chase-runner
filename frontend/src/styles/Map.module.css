@@ -555,9 +555,6 @@ p:hover {
         margin-left: auto;
         margin-right: auto;
     }
-    .leafletContainer .leaflet-top .leaflet-control {
-        margin-top: 20rem !important;
-    }
     .raceTypeSentence {
         margin: 1rem 0;
         margin-left: 19rem;
