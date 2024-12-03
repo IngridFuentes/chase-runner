@@ -352,7 +352,7 @@ p:hover {
 
 .raceTypeSentence{
     /* margin-left: 65px; */
-    margin-left: 5rem;
+    margin-left: 39rem;
 }
 
 .list {
@@ -491,17 +491,6 @@ p:hover {
 
 .card:hover, .secondCard:hover {
     background-color: #a8f2b03e;
-}
-
-.mapBackground {
-    width: 100%; /* Ensures the parent div takes full width */
-  }
-  
-.leafletContainer{
-        width: 50%; /* Default width for larger screens */
-        height: 500px; /* Default height */
-        margin: 3rem auto; /* Centers the map */
-        transition: all 0.3s ease; /* Smooth resizing */
 }
 .leafletContainer .leaflet-top .leaflet-control {
     margin-top: 26rem !important;
