@@ -527,4 +527,7 @@ p:hover {
     .raceTypeSentence{
         margin-left: 0;
     }
+    .dropdown .dropdownRow {
+        height: 100px;
+    }
 }
