@@ -391,8 +391,8 @@ const Map = () => {
           const token = await getAccessTokenSilently();
           // console.log("runs route frontend");
           const response = await fetch(
-            // "https://chase-runner-backend.vercel.app/runs",
-            "http://localhost:3000/runs",
+            "https://chase-runner-backend.vercel.app/runs",
+            // "http://localhost:3000/runs",
             {
               method: "POST",
               headers: {
@@ -490,13 +490,16 @@ const Map = () => {
   const handleDeletePlace = async (id) => {
     try {
       const token = await getAccessTokenSilently();
-      const response = await fetch(`http://localhost:3000/runs/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await fetch(
+        `https://chase-runner-backend.vercel.app/runs/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to delete place with id: ${id}`);
