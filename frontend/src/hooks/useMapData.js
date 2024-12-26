@@ -23,8 +23,8 @@ const useMapData = () => {
     const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
     // const backendUrl = process.env.REACT_APP_BACKEND_URL;
     const geoapifyUrl = 'https://api.geoapify.com/v1/geocode/search'
-    const backendUrl = 'http://localhost:3000'
-    // const backendUrl = 'https://chase-runner-backend.vercel.app'
+    // const backendUrl = 'http://localhost:3000'
+    const backendUrl = 'https://chase-runner-backend.vercel.app'
 
   useEffect(() => {
     // This will be called when user is authenticated
@@ -65,24 +65,6 @@ const useMapData = () => {
         }
       }, [cityName, debouncedSearch]); 
 
-    // const extractCityInfo = (cityData) => {
-    //   console.log(cityData, 'city')
-    //   return cityData.map(({ properties }) => {
-    //     const { lat, lon, country, name: cityName } = properties;
-    //     return {
-    //       lat,
-    //       lon,
-    //       country,
-    //       cityName,
-    //     };
-    //   });
-    // };    
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     handleCitySearch(cityName);
-    // };
-
     const handleSuggestionClick = useCallback(async (selectedCity) => {
         setCityName(selectedCity);
         setSelectedCity(selectedCity);
@@ -119,37 +101,6 @@ const useMapData = () => {
           }
         }, [fetchSavedPlaces, isAuthenticated]);
 
-    //   async function saveGeoJsonData(geojson) {
-    //     try {
-    //         const response = await fetch('http://localhost:3000/geojson', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({
-    //                 name: 'My GeoJSON',
-    //                 description: 'Description of the GeoJSON',
-    //                 geojson,
-    //             }),
-    //         });
-    //         const data = await response.json();
-    //         console.log('GeoJSON data saved:', data);
-    //     } catch (error) {
-    //         console.error('Error saving GeoJSON data:', error);
-    //     }
-    // }
-    
-    // Fetch GeoJSON data
-    // async function fetchGeoJsonData() {
-    //     try {
-    //         const response = await fetch('http://localhost:3000/geojson');
-    //         const data = await response.json();
-    //         console.log('GeoJSON data fetched:', data);
-    //         return data;
-    //     } catch (error) {
-    //         console.error('Error fetching GeoJSON data:', error);
-    //     }
-    // }
 
       return{
         cityName,
