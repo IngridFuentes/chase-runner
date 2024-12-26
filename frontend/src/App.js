@@ -26,11 +26,21 @@ function App() {
     return <RunningShoesSpinner />;
   }
 
+  function isRunningLocally() {
+    return window.location.hostname === 'localhost' || 
+           window.location.hostname === '127.0.0.1';
+  }
+  
+  if (isRunningLocally()) {
+    console.log('Running on localhost');
+  } else {
+    console.log('Not running on localhost');
+  }
+
     return (
             <div>
               <div className={styles.mainContainer} >
                   <Routes>
-                      {/* <Route path="/" element={<Home />} /> */}
                       <Route path="/callback" element={<Callback />} />
                       <Route path="/" element={isAuthenticated ? <Navigate to="/map" /> : <Home />} />
                       <Route path="/map" element={isAuthenticated ? <Map /> : <Navigate to="/" />} />
