@@ -26,8 +26,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-// const port = process.env.PORT || 3000;
-const port = "https://chase-runner-backend.vercel.app"
+const port = process.env.PORT || 3000;
+// const port = "https://chase-runner-backend.vercel.app"
 
 const verifyJwt = jwt({
   secret:jwks.expressJwtSecret({
