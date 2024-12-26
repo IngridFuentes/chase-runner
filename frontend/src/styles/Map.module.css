@@ -461,6 +461,13 @@ p:hover {
         margin: 3rem auto; /* Centers the map */
         transition: all 0.3s ease; /* Smooth resizing */
 }
+.confetti{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 10000;
+}
 
 /* Responsive styles for smaller screens (e.g., phones) */
 @media (max-width: 768px) {
@@ -530,4 +537,8 @@ p:hover {
     .dropdown .dropdownRow {
         height: 100px;
     }
+    .react-select__control {
+        width: 90%;
+    }
+
 }

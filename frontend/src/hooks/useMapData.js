@@ -1,11 +1,19 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
+
+const debounce = (func, delay) => {
+  let timeoutId;
+  return (...args) => {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+};
 
 const useMapData = () => {
     const [cityName, setCityName] = useState('');
     const [country, setCountry] = useState('');
     const [cityCoordinates, setCityCoordinates] = useState(null);
-    const [mapCenter, setMapCenter] = useState([39.106667, -94.676392]); // Default map center
+    const [mapCenter, setMapCenter] = useState([39.106667, -94.676392]);
     const [savedPlaces, setSavedPlaces] = useState([]);
     const [showConfetti, setShowConfetti] = useState(false);
     const [suggestions, setSuggestions] = useState([]);
@@ -14,8 +22,9 @@ const useMapData = () => {
 
     const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
     // const backendUrl = process.env.REACT_APP_BACKEND_URL;
-    // const backendUrl = 'http://localhost:3000'
-    const backendUrl = 'https://chase-runner-backend.vercel.app'
+    const geoapifyUrl = 'https://api.geoapify.com/v1/geocode/search'
+    const backendUrl = 'http://localhost:3000'
+    // const backendUrl = 'https://chase-runner-backend.vercel.app'
 
   useEffect(() => {
     // This will be called when user is authenticated
@@ -23,24 +32,14 @@ const useMapData = () => {
       // console.log("User authenticated:", user);
     }
   }, [isAuthenticated, user]);
-
-      const debounce = (func, delay) => {
-        let timeoutId;
-        return function() {
-          const context = this;
-          const args = arguments;
-          clearTimeout(timeoutId);
-          timeoutId = setTimeout(() => func.apply(context, args), delay);
-          console.log(timeoutId, 'time')
-        };
-      };
    
-      const handleCitySearch = async (cityName) => {
+      const handleCitySearch = useCallback(async (cityName) => {
         try{
           const response = await fetch(
-                  `https://api.geoapify.com/v1/geocode/search?text=${cityName}&lang=en&limit=10&type=city&apiKey=63f9e025a41e4c2eb7b9fea7f557a9b5`
+                  `${geoapifyUrl}?text=${cityName}&lang=en&limit=10&type=city&filter=countrycode:us&apiKey=63f9e025a41e4c2eb7b9fea7f557a9b5`
                 );
           const data = await response.json();
+          console.log(data, 'data API')
           setData(data);
           return data;
         } 
@@ -49,46 +48,51 @@ const useMapData = () => {
           throw error;
         }
     
-      }
+      }, []);
+
+      const debouncedSearch = useMemo(
+        () => debounce(async (cityName) => {
+          const newData = await handleCitySearch(cityName);
+          setData(newData);
+        }, 300),
+        [handleCitySearch]
+      );
+    
       useEffect(() => {
-        if(cityName.trim().length >=3) {
-          const debouncedSearch = debounce(handleCitySearch, 1000);
+        if (cityName.trim().length >= 3) {
+          // Call the debounced function to handle the search
           debouncedSearch(cityName);
         }
-      }, [cityName])
+      }, [cityName, debouncedSearch]); 
 
-    const extractCityInfo = (cityData) => {
-      console.log(cityData, 'city')
-      return cityData.map(({ properties }) => {
-        const { lat, lon, country, name: cityName } = properties;
-        return {
-          lat,
-          lon,
-          country,
-          cityName,
-        };
-      });
-    };    
+    // const extractCityInfo = (cityData) => {
+    //   console.log(cityData, 'city')
+    //   return cityData.map(({ properties }) => {
+    //     const { lat, lon, country, name: cityName } = properties;
+    //     return {
+    //       lat,
+    //       lon,
+    //       country,
+    //       cityName,
+    //     };
+    //   });
+    // };    
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        handleCitySearch(cityName);
-    };
+    // const handleSubmit = async (e) => {
+    //     e.preventDefault();
+    //     handleCitySearch(cityName);
+    // };
 
-    const handleSuggestionClick = async (selectedCity) => {
+    const handleSuggestionClick = useCallback(async (selectedCity) => {
         setCityName(selectedCity);
         setSelectedCity(selectedCity);
         setSuggestions([]);
-    }
+    }, []);
 
         //Fetch saved places from the backend
         const fetchSavedPlaces = useCallback(async () => {
-          // console.log(isAuthenticated, "fetch places authenticated?");
-          // console.log('User authenticated:', user?.sub);
-        
           try {
             const token = await getAccessTokenSilently();
-            // console.log(token, 'token fetch');
             const response = await fetch(`${backendUrl}/user/id/runs`, {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -107,7 +111,7 @@ const useMapData = () => {
           } catch (error) {
             console.error('Error fetching runs:', error);
           }
-        }, [getAccessTokenSilently, isAuthenticated, user?.sub]);
+        }, [getAccessTokenSilently, user?.sub]);
         
         useEffect(() => {
           if (isAuthenticated) {
@@ -115,37 +119,37 @@ const useMapData = () => {
           }
         }, [fetchSavedPlaces, isAuthenticated]);
 
-      async function saveGeoJsonData(geojson) {
-        try {
-            const response = await fetch('http://localhost:3000/geojson', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    name: 'My GeoJSON',
-                    description: 'Description of the GeoJSON',
-                    geojson,
-                }),
-            });
-            const data = await response.json();
-            console.log('GeoJSON data saved:', data);
-        } catch (error) {
-            console.error('Error saving GeoJSON data:', error);
-        }
-    }
+    //   async function saveGeoJsonData(geojson) {
+    //     try {
+    //         const response = await fetch('http://localhost:3000/geojson', {
+    //             method: 'POST',
+    //             headers: {
+    //                 'Content-Type': 'application/json',
+    //             },
+    //             body: JSON.stringify({
+    //                 name: 'My GeoJSON',
+    //                 description: 'Description of the GeoJSON',
+    //                 geojson,
+    //             }),
+    //         });
+    //         const data = await response.json();
+    //         console.log('GeoJSON data saved:', data);
+    //     } catch (error) {
+    //         console.error('Error saving GeoJSON data:', error);
+    //     }
+    // }
     
     // Fetch GeoJSON data
-    async function fetchGeoJsonData() {
-        try {
-            const response = await fetch('http://localhost:3000/geojson');
-            const data = await response.json();
-            console.log('GeoJSON data fetched:', data);
-            return data;
-        } catch (error) {
-            console.error('Error fetching GeoJSON data:', error);
-        }
-    }
+    // async function fetchGeoJsonData() {
+    //     try {
+    //         const response = await fetch('http://localhost:3000/geojson');
+    //         const data = await response.json();
+    //         console.log('GeoJSON data fetched:', data);
+    //         return data;
+    //     } catch (error) {
+    //         console.error('Error fetching GeoJSON data:', error);
+    //     }
+    // }
 
       return{
         cityName,
@@ -163,16 +167,9 @@ const useMapData = () => {
         handleCitySearch,
         data,
         setData,
-        handleSubmit,
         suggestions,
         handleSuggestionClick,
-        // handleKeyDown,
-        // selectedCityIndex,
-        // saveCityToBackend
-        // fetchCitiesFromAPI,
         fetchSavedPlaces,
-        saveGeoJsonData,
-        fetchGeoJsonData,
       }
 
 }
