@@ -119,7 +119,7 @@ app.delete('/runs/:id', async (req, res) => {
     const result = await pool.query('DELETE FROM runs WHERE id = $1 RETURNING *', [placeId]);
 
     if (result.rows.length === 0) {
-      return res.status(404).json({ message: 'Place not found' });
+      return res.status(406).json({ message: 'Place not found' });
     }
 
     res.status(200).json({ message: 'Place deleted successfully', deletedPlace: result.rows[0] });
