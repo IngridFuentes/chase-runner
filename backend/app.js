@@ -35,11 +35,11 @@ const verifyJwt = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri:process.env.AUTH0_JWKS_URI,
+    jwksUri:"https://dev-mqo01gfd3el6ls61.us.auth0.com/.well-known/jwks.json"
   }),
   algorithms: ['RS256'],
-  audience:process.env.AUTH0_AUDIENCE,
-  issuer: process.env.AUTH0_ISSUER,
+  audience:"https://api.chaserunner.com",
+  issuer: "https://dev-mqo01gfd3el6ls61.us.auth0.com/",
 }).unless({path: ['/', '/favicon.ico']});
 
 app.use(verifyJwt);
