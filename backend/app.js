@@ -16,9 +16,10 @@ app.use(express.json());
 app.use(express.urlencoded( { extended:true }))
 app.use(express.static("public"))
 
+  // origin: 'http://localhost:3001'
+  
 const corsOptions = {
   origin: 'https://chase-runner.vercel.app',
-  // origin: 'http://localhost:3001',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 
@@ -26,7 +27,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions));
 
-const port = process.env.PORT || 3000; //do not change this in PRODUCTION. Just do NOT change!
+// const port = process.env.PORT || 3000; //do not change this in PRODUCTION. Just do NOT change!
+const port = "https://chase-runner-backend.vercel.app"
 
 const verifyJwt = jwt({
   secret:jwks.expressJwtSecret({
