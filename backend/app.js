@@ -28,18 +28,18 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // const port = process.env.PORT || 3000; //do not change this in PRODUCTION. Just do NOT change!
-const port = "https://chase-runner-backend.vercel.app"
+// const backendUrl = "https://chase-runner-backend.vercel.app"
 
 const verifyJwt = jwt({
   secret:jwks.expressJwtSecret({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri:"https://dev-mqo01gfd3el6ls61.us.auth0.com/.well-known/jwks.json"
+    jwksUri:process.env.AUTH0_JWKS_URI
   }),
   algorithms: ['RS256'],
-  audience:"https://api.chaserunner.com",
-  issuer: "https://dev-mqo01gfd3el6ls61.us.auth0.com/",
+  audience:process.env.AUTH0_AUDIENCE,
+  issuer:process.env.AUTH0_ISSUER,
 }).unless({path: ['/', '/favicon.ico']});
 
 app.use(verifyJwt);
