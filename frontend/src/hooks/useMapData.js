@@ -39,7 +39,7 @@ const useMapData = () => {
                   `${geoapifyUrl}?text=${cityName}&lang=en&limit=10&type=city&filter=countrycode:us&apiKey=63f9e025a41e4c2eb7b9fea7f557a9b5`
                 );
           const data = await response.json();
-          console.log(data, 'data API')
+          // console.log(data, 'data API')
           setData(data);
           return data;
         } 
@@ -75,7 +75,7 @@ const useMapData = () => {
         const fetchSavedPlaces = useCallback(async () => {
           try {
             const token = await getAccessTokenSilently();
-            console.log(token, 'token frontend')
+            // console.log(token, 'token frontend')
             const response = await fetch(`${backendUrl}/user/id/runs`, {
               headers: {
                 Authorization: `Bearer ${token}`,

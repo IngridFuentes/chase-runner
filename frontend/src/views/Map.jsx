@@ -260,7 +260,7 @@ const Map = () => {
   const filterCities = (searchWord, data) => {
     if (data && data.features && data.features.length > 0) {
       const filteredData = data.features.filter((value) => {
-        console.log("Checking value:", value.properties.city);
+        // console.log("Checking value:", value.properties.city);
 
         const city = value.properties.city?.toLowerCase();
         const search = searchWord.toLowerCase();
