@@ -75,6 +75,7 @@ const useMapData = () => {
         const fetchSavedPlaces = useCallback(async () => {
           try {
             const token = await getAccessTokenSilently();
+            console.log(token, 'token frontend')
             const response = await fetch(`${backendUrl}/user/id/runs`, {
               headers: {
                 Authorization: `Bearer ${token}`,

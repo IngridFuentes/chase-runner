@@ -54,7 +54,7 @@ app.get("/", (req, res) => {
 
 app.get("/user/id/runs", async (req, res) => {
   console.log("Protected route reached");
-  // console.log("JWT payload:", req.auth);
+  console.log("JWT payload:", req.auth);
   const userId = req.auth.sub;
   
   if (!userId) {
