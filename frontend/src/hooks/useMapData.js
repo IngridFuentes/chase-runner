@@ -79,7 +79,7 @@ const useMapData = () => {
               headers: {
                 Authorization: `Bearer ${token}`,
               },
-              credentials: 'include',
+              credentials: 'include', // I needed to add this line to work on vercel production
             });
         
             if (response.ok) {
