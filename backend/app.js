@@ -34,7 +34,7 @@ const verifyJwt = jwt({
     cache: true,
     rateLimit: true,
     jwksRequestsPerMinute: 5,
-    jwksUri:"https://dev-mqo01gfd3el6ls61.us.auth0.com/.well-known/jwks.json"
+    jwksUri:process.env.AUTH0_JWKS_URI
   }),
   algorithms: ['RS256'],
   audience: process.env.AUTH0_AUDIENCE,
