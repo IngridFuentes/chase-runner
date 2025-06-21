@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useAuth0 } from '@auth0/auth0-react';
+import config from "../config";
 
 const debounce = (func, delay) => {
   let timeoutId;
@@ -21,10 +22,8 @@ const useMapData = () => {
     const [data, setData] = useState({});
 
     const { isAuthenticated, user, getAccessTokenSilently } = useAuth0();
-    // const backendUrl = process.env.REACT_APP_BACKEND_URL;
-    const geoapifyUrl = 'https://api.geoapify.com/v1/geocode/search'
-    // const backendUrl = 'http://localhost:3000'
-    const backendUrl = 'https://chase-runner-backend.vercel.app'
+    const geoapifyUrl = 'https://api.geoapify.com/v1/geocode/search';
+    const backendUrl = config.apiUrl;
 
   useEffect(() => {
     // This will be called when user is authenticated
@@ -73,28 +72,29 @@ const useMapData = () => {
 
         //Fetch saved places from the backend
         const fetchSavedPlaces = useCallback(async () => {
+          if (!isAuthenticated) {
+            console.log("User not authenticated");
+            return;
+          }
+
           try {
             const token = await getAccessTokenSilently();
             const response = await fetch(`${backendUrl}/user/id/runs`, {
               headers: {
-                Authorization: `Bearer ${token}`,
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json',
               },
-              credentials: 'include', // I needed to add this line to work on vercel production
             });
         
-            if (response.ok) {
-              const data = await response.json();
-              // console.log(data, 'data');
-              const filteredData = data.filter(item => item.user_id === user.sub);
-              // console.log(filteredData, 'data that belongs to user')
-              setSavedPlaces(filteredData);
-            } else {
-              console.error('Failed to fetch runs');
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
             }
+            const data = await response.json();
+            setSavedPlaces(data);
           } catch (error) {
-            console.error('Error fetching runs:', error);
+            console.error("Error fetching saved places:", error);
           }
-        }, [getAccessTokenSilently, user?.sub]);
+        }, [getAccessTokenSilently, isAuthenticated, backendUrl]);
         
         useEffect(() => {
           if (isAuthenticated) {

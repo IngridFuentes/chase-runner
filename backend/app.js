@@ -3,7 +3,7 @@ const cors = require('cors');
 const { expressjwt: jwt } = require('express-jwt');
 const jwks = require('jwks-rsa');
 const axios = require('axios');
-require('dotenv').config();
+const config = require('./config');
 const storeOrUpdateUser = require('./utils/storeOrUpdateUser');
 const storeOrUpdateRun = require('./utils/storeOrUpdateRun');
 const getRunsForUser = require('./utils/getRunsForUser');
@@ -13,39 +13,36 @@ const app = express();
 app.set("views", "views");
 app.set("view engine", "ejs");
 app.use(express.json());
-app.use(express.urlencoded( { extended:true }))
-app.use(express.static("public"))
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
 
-  // origin: 'http://localhost:3001'
-  
 const corsOptions = {
-  origin: 'https://chase-runner.vercel.app',
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
-  credentials: true, 
+    origin: config.corsOrigin,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    credentials: true,
 };
 
 app.use(cors(corsOptions));
 
-// const port = process.env.PORT || 3000; //do not change this in PRODUCTION. Just do NOT change!
-// const backendUrl = "https://chase-runner-backend.vercel.app"
-
+// JWT verification middleware
 const verifyJwt = jwt({
-  secret:jwks.expressJwtSecret({
-    cache: true,
-    rateLimit: true,
-    jwksRequestsPerMinute: 5,
-    jwksUri:process.env.AUTH0_JWKS_URI
-  }),
-  algorithms: ['RS256'],
-  audience:process.env.AUTH0_AUDIENCE,
-  issuer:process.env.AUTH0_ISSUER,
-}).unless({path: ['/', '/favicon.ico']});
+    secret: jwks.expressJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: config.auth0.jwksUri
+    }),
+    algorithms: ['RS256'],
+    audience: config.auth0.audience,
+    issuer: config.auth0.issuer,
+}).unless({ path: ['/', '/favicon.ico'] });
 
 app.use(verifyJwt);
 
+// Log authentication info for debugging
 app.use((req, res, next) => {
-  console.log(req.auth);
+  console.log('Auth info:', req.auth);
   next();
 });
 
@@ -55,17 +52,17 @@ app.get("/", (req, res) => {
 
 app.get("/user/id/runs", async (req, res) => {
   console.log("Protected route reached");
-  // console.log("JWT payload:", req.auth);
-  const userId = req.auth.sub;
   
-  if (!userId) {
-    return res.status(401).send("User not authenticated");
+  if (!req.auth || !req.auth.sub) {
+    return res.status(401).json({ error: "User not authenticated" });
   }
-
+  
+  const userId = req.auth.sub;
+  console.log("Fetching runs for user:", userId);
+  
   const client = await pool.connect();
 
   try {
-
     const userCheckQuery = `SELECT sub FROM users WHERE sub = $1`;
     const userResult = await client.query(userCheckQuery, [userId]);
 
@@ -86,24 +83,40 @@ app.get("/user/id/runs", async (req, res) => {
     res.json(runs);
   } catch (error) {
     console.error("Error fetching runs:", error);
-    res.status(500).send("Error fetching runs");
+    res.status(500).json({ error: "Error fetching runs", details: error.message });
   } finally {
     client.release();
   }
-})
+});
 
 app.post('/runs', async (req, res) => {
-  if (!req.auth.sub || !req.auth.sub) {
-      return res.status(401).send("User not authenticated");
-    }
-  
-  const runData = req.body;
-  console.log("body:", runData);
   try {
+    const runData = req.body;
+    
+    // Validate required fields
+    const requiredFields = ['lat', 'lon', 'name', 'description', 'geojson', 'race_type', 'color'];
+    const missingFields = requiredFields.filter(field => !runData[field]);
+    
+    if (missingFields.length > 0) {
+      return res.status(400).json({ 
+        error: "Missing required fields", 
+        missingFields 
+      });
+    }
+
+    console.log("Saving run data:", runData);
     await storeOrUpdateRun(runData);
-    res.status(201).send('Run added successfully');
+    
+    res.status(201).json({ 
+      message: 'Run added successfully',
+      run: runData
+    });
   } catch (err) {
-    res.status(500).send('Error storing run');
+    console.error('Error storing run:', err);
+    res.status(500).json({ 
+      error: 'Error storing run',
+      details: err.message 
+    });
   }
 });
 
@@ -130,20 +143,23 @@ app.delete('/runs/:id', async (req, res) => {
   }
 });
 
-app.use((req,res, next)=> {
-  const error = new Error("Not found");
-  error.status = 404;
-  next(error);
+// Error handling middleware
+app.use((req, res, next) => {
+    const error = new Error("Not found");
+    error.status = 404;
+    next(error);
 });
 
 app.use((error, req, res, next) => {
-  const status = error.status || 500;
-  const message = error.message || "Internal server error";
-  res.status(status).send(message);
-})
+    const status = error.status || 500;
+    const message = error.message || "Internal server error";
+    res.status(status).send(message);
+});
 
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(config.port, () => {
+        console.log(`Server is running on port ${config.port}`);
+    });
+}
 
-// app.listen(3000, () => {
-//     console.log("Express is running in port 3000")
-// });
 module.exports = app;

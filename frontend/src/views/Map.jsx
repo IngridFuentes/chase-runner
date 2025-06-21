@@ -16,6 +16,7 @@ import CloseIcon from "@mui/icons-material/Close";
 import Banner from "../components/Banner.js";
 import { useAuth0 } from "@auth0/auth0-react";
 import RunningShoesSpinner from "./RunningShoesSpinner.jsx";
+import config from "../config";
 
 const Map = () => {
   const {
@@ -238,6 +239,15 @@ const Map = () => {
       setIsDropdownVisible(false);
       return;
     }
+
+    // Trigger search immediately
+    handleCitySearch(searchWord).then(data => {
+      if (data && data.features) {
+        filterCities(searchWord, data);
+      }
+    }).catch(error => {
+      console.error("Error during search:", error);
+    });
   };
 
   useEffect(() => {
@@ -261,20 +271,16 @@ const Map = () => {
     if (data && data.features && data.features.length > 0) {
       const filteredData = data.features.filter((value) => {
         const city = value.properties.city?.toLowerCase();
+        const state = value.properties.state?.toLowerCase();
         const search = searchWord.toLowerCase();
-        const cityMatch = city && city.includes(search);
-        const stateMatch = value.properties.state
-          ?.toLowerCase()
-          .includes(searchWord.toLowerCase());
-        if (city && cityMatch === false) {
-          return "";
-        } else {
-          return cityMatch;
-        }
+        
+        return (city && city.includes(search)) || (state && state.includes(search));
       });
+      
       setFilteredData(filteredData);
-      setIsDropdownVisible(true);
+      setIsDropdownVisible(filteredData.length > 0);
     } else {
+      setFilteredData([]);
       setIsDropdownVisible(false);
     }
   };
@@ -318,6 +324,11 @@ const Map = () => {
   };
 
   const handleCitySelection = async (selectedCity, selectedRunType) => {
+    if (!isAuthenticated) {
+      alert("Please log in to add runs");
+      return;
+    }
+
     if (
       selectedCity &&
       selectedCity.properties &&
@@ -329,9 +340,6 @@ const Map = () => {
       const description = `Event ${selectedRaceType}`;
 
       const userId = user.sub;
-
-      // console.log(userId, "user id");
-
       if (!userId) {
         console.error("User not authenticated");
         return;
@@ -342,13 +350,11 @@ const Map = () => {
       setStatesCount((prevCount) => prevCount + 1);
       localStorage.setItem("statesCount", statesCount + 1);
 
-      // Filter geoJsonData to only include the selected state
       const selectedStateData = geoJsonData.features.find(
         (feature) => feature.properties.name === state
       );
 
       if (selectedStateData) {
-        // Create a new GeoJSON object that only includes the selected state's data
         const updatedGeoJsonData = {
           type: "FeatureCollection",
           features: [
@@ -361,8 +367,6 @@ const Map = () => {
             },
           ],
         };
-
-        // console.log("Updated GeoJSON Data:", updatedGeoJsonData);
 
         try {
           let color;
@@ -386,11 +390,10 @@ const Map = () => {
               color = "#ffffff";
               break;
           }
+
           const token = await getAccessTokenSilently();
-          // console.log("runs route frontend");
           const response = await fetch(
-            "https://chase-runner-backend.vercel.app/runs",
-            // "http://localhost:3000/runs",
+            `${config.apiUrl}/runs`,
             {
               method: "POST",
               headers: {
@@ -414,12 +417,12 @@ const Map = () => {
           );
 
           if (!response.ok) {
-            throw new Error(
-              `${response.status} ${
-                response.statusText
-              }: ${await response.text()}`
-            );
+            const errorText = await response.text();
+            throw new Error(`Failed to save run: ${response.status} ${response.statusText} - ${errorText}`);
           }
+
+          const result = await response.json();
+          console.log('Run saved successfully:', result);
 
           setSelectedRaceType(selectedRaceType);
           setShowPopup(true);
@@ -434,7 +437,8 @@ const Map = () => {
             setShowConfetti(false);
           }, 5000);
         } catch (error) {
-          console.error("Error saving data to backend:", error);
+          console.error("Error saving run:", error);
+          alert(`Failed to save run: ${error.message}`);
         }
       } else {
         console.error("Selected state data not found");
@@ -486,10 +490,15 @@ const Map = () => {
   };
 
   const handleDeletePlace = async (id) => {
+    if (!isAuthenticated) {
+      alert("Please log in to delete runs");
+      return;
+    }
+
     try {
       const token = await getAccessTokenSilently();
       const response = await fetch(
-        `https://chase-runner-backend.vercel.app/runs/${id}`,
+        `${config.apiUrl}/runs/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -508,6 +517,7 @@ const Map = () => {
       console.log(`Place with id ${id} deleted successfully.`);
     } catch (error) {
       console.error("Error during deletion:", error);
+      alert(`Failed to delete run: ${error.message}`);
     }
   };
 
@@ -519,6 +529,7 @@ const Map = () => {
     <div>
       <Banner />
       <br />
+      <div className={styles.searchContainer}>
       <div className={styles.search}>
         <div className={styles.searchInput}>
           <input
@@ -583,17 +594,25 @@ const Map = () => {
                     onChange={(value) => handleMarathonType(index, value)}
                     onClick={(value) => handleMarathonType(index, value)}
                     placeholder="Select..."
+                    menuPortalTarget={typeof window !== "undefined" ? document.body : null}
+                    menuPosition="absolute"
+                    menuPlacement="auto"
                     styles={{
                       control: (provided) => ({
                         ...provided,
                         width: "117px",
+                        zIndex: 1,
+                      }),
+                      menuPortal: (base) => ({
+                        ...base,
+                        zIndex: 9999, 
                       }),
                       option: (provided, state) => ({
                         ...provided,
                         backgroundColor: state.isFocused ? "#f0f0f0" : "white",
                         color: state.isFocused ? "#000" : "#333",
                         cursor: "pointer",
-                        zIndex: 1000,
+                        // zIndex: 1000,
                       }),
                     }}
                   />
@@ -602,7 +621,7 @@ const Map = () => {
             ))}
           </div>
         )}
-
+      </div>
       {showPopup && (
         <div className={styles.popup}>
           <div className={styles.popupContent}>
@@ -618,13 +637,15 @@ const Map = () => {
       {showConfetti && (
         <div className={styles.confetti}>
           <ConfettiExplosion
-            force={0.8}
-            duration={5000}
-            particleCount={500}
+            force={0.9}
+            duration={3000}
+            particleCount={250}
             width={2000}
-            angle={180}
-            gravity={0}
+            height={2000}
+            angle={360}
+            gravity={0.2}
             zIndex={10000}
+            colors={['#7CB342', '#DCEDC8', '#F1F8E9', '#558B2F', '#FFFFFF']}
           />
         </div>
       )}

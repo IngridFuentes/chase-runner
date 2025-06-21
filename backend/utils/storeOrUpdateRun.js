@@ -22,22 +22,36 @@ const storeOrUpdateRun = async (runData) => {
    // Start a transaction to ensure data consistency
    await client.query('BEGIN');
 
-   // Check if user exists in the users table by 'sub' (the Auth0 'user_id')
-   const userResult = await client.query('SELECT * FROM users WHERE sub = $1', [user_id]);
+   let userIdInDb;
+   if (user_id) {
+     // Check if user exists in the users table by 'sub' (the Auth0 'user_id')
+     const userResult = await client.query('SELECT * FROM users WHERE sub = $1', [user_id]);
 
-    let userIdInDb;
-    if (userResult.rows.length > 0) {
-      // User exists, get the ID from the users table
-      userIdInDb = userResult.rows[0].sub;
-    } else {
-      // User does not exist, create a new user in the users table
-      const insertUserResult = await client.query(
-        'INSERT INTO users (sub) VALUES ($1) RETURNING sub',
-        [user_id]
-      );
-      userIdInDb = insertUserResult.rows[0].sub;
-
-    }
+     if (userResult.rows.length > 0) {
+       // User exists, get the ID from the users table
+       userIdInDb = userResult.rows[0].sub;
+     } else {
+       // User does not exist, create a new user in the users table
+       const insertUserResult = await client.query(
+         'INSERT INTO users (sub) VALUES ($1) RETURNING sub',
+         [user_id]
+       );
+       userIdInDb = insertUserResult.rows[0].sub;
+     }
+   } else {
+     // For testing without authentication, use a default test user
+     const testUserResult = await client.query('SELECT * FROM users WHERE sub = $1', ['test_user']);
+     
+     if (testUserResult.rows.length === 0) {
+       const insertTestUserResult = await client.query(
+         'INSERT INTO users (sub) VALUES ($1) RETURNING sub',
+         ['test_user']
+       );
+       userIdInDb = insertTestUserResult.rows[0].sub;
+     } else {
+       userIdInDb = testUserResult.rows[0].sub;
+     }
+   }
 
       // Insert a new record into the runs table
       const insertRunQuery = `
@@ -59,6 +73,7 @@ const storeOrUpdateRun = async (runData) => {
       console.log('Run data inserted:', result.rows[0]);
        // Commit the transaction
     await client.query('COMMIT');
+    return result.rows[0];
 
     } catch (err) {
       // Rollback the transaction in case of an error

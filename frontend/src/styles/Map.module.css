@@ -231,7 +231,7 @@ p:hover {
 }  */
 
 
-/* Base styles for larger screens (e.g., MacBook Pro 13") */
+/* Base styles for larger screens */
 .input {
     margin-bottom: 1rem;
     text-align: center;
@@ -252,95 +252,343 @@ p:hover {
 
 .search {
     position: relative;
+    width: 90%;
+    max-width: 1000px;
     margin: 0 auto;
-    width: 100%;
+    z-index: 1000;
 }
 
 .searchInput {
+    position: relative;
+    width: 100%;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    position: absolute;
-    left: 25%;
-    width: 50%; 
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 2px solid var(--light-green);
 }
 
-.searchInput input {
-    width: 100%; 
-    height: 30px;
-    padding-right: 30px;
+.searchInput:hover {
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+    border-color: var(--primary-green);
+}
+
+.inputField {
+    width: 100%;
+    padding: 1rem 3rem 1rem 1.5rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: var(--dark-green);
+    background: transparent;
+    transition: all 0.3s ease;
+}
+
+.inputField:focus {
+    outline: none;
+}
+
+.searchIcon {
+    position: absolute;
+    right: 1rem;
+    color: var(--dark-green);
+    cursor: pointer;
+    transition: color 0.3s ease;
+    top: 0.5rem;
+}
+
+.searchIcon:hover {
+    color: var(--primary-green);
 }
 
 .dropdown {
     position: absolute;
-    left: 25%;
-    width: 50%;
-    background-color: white;
-    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
-    overflow-y: auto;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     z-index: 1000;
-    height: 380px;
-    top: 8.6rem;
+    border: 2px solid var(--light-green);
+    max-height: 300px;
+    overflow-y: auto;
 }
 
-.dropdown div {
-    cursor: pointer;
+.dropdownRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem;
+    border-bottom: 1px solid var(--light-green);
     transition: background-color 0.3s ease;
 }
 
-.dropdown div:hover {
-    background-color: #f0f0f0;
+.dropdownRow:last-child {
+    border-bottom: none;
 }
 
-.dropdown::-webkit-scrollbar {
-    display: none;
-}
-
-.dropdown .dropdownRow {
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    padding: 0 10px;
-    color: black;
-}
-
-.dropdownRow p {
-    margin-left: 10px;
-}
-
-p:hover {
-    background-color: rgb(233, 233, 233);
-    margin: 0;
-}
-
-.searchIcon, .closeIcon {
-    position: absolute;
-    right: 10px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-}
-
-.raceTypeSentence{
-    float: right;
-    margin-right: 1.5rem;
+.dropdownRow:hover {
+    background-color: var(--lighter-green);
 }
 
 .list {
+    flex: 1;
+    padding-right: 1rem;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--dark-green);
+}
+
+.marathonTypeDropdown {
+    min-width: 120px;
+    /* z-index: 1000; */
+}
+
+/* Custom styles for react-select */
+.marathonTypeDropdown :global(.select__control) {
+    border: 2px solid var(--light-green);
+    border-radius: 8px;
+    min-height: 38px;
+    box-shadow: none;
+    transition: all 0.3s ease;
+}
+
+.marathonTypeDropdown :global(.select__control:hover) {
+    border-color: var(--primary-green);
+}
+
+.marathonTypeDropdown :global(.select__menu) {
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    border: 2px solid var(--light-green);
+}
+
+.marathonTypeDropdown :global(.select__option) {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    color: var(--dark-green);
+}
+
+.marathonTypeDropdown :global(.select__option--is-focused) {
+    background-color: var(--lighter-green);
+}
+
+.marathonTypeDropdown :global(.select__option--is-selected) {
+    background-color: var(--primary-green);
+    color: var(--white);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+    .search, .dropdown {
+        width: 95%;
+    }
+
+    .dropdownRow {
+        padding: 0.75rem;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .list {
+        padding-right: 0;
+        width: 100%;
+    }
+
+    .marathonTypeDropdown {
+        width: 100%;
+    }
+
+    .marathonTypeDropdown :global(.select__control) {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .search, .dropdown {
+        width: 98%;
+    }
+
+    .inputField {
+        font-size: 0.9rem;
+        padding: 0.75rem 2.5rem 0.75rem 1rem;
+    }
+
+    .dropdownRow {
+        padding: 0.5rem;
+    }
+
+    .list {
+        font-size: 0.9rem;
+    }
+}
+
+/* Scrollbar styles */
+.dropdown::-webkit-scrollbar {
+    width: 8px;
+}
+
+.dropdown::-webkit-scrollbar-track {
+    background: var(--lighter-green);
+    border-radius: 4px;
+}
+
+.dropdown::-webkit-scrollbar-thumb {
+    background: var(--primary-green);
+    border-radius: 4px;
+}
+
+.dropdown::-webkit-scrollbar-thumb:hover {
+    background: var(--dark-green);
+}
+
+.mapBackground {
     width: 100%;
-    margin: 8px;
+    padding: 3rem 0;
+    position: relative;
+    background: #f5f7f2;
+    overflow: hidden;
 }
 
-.listCheckbox {
-    font-family: sans-serif;
-    margin-top: 5px;
+.mapBackground::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: 
+        radial-gradient(circle at 70% 30%, rgba(124, 179, 66, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 30% 70%, rgba(124, 179, 66, 0.05) 0%, transparent 50%);
+    animation: rotateGradient 25s linear infinite reverse;
 }
 
-.listCheckbox h3 {
-    font-size: small;
-    display: inline-block;
-    color: green;
+.mapBackground::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        repeating-linear-gradient(
+            -45deg,
+            transparent,
+            transparent 10px,
+            rgba(124, 179, 66, 0.03) 10px,
+            rgba(124, 179, 66, 0.03) 20px
+        );
+    animation: slidePattern 35s linear infinite reverse;
+}
+
+@keyframes waveFloat {
+    0%, 100% { 
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 0.3;
+    }
+    25% {
+        transform: translateY(-10px) scale(1.02) rotate(2deg);
+        opacity: 0.4;
+    }
+    50% {
+        transform: translateY(0) scale(1) rotate(0deg);
+        opacity: 0.3;
+    }
+    75% {
+        transform: translateY(10px) scale(0.98) rotate(-2deg);
+        opacity: 0.4;
+    }
+}
+
+.leafletContainer {
+    width: 90%;
+    max-width: 1000px;
+    height: 500px;
+    margin: 0 auto;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    position: relative;
+    z-index: 1;
+    border: 2px solid var(--primary-green);
+}
+
+.leafletContainer:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(124, 179, 66, 0.2);
+}
+
+.cardContainer {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+    padding: 2rem;
+    margin-top: 2rem;
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 2rem auto;
+}
+
+.card, .secondCard {
+    padding: 2rem;
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 2px solid var(--light-green);
+    position: relative;
+    overflow: hidden;
+}
+
+.card::after, .secondCard::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent 0%,
+        rgba(124, 179, 66, 0.1) 50%,
+        transparent 100%
+    );
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.card:hover, .secondCard:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(124, 179, 66, 0.2);
+    border-color: var(--primary-green);
+}
+
+.cardSentence {
+    color: var(--dark-green);
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.marathonCount {
+    font-size: 3.5rem;
+    color: var(--primary-green);
+    font-weight: 800;
+    text-align: center;
+    text-shadow: 0 2px 4px rgba(124, 179, 66, 0.1);
 }
 
 .popup {
@@ -348,197 +596,96 @@ p:hover {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    background-color: #ffffff;
-    padding: 20px;
-    border: 2px solid #1bb75a;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
     z-index: 9999;
-    width: 30rem;
-    height: 10rem;
+    width: 90%;
+    max-width: 400px;
+    height: auto;
+    min-height: 200px;
+    animation: popupSlide 0.3s ease;
+    border: 2px solid var(--primary-green);
+}
+
+@keyframes popupSlide {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -40%);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+    }
 }
 
 .popupContent {
     text-align: center;
-    margin-top: 2rem;
+    color: var(--dark-green);
+}
+
+.popupContent h2 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--primary-green);
 }
 
 .close {
     position: absolute;
-    top: 5px;
-    right: 10px;
+    top: 1rem;
+    right: 1rem;
     cursor: pointer;
-    font-size: 20px;
-    color: #1bb75a;
-}
-
-.close:hover {
-    color: #ff0000;
-}
-
-.welcomeName {
-    margin-left: 3rem;
-    font-size: larger;
-    font-family: sans-serif;
-    color: rgb(14, 142, 14);
-}
-
-.buttonContainer {
-    display: grid;
-    place-items: center;
-}
-
-.buttonAddRun {
-    border: none;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(40, 173, 57, 0.7);
-    width: 6rem;
-    height: 2rem;
+    font-size: 1.5rem;
+    color: var(--primary-green);
+    transition: var(--transition);
+    width: 32px;
+    height: 32px;
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: white;
-    color: #28af39;
-    cursor: pointer;
-    font-weight: bold;
+    border-radius: 50%;
+    background: var(--light-green);
 }
 
-.buttonAddRun:hover {
-    background-color: #a8f2b03e;
+.close:hover {
+    background: var(--primary-green);
+    color: var(--white);
+    transform: rotate(90deg);
 }
 
-.cardContainer {
+/* Base styles */
+:root {
+    --primary-green: #7CB342;
+    --light-green: #DCEDC8;
+    --lighter-green: #F1F8E9;
+    --dark-green: #558B2F;
+    --white: #FFFFFF;
+    --shadow: 0 4px 6px rgba(124, 179, 66, 0.1);
+    --transition: all 0.3s ease;
+}
+.searchContainer{
+    position: relative;
+    width: 100%;
+    max-width: 50%;
+    margin: 0 auto;
+}
+.search,
+.dropdown{
+    width: 100%;
+    height: 500%;
+}
+
+.listCheckbox {
     display: flex;
-    justify-content: space-between; 
-    padding: 0 1rem; 
-    gap: 1rem;
-}
-
-.card, .secondCard {
-    flex: 1; 
-    padding: 20px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    background-color: #fff;
-    margin-top: 1rem;
-    height: 15rem;
-}
-
-.card {
-    margin-left: 1rem;
-}
-
-.secondCard {
-    margin-right: 1rem;
-}
-
-.cardSentence {
-    color: #05bb17; 
-    font-size: 2rem;
-    font-weight: bold; 
-    margin: 0 0 1rem;
-}
-
-.marathonCount {
-    font-size: 48px;
-    color: #268610;
-    font-weight: bold;
-    margin-top: 10px;
-    text-align: center;
-}
-
-.card:hover, .secondCard:hover {
-    background-color: #a8f2b03e;
-}
-
-.mapBackground {
-    width: 100%; /* Ensures the parent div takes full width */
+    justify-content: flex-end;
+    padding: 0.5rem 2.5rem;
   }
-
-.leafletContainer{
-        width: 50%; /* Default width for larger screens */
-        height: 500px; /* Default height */
-        margin: 3rem auto; /* Centers the map */
-        transition: all 0.3s ease; /* Smooth resizing */
-}
-.confetti{
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 10000;
-}
-
-/* Responsive styles for smaller screens (e.g., phones) */
-@media (max-width: 768px) {
-    .inputBox {
-        width: 90%;
-    }
-
-    .searchInput {
-        position: static;
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .dropdown {
-        left: 5%;
-        width: 90%;
-    }
-
-    .cardContainer {
-        flex-direction: column; 
-        gap: 1rem; 
-        margin-top: 20px;
-    }
-
-    .card, .secondCard {
-        margin: 0;
-        width: 100%;
-    }
-
-    .searchIcon, .closeIcon {
-        right: 20px;
-    }
-
-    .popup {
-        width: 90%;
-        height: auto;
-    }
-
-    .buttonAddRun {
-        width: 100%;
-        height: auto; 
-        font-size: 1rem;
-    }
-
-    .welcomeName {
-        margin-left: 0;
-        text-align: center;
-    }
-
-    .listCheckbox {
-        margin-left: 0;
-    }
-    .buttonContainer{
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .leafletContainer{
-        width: auto;
-        max-width: 90%;
-        height: 50vh;
-    }
-    .raceTypeSentence{
-        margin-left: 0;
-    }
-    .dropdown .dropdownRow {
-        height: 100px;
-    }
-    .react-select__control {
-        width: 90%;
-    }
-
+  
+.raceTypeSentence{
+    margin: 0;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-color);
 }

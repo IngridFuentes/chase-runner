@@ -1,0 +1,20 @@
+-- Create users table
+CREATE TABLE IF NOT EXISTS users (
+    id SERIAL PRIMARY KEY,
+    sub VARCHAR(255) UNIQUE NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create runs table
+CREATE TABLE IF NOT EXISTS runs (
+    id SERIAL PRIMARY KEY,
+    user_id VARCHAR(255) REFERENCES users(sub),
+    lat DECIMAL(10, 8) NOT NULL,
+    lon DECIMAL(11, 8) NOT NULL,
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    geojson JSONB NOT NULL,
+    race_type VARCHAR(50) NOT NULL,
+    color VARCHAR(50) NOT NULL,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+); 

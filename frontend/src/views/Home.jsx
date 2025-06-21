@@ -6,12 +6,10 @@ import styles from "../styles/Home.module.css";
 const Home = () => {
   return (
     <div className={styles.container}>
-      <img
-        loading="lazy"
-        src="https://storage.googleapis.com/flutterflow-io-6f20.appspot.com/projects/hasini-dibf1m/assets/1bew6og46zuv/chaserunner.jpg"
-        className={styles.responsiveImg}
-        alt=""
-      />
+      <img src="/runnerLogo.jpg" alt="Chase Runner Logo" className={styles.logo} />
+      <h1 className={styles.welcomeText}>Welcome to Chase Runner</h1>
+      <p className={styles.subtitle}>Track your runs across the USA</p>
+     
       <div className={styles.buttonGroup}>
         <Login />
         <Signup />
