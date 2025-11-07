@@ -47,6 +47,7 @@ const Map = () => {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isAIOpen, setIsAIOpen] = useState(false);
 
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
@@ -569,165 +570,187 @@ const Map = () => {
   }
 
   return (
-    <div>
-      <Banner />
-      <br />
-      <div className={styles.search}>
-        <div className={styles.searchInput}>
-          <input
-            ref={inputRef}
-            type="text"
-            className={styles.inputField}
-            placeholder="Search by City"
-            value={cityName}
-            onChange={handleChange}
-            onKeyDown={handleCityKeyDown}
-          />
-          <div className={styles.searchIcon}>
-            {cityName === "" ? (
-              <SearchIcon className={styles.searchIcon} />
-            ) : (
-              <CloseIcon
-                onClick={() => {
-                  setCityName("");
-                  setFilteredData([]);
-                  setIsDropdownVisible(false);
-                }}
-                className={styles.closeIcon}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {data.features !== undefined &&
-        isDropdownVisible &&
-        filteredData.length > 0 && (
-          <div className={styles.dropdown}>
-            <div className={styles.listCheckbox}>
-              {/* <h3>Done </h3>
-                      <h3>Target</h3> */}
-              <h3 className={styles.raceTypeSentence}>Race Type</h3>
-            </div>
-            {filteredData.map((d, index) => (
-              <div
-                key={index}
-                className={styles.dropdownRow}
-                // style={{ backgroundColor: `${selectedMarathonType[index]?.color} !important`  }}
-                // onClick={() => handleCitySelection(d)}
-                // onKeyDown={(e) => handleCityKeyDown(e, d)}
-              >
-                <div
+    <div className={styles.appContainer}>
+      {/* Main Content Area */}
+      <div
+        className={`${styles.mainContent} ${isAIOpen ? styles.splitView : ""}`}
+      >
+        <Banner />
+        <br />
+        <div className={styles.search}>
+          <div className={styles.searchInput}>
+            <input
+              ref={inputRef}
+              type="text"
+              className={styles.inputField}
+              placeholder="Search by City"
+              value={cityName}
+              onChange={handleChange}
+              onKeyDown={handleCityKeyDown}
+            />
+            <div className={styles.searchIcon}>
+              {cityName === "" ? (
+                <SearchIcon className={styles.searchIcon} />
+              ) : (
+                <CloseIcon
                   onClick={() => {
-                    handleCitySelection(d);
-
+                    setCityName("");
+                    setFilteredData([]);
                     setIsDropdownVisible(false);
                   }}
-                  className={styles.list}
-                >
-                  {d.properties.city}, {d.properties.state}
-                </div>
+                  className={styles.closeIcon}
+                />
+              )}
+            </div>
+          </div>
+        </div>
 
-                <div className={styles.marathonTypeDropdown}>
-                  <Select
-                    options={marathonTypeOptions}
-                    isSearchable={false}
-                    value={selectedMarathonType[index]}
-                    onChange={(value) => handleMarathonType(index, value)}
-                    onClick={(value) => handleMarathonType(index, value)}
-                    placeholder="Select..."
-                    styles={{
-                      control: (provided) => ({
-                        ...provided,
-                        width: "117px",
-                      }),
-                      option: (provided, state) => ({
-                        ...provided,
-                        backgroundColor: state.isFocused ? "#f0f0f0" : "white",
-                        color: state.isFocused ? "#000" : "#333",
-                        cursor: "pointer",
-                        zIndex: 1000,
-                      }),
-                    }}
-                  />
-                </div>
+        {data.features !== undefined &&
+          isDropdownVisible &&
+          filteredData.length > 0 && (
+            <div className={styles.dropdown}>
+              <div className={styles.listCheckbox}>
+                <h3 className={styles.raceTypeSentence}>Race Type</h3>
               </div>
-            ))}
+              {filteredData.map((d, index) => (
+                <div key={index} className={styles.dropdownRow}>
+                  <div
+                    onClick={() => {
+                      handleCitySelection(d);
+                      setIsDropdownVisible(false);
+                    }}
+                    className={styles.list}
+                  >
+                    {d.properties.city}, {d.properties.state}
+                  </div>
+
+                  <div className={styles.marathonTypeDropdown}>
+                    <Select
+                      options={marathonTypeOptions}
+                      isSearchable={false}
+                      value={selectedMarathonType[index]}
+                      onChange={(value) => handleMarathonType(index, value)}
+                      onClick={(value) => handleMarathonType(index, value)}
+                      placeholder="Select..."
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: "117px",
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          backgroundColor: state.isFocused
+                            ? "#f0f0f0"
+                            : "white",
+                          color: state.isFocused ? "#000" : "#333",
+                          cursor: "pointer",
+                          zIndex: 1000,
+                        }),
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+        {showPopup && (
+          <div className={styles.popup}>
+            <div className={styles.popupContent}>
+              <span className={styles.close} onClick={handleClosePopup}>
+                &times;
+              </span>
+              <h2>Congratulations!</h2>
+              <p>You have completed a race.</p>
+            </div>
           </div>
         )}
 
-      {showPopup && (
-        <div className={styles.popup}>
-          <div className={styles.popupContent}>
-            <span className={styles.close} onClick={handleClosePopup}>
-              &times;
-            </span>
-            <h2>Congratulations!</h2>
-            <p>You have completed a race.</p>
+        {showConfetti && (
+          <div className={styles.confetti}>
+            <ConfettiExplosion
+              force={0.8}
+              duration={5000}
+              particleCount={500}
+              width={2000}
+              angle={180}
+              gravity={0}
+              zIndex={10000}
+            />
+          </div>
+        )}
+
+        <div className={styles.mapBackground}>
+          <MapContainer
+            center={[39.8283, -98.5795]}
+            zoom={4}
+            className={styles.leafletContainer}
+            zoomControl={false}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            {savedPlaces.map((place) => (
+              <GeoJSON
+                key={place.id}
+                data={place.geojson}
+                style={{ color: place.color }}
+              >
+                <Popup>
+                  {place.name}: {place.description}
+                  <button
+                    onClick={() => handleDeletePlace(place.id)}
+                    style={{ marginLeft: "10px", color: "red", border: "none" }}
+                  >
+                    Delete
+                  </button>
+                </Popup>
+              </GeoJSON>
+            ))}
+          </MapContainer>
+        </div>
+
+        <div className={styles.cardContainer}>
+          <div className={styles.card}>
+            <h2 className={styles.cardSentence}>Runs So Far</h2>
+            <div className={styles.marathonCount}>{savedPlaces.length}</div>
+          </div>
+          <div className={styles.secondCard}>
+            <h2 className={styles.cardSentence}>Number of States</h2>
+            <div className={styles.marathonCount}>{savedPlaces.length}</div>
+          </div>
+        </div>
+
+        {/* AI Assistant Toggle Button - Fixed position */}
+        {!isAIOpen && (
+          <button
+            className={styles.aiToggleButton}
+            onClick={() => setIsAIOpen(true)}
+          >
+            🤖 AI Assistant
+          </button>
+        )}
+      </div>
+
+      {/* AI Assistant Panel */}
+      {isAIOpen && (
+        <div className={styles.aiPanel}>
+          <div className={styles.aiPanelHeader}>
+            <h3>AI Running Coach</h3>
+            <button
+              className={styles.closeAIButton}
+              onClick={() => setIsAIOpen(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <div className={styles.aiPanelContent}>
+            <AIAssistant userRunData={userRunData} />
           </div>
         </div>
       )}
-
-      {showConfetti && (
-        <div className={styles.confetti}>
-          <ConfettiExplosion
-            force={0.8}
-            duration={5000}
-            particleCount={500}
-            width={2000}
-            angle={180}
-            gravity={0}
-            zIndex={10000}
-          />
-        </div>
-      )}
-
-      <div className={styles.mapBackground}>
-        <MapContainer
-          center={[39.8283, -98.5795]}
-          zoom={4}
-          // style={{ height: "500px", width: "50%", margin: "3rem auto auto" }}
-          className={styles.leafletContainer}
-          zoomControl={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-          {savedPlaces.map((place) => (
-            <GeoJSON
-              key={place.id}
-              data={place.geojson}
-              style={{ color: place.color }}
-            >
-              <Popup>
-                {place.name}: {place.description}
-                <button
-                  onClick={() => handleDeletePlace(place.id)}
-                  style={{ marginLeft: "10px", color: "red", border: "none" }}
-                >
-                  Delete
-                </button>
-              </Popup>
-            </GeoJSON>
-          ))}
-        </MapContainer>
-      </div>
-      <div className={styles.cardContainer}>
-        <div className={styles.card}>
-          <h2 className={styles.cardSentence}>Runs So Far</h2>
-          <div className={styles.marathonCount}>{savedPlaces.length}</div>
-        </div>
-        <div className={styles.secondCard}>
-          <h2 className={styles.cardSentence}>Number of States</h2>
-          <div className={styles.marathonCount}>{savedPlaces.length}</div>
-        </div>
-      </div>
-      {/* Right side - AI Assistant */}
-      <div className={pageStyles.rightPanel}>
-        <AIAssistant userRunData={userRunData} />
-      </div>
     </div>
   );
 };
