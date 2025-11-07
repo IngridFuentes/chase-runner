@@ -8,6 +8,7 @@ const storeOrUpdateUser = require('./utils/storeOrUpdateUser');
 const storeOrUpdateRun = require('./utils/storeOrUpdateRun');
 const getRunsForUser = require('./utils/getRunsForUser');
 const pool = require('./db');
+const aiRoutes = require('./routes/ai.js');
 
 const app = express();
 app.set("views", "views");
@@ -19,7 +20,7 @@ app.use(express.static("public"))
   // origin: 'http://localhost:3001'
   
 const corsOptions = {
-  origin: 'https://chase-runner.vercel.app',
+  origin: 'http://localhost:3001',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 
@@ -29,6 +30,31 @@ app.use(cors(corsOptions));
 
 // const port = process.env.PORT || 3000; //do not change this in PRODUCTION. Just do NOT change!
 // const backendUrl = "https://chase-runner-backend.vercel.app"
+
+
+app.use((req, res, next) => {
+  console.log('\n=== BACKEND INCOMING REQUEST ===');
+  console.log('Method:', req.method);
+  console.log('Path:', req.path);
+  console.log('Headers:', {
+    authorization: req.headers.authorization ? 'Present ✓' : 'Missing ✗',
+    'content-type': req.headers['content-type']
+  });
+  
+  if (req.headers.authorization) {
+    console.log('Auth header value:', req.headers.authorization.substring(0, 50) + '...');
+  }
+  
+  next();
+});
+
+
+// Debug logging (must be BEFORE jwt)
+app.use((req, res, next) => {
+  console.log('=== BACKEND REQUEST ===', req.method, req.path);
+  console.log('Auth header:', req.headers.authorization);
+  next();
+});
 
 const verifyJwt = jwt({
   secret:jwks.expressJwtSecret({
@@ -40,6 +66,14 @@ const verifyJwt = jwt({
   algorithms: ['RS256'],
   audience:process.env.AUTH0_AUDIENCE,
   issuer:process.env.AUTH0_ISSUER,
+
+  getToken: (req) => {
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+      return req.headers.authorization.split(' ')[1];
+    }
+    return null;
+  }
+
 }).unless({path: ['/', '/favicon.ico']});
 
 app.use(verifyJwt);
@@ -48,6 +82,8 @@ app.use((req, res, next) => {
   console.log(req.auth);
   next();
 });
+
+app.use('/api/ai', aiRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the backend!");
@@ -143,7 +179,13 @@ app.use((error, req, res, next) => {
 })
 
 
-// app.listen(3000, () => {
-//     console.log("Express is running in port 3000")
-// });
+app.use((req, res) => {
+  console.log("name is ....")
+  console.log('404 handler reached:', req.path);
+  res.status(404).json({ error: 'Not found' });
+});
+
+app.listen(3000, () => {
+    console.log("Express is running in port 3000")
+});
 module.exports = app;

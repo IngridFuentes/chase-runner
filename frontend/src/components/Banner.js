@@ -21,8 +21,10 @@ const Banner = () => {
 
     return ( 
         <div className={styles.mainHeader}>
+            <div className={styles.logoContainer}>
             <div className={styles.projectLogo}></div>
             <div className={styles.headerImage}></div>
+            </div>
             <div className={styles.spacer}></div>
             <Dropdown>
                 <Dropdown.Toggle variant="success" id="dropdown-basic" style={{borderStyle:'none', backgroundColor:'white', borderRadius:'0', width: 'auto'}}>

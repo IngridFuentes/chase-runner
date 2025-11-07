@@ -9,23 +9,29 @@
     color: rgb(63 65 181);
   }
   
+  .logoContainer {
+    display: flex;
+    align-items: center;
+    gap: 1rem; /* Space between the two images */
+    justify-content: center; /* Centers both images horizontally */
+  }
+  
   .headerImage {
-    background-image: url('../image/logoImage.png');
-    background-size: 4rem;
+    background-image: url('../image/cr.png');
+    background-size: cover; /* Changed from 4rem for better fit */
+    background-position: center;
+    background-repeat: no-repeat;
     width: 65px;
     height: 30px;
-    /* margin-top: -30px; */
-    margin: auto;
   }
     
   .projectLogo {
-    background-image: url('../image/runnerLogo.jpg');
-    background-size: 4rem;
+    background-image: url('../image/runner.jpg');
+    background-size: cover; /* Changed from 4rem for better fit */
+    background-position: center;
+    background-repeat: no-repeat;
     width: 60px;
     height: 40px;
-    /* margin-top: -30px; */
-    margin: auto;
-    margin-left: 1rem;
   }
   
   .spacer {

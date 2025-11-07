@@ -340,7 +340,7 @@ p:hover {
 .listCheckbox h3 {
     font-size: small;
     display: inline-block;
-    color: green;
+    color: #2894f2;
 }
 
 .popup {
@@ -350,7 +350,7 @@ p:hover {
     transform: translate(-50%, -50%);
     background-color: #ffffff;
     padding: 20px;
-    border: 2px solid #1bb75a;
+    border: 2px solid #2894f2;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     z-index: 9999;
     width: 30rem;
@@ -368,7 +368,7 @@ p:hover {
     right: 10px;
     cursor: pointer;
     font-size: 20px;
-    color: #1bb75a;
+    color: #2894f2;
 }
 
 .close:hover {
@@ -433,7 +433,7 @@ p:hover {
 }
 
 .cardSentence {
-    color: #05bb17; 
+    color: #0a33ed; 
     font-size: 2rem;
     font-weight: bold; 
     margin: 0 0 1rem;
@@ -441,14 +441,14 @@ p:hover {
 
 .marathonCount {
     font-size: 48px;
-    color: #268610;
+    color: #0a33ed;
     font-weight: bold;
     margin-top: 10px;
     text-align: center;
 }
 
 .card:hover, .secondCard:hover {
-    background-color: #a8f2b03e;
+    background-color: #63bdf43e;
 }
 
 .mapBackground {

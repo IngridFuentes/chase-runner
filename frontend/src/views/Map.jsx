@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Select from "react-select";
 import { MapContainer, TileLayer, GeoJSON, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
@@ -16,6 +16,8 @@ import CloseIcon from "@mui/icons-material/Close";
 import Banner from "../components/Banner.js";
 import { useAuth0 } from "@auth0/auth0-react";
 import RunningShoesSpinner from "./RunningShoesSpinner.jsx";
+import AIAssistant from "./AIAssistant";
+import pageStyles from "../styles/CoachPage.module.css";
 
 const Map = () => {
   const {
@@ -52,9 +54,60 @@ const Map = () => {
     // This will be called when user is authenticated
     if (isAuthenticated) {
       // console.log(isAuthenticated, "authenticated? on map");
-      // console.log("User authenticated:", user);
+      console.log("User authenticated:", user);
     }
   }, [isAuthenticated, user]);
+
+  // Add this inside your Map component, after your state declarations
+  const userRunData = useMemo(() => {
+    if (!savedPlaces || savedPlaces.length === 0) {
+      return {
+        totalRuns: 0,
+        totalStates: 0,
+        userName: user?.name || "Runner",
+        message: "No runs recorded yet",
+      };
+    }
+
+    // Get unique states
+    const uniqueStates = [...new Set(savedPlaces.map((place) => place.name))];
+
+    // Calculate race type breakdown
+    const raceTypeBreakdown = savedPlaces.reduce((acc, place) => {
+      const type = place.race_type || "Unknown";
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Get most recent run
+    const mostRecentRun = savedPlaces[savedPlaces.length - 1];
+
+    // Calculate total distance (if you have distance data)
+    // const totalDistance = savedPlaces.reduce((sum, place) => sum + (place.distance || 0), 0);
+
+    return {
+      userName: user?.name || "Runner",
+      userEmail: user?.email,
+      totalRuns: savedPlaces.length,
+      totalStates: uniqueStates.length,
+      statesVisited: uniqueStates,
+      raceTypeBreakdown: raceTypeBreakdown,
+      mostRecentRun: mostRecentRun
+        ? {
+            state: mostRecentRun.name,
+            raceType: mostRecentRun.race_type,
+            description: mostRecentRun.description,
+          }
+        : null,
+      allRuns: savedPlaces.map((place) => ({
+        id: place.id,
+        state: place.name,
+        raceType: place.race_type,
+        description: place.description,
+        color: place.color,
+      })),
+    };
+  }, [savedPlaces, user]); // Recalculate when savedPlaces or user changes
 
   const marathonTypeOptions = [
     { value: "5K", label: "5K" },
@@ -389,8 +442,8 @@ const Map = () => {
           const token = await getAccessTokenSilently();
           // console.log("runs route frontend");
           const response = await fetch(
-            "https://chase-runner-backend.vercel.app/runs",
-            // "http://localhost:3000/runs",
+            // "https://chase-runner-backend.vercel.app/runs",
+            "http://localhost:3000/runs",
             {
               method: "POST",
               headers: {
@@ -670,6 +723,10 @@ const Map = () => {
           <h2 className={styles.cardSentence}>Number of States</h2>
           <div className={styles.marathonCount}>{savedPlaces.length}</div>
         </div>
+      </div>
+      {/* Right side - AI Assistant */}
+      <div className={pageStyles.rightPanel}>
+        <AIAssistant userRunData={userRunData} />
       </div>
     </div>
   );
