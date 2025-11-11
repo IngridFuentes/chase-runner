@@ -130,16 +130,25 @@ app.get("/user/id/runs", async (req, res) => {
 
 app.post('/runs', async (req, res) => {
   if (!req.auth.sub || !req.auth.sub) {
-      return res.status(401).send("User not authenticated");
+      return res.status(401).json({ error: "User not authenticated" }); //sending JSON instead of text!
     }
   
   const runData = req.body;
   console.log("body:", runData);
   try {
-    await storeOrUpdateRun(runData);
-    res.status(201).send('Run added successfully');
+    const result = await storeOrUpdateRun(runData);
+    
+    //Return JSON instead of plain text!
+    res.status(201).json({ 
+      message: 'Run added successfully',
+      data: result 
+    });
   } catch (err) {
-    res.status(500).send('Error storing run');
+    console.error('Error storing run:', err);
+    res.status(500).json({ 
+      error: 'Error storing run',
+      details: err.message 
+    });
   }
 });
 
@@ -179,11 +188,11 @@ app.use((error, req, res, next) => {
 })
 
 
-app.use((req, res) => {
-  console.log("name is ....")
-  console.log('404 handler reached:', req.path);
-  res.status(404).json({ error: 'Not found' });
-});
+// app.use((req, res) => {
+//   console.log("name is ....")
+//   console.log('404 handler reached:', req.path);
+//   res.status(404).json({ error: 'Not found' });
+// });
 
 app.listen(3000, () => {
     console.log("Express is running in port 3000")

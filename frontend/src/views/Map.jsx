@@ -18,6 +18,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import RunningShoesSpinner from "./RunningShoesSpinner.jsx";
 import AIAssistant from "./AIAssistant";
 import pageStyles from "../styles/CoachPage.module.css";
+import StateDetailsPanel from "./StateDetailsPanel";
 
 const Map = () => {
   const {
@@ -48,6 +49,8 @@ const Map = () => {
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(true);
   const [isAIOpen, setIsAIOpen] = useState(false);
+  const [selectedStateData, setSelectedStateData] = useState(null);
+  const [isStatePanelOpen, setIsStatePanelOpen] = useState(false);
 
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
@@ -294,6 +297,19 @@ const Map = () => {
     }
   };
 
+  const handleStateClick = (stateName) => {
+    // Filter runs for the clicked state
+    const stateRuns = savedPlaces.filter((place) => place.name === stateName);
+
+    if (stateRuns.length > 0) {
+      setSelectedStateData({
+        name: stateName,
+        runs: stateRuns,
+      });
+      setIsStatePanelOpen(true);
+    }
+  };
+
   useEffect(() => {
     const handler = setTimeout(async () => {
       if (cityName.trim() !== "") {
@@ -401,7 +417,7 @@ const Map = () => {
         (feature) => feature.properties.name === state
       );
 
-      if (selectedStateData) {
+      if (selectedStateData && city) {
         // Create a new GeoJSON object that only includes the selected state's data
         const updatedGeoJsonData = {
           type: "FeatureCollection",
@@ -411,13 +427,13 @@ const Map = () => {
               properties: {
                 ...selectedStateData.properties,
                 selectedRaceType: selectedRaceType,
+                city: city,
               },
             },
           ],
         };
 
         // console.log("Updated GeoJSON Data:", updatedGeoJsonData);
-
         try {
           let color;
           switch (selectedRaceType) {
@@ -442,6 +458,26 @@ const Map = () => {
           }
           const token = await getAccessTokenSilently();
           // console.log("runs route frontend");
+
+          const requestBody = {
+            lat: selectedCity.geometry.coordinates[1],
+            lon: selectedCity.geometry.coordinates[0],
+            name: selectedStateData.properties.name,
+            description: description,
+            geojson: {
+              type: selectedStateData.geometry.type,
+              coordinates: selectedStateData.geometry.coordinates,
+            },
+            race_type: selectedRaceType,
+            color: color,
+            city: city,
+            user_id: userId,
+          };
+
+          // ADD THIS: Check the request body before sending
+          // console.log("📤 Sending to backend:", requestBody);
+          // console.log("📤 City in request:", requestBody.city);
+
           const response = await fetch(
             // "https://chase-runner-backend.vercel.app/runs",
             "http://localhost:3000/runs",
@@ -451,19 +487,7 @@ const Map = () => {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                lat: selectedCity.geometry.coordinates[1],
-                lon: selectedCity.geometry.coordinates[0],
-                name: selectedStateData.properties.name,
-                description: description,
-                geojson: {
-                  type: selectedStateData.geometry.type,
-                  coordinates: selectedStateData.geometry.coordinates,
-                },
-                race_type: selectedRaceType,
-                color: color,
-                user_id: userId,
-              }),
+              body: JSON.stringify(requestBody),
             }
           );
 
@@ -474,6 +498,10 @@ const Map = () => {
               }: ${await response.text()}`
             );
           }
+
+          // ADD THIS: Check the response
+          const responseData = await response.json();
+          // console.log("Backend response:", responseData);
 
           setSelectedRaceType(selectedRaceType);
           setShowPopup(true);
@@ -491,6 +519,9 @@ const Map = () => {
           console.error("Error saving data to backend:", error);
         }
       } else {
+        // ADD THIS: Debug why we're not entering the if block
+        console.error("❌ selectedStateData:", selectedStateData);
+        console.error("❌ city value:", city);
         console.error("Selected state data not found");
       }
     } else {
@@ -697,6 +728,9 @@ const Map = () => {
                 key={place.id}
                 data={place.geojson}
                 style={{ color: place.color }}
+                eventHandlers={{
+                  click: () => handleStateClick(place.name),
+                }}
               >
                 <Popup>
                   {place.name}: {place.description}
@@ -751,6 +785,12 @@ const Map = () => {
           </div>
         </div>
       )}
+
+      <StateDetailsPanel
+        isOpen={isStatePanelOpen}
+        onClose={() => setIsStatePanelOpen(false)}
+        stateData={selectedStateData}
+      />
     </div>
   );
 };

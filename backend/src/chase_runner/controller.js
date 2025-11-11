@@ -18,13 +18,13 @@ const addMarker = (req, res) => {
 }
 
 const geojson_data = async (req, res) => {
-  const { lat, lon, name, geojson, race_type, color, description, user_id } = req.body;
+  const { lat, lon, name, geojson, race_type, color, description, city, user_id } = req.body;
 
   try {
 
       const result = await pool.query(
         queries.geojson_data,
-        [lat, lon, name, description, geojson, race_type, color, user_id]
+        [lat, lon, name, description, geojson, race_type, color, city, user_id]
       );
       res.status(201).json({
         message: 'Data inserted successfully!',
