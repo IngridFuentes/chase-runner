@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import Select from "react-select";
-import { MapContainer, TileLayer, GeoJSON, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import red from "../image/pin.png";
@@ -54,15 +54,17 @@ const Map = () => {
 
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
+  const totalRuns = savedPlaces.length;
+  const uniqueStates = useMemo(() => {
+    return [...new Set(savedPlaces.map((place) => place.name))];
+  }, [savedPlaces]);
+  const totalStates = uniqueStates.length;
+
   useEffect(() => {
-    // This will be called when user is authenticated
     if (isAuthenticated) {
-      // console.log(isAuthenticated, "authenticated? on map");
-      console.log("User authenticated:", user);
     }
   }, [isAuthenticated, user]);
 
-  // Add this inside your Map component, after your state declarations
   const userRunData = useMemo(() => {
     if (!savedPlaces || savedPlaces.length === 0) {
       return {
@@ -85,9 +87,6 @@ const Map = () => {
 
     // Get most recent run
     const mostRecentRun = savedPlaces[savedPlaces.length - 1];
-
-    // Calculate total distance (if you have distance data)
-    // const totalDistance = savedPlaces.reduce((sum, place) => sum + (place.distance || 0), 0);
 
     return {
       userName: user?.name || "Runner",
@@ -260,32 +259,6 @@ const Map = () => {
     };
   };
 
-  useEffect(() => {
-    localStorage.setItem("marathonsDone", 0);
-    localStorage.setItem("statesCount", 0);
-    const savedGeoJsonData = localStorage.getItem("geoJsonData");
-    if (savedGeoJsonData) {
-      setGeoJsonData(JSON.parse(savedGeoJsonData));
-    } else {
-      // Initialize with empty data or default value if nothing is found
-      setGeoJsonData([]);
-    }
-
-    const storedMarathonsDone = localStorage.getItem("marathonsDone");
-    if (storedMarathonsDone) {
-      setMarathonsDone(parseInt(storedMarathonsDone, 10));
-    } else {
-      setMarathonsDone(0);
-    }
-
-    const statesCount = localStorage.getItem("statesCount");
-    if (statesCount) {
-      setStatesCount(parseInt(statesCount, 10));
-    } else {
-      setStatesCount(0);
-    }
-  }, []);
-
   const handleChange = (e) => {
     const searchWord = e.target.value;
     setCityName(searchWord);
@@ -400,8 +373,6 @@ const Map = () => {
 
       const userId = user.sub;
 
-      // console.log(userId, "user id");
-
       if (!userId) {
         console.error("User not authenticated");
         return;
@@ -474,10 +445,6 @@ const Map = () => {
             user_id: userId,
           };
 
-          // ADD THIS: Check the request body before sending
-          // console.log("📤 Sending to backend:", requestBody);
-          // console.log("📤 City in request:", requestBody.city);
-
           const response = await fetch(
             // "https://chase-runner-backend.vercel.app/runs",
             "http://localhost:3000/runs",
@@ -498,10 +465,7 @@ const Map = () => {
               }: ${await response.text()}`
             );
           }
-
-          // ADD THIS: Check the response
           const responseData = await response.json();
-          // console.log("Backend response:", responseData);
 
           setSelectedRaceType(selectedRaceType);
           setShowPopup(true);
@@ -574,7 +538,8 @@ const Map = () => {
     try {
       const token = await getAccessTokenSilently();
       const response = await fetch(
-        `https://chase-runner-backend.vercel.app/runs/${id}`,
+        // `https://chase-runner-backend.vercel.app/runs/${id}`,
+        `http://localhost:3000/${id}`,
         {
           method: "DELETE",
           headers: {
@@ -590,7 +555,6 @@ const Map = () => {
 
       const updatedPlaces = savedPlaces.filter((place) => place.id !== id);
       setSavedPlaces(updatedPlaces);
-      console.log(`Place with id ${id} deleted successfully.`);
     } catch (error) {
       console.error("Error during deletion:", error);
     }
@@ -599,6 +563,27 @@ const Map = () => {
   if (loading) {
     return <RunningShoesSpinner />;
   }
+
+  const MapResizer = ({ isAIOpen }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      // Wait for CSS transition to complete, then recalculate map size
+      const timer = setTimeout(() => {
+        map.invalidateSize(); // Tells Leaflet to recalculate the map size
+
+        // Recenter the map to maintain view
+        if (window.innerWidth > 768) {
+          // Only on desktop
+          map.setView([39.8283, -98.5795], map.getZoom());
+        }
+      }, 350);
+
+      return () => clearTimeout(timer);
+    }, [isAIOpen, map]);
+
+    return null;
+  };
 
   return (
     <div className={styles.appContainer}>
@@ -723,6 +708,8 @@ const Map = () => {
               url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
 
+            <MapResizer isAIOpen={isAIOpen} />
+
             {savedPlaces.map((place) => (
               <GeoJSON
                 key={place.id}
@@ -736,7 +723,11 @@ const Map = () => {
                   {place.name}: {place.description}
                   <button
                     onClick={() => handleDeletePlace(place.id)}
-                    style={{ marginLeft: "10px", color: "red", border: "none" }}
+                    style={{
+                      marginLeft: "10px",
+                      color: "red",
+                      border: "none",
+                    }}
                   >
                     Delete
                   </button>
@@ -749,15 +740,14 @@ const Map = () => {
         <div className={styles.cardContainer}>
           <div className={styles.card}>
             <h2 className={styles.cardSentence}>Runs So Far</h2>
-            <div className={styles.marathonCount}>{savedPlaces.length}</div>
+            <div className={styles.marathonCount}>{totalRuns}</div>
           </div>
           <div className={styles.secondCard}>
             <h2 className={styles.cardSentence}>Number of States</h2>
-            <div className={styles.marathonCount}>{savedPlaces.length}</div>
+            <div className={styles.marathonCount}>{totalStates}</div>
           </div>
         </div>
 
-        {/* AI Assistant Toggle Button - Fixed position */}
         {!isAIOpen && (
           <button
             className={styles.aiToggleButton}
@@ -768,7 +758,6 @@ const Map = () => {
         )}
       </div>
 
-      {/* AI Assistant Panel */}
       {isAIOpen && (
         <div className={styles.aiPanel}>
           <div className={styles.aiPanelHeader}>

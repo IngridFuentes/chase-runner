@@ -452,14 +452,25 @@ p:hover {
 }
 
 .mapBackground {
-    width: 100%; /* Ensures the parent div takes full width */
+    width: 100%;
+    padding: 20px;
+    margin-top: 2rem;
   }
 
 .leafletContainer{
-        width: 50%; /* Default width for larger screens */
-        height: 500px; /* Default height */
-        margin: 3rem auto; /* Centers the map */
-        transition: all 0.3s ease; /* Smooth resizing */
+        /* width: 50%; Default width for larger screens */
+        /* height: 500px; Default height */
+        /* margin: 3rem auto; Centers the map */
+        /* transition: all 0.3s ease; Smooth resizing */
+        height: 70vh !important; /* 70% of viewport height - makes it bigger */
+        min-height: 500px !important; /* Minimum height for small screens */
+        max-height: 800px !important; /* Maximum height for very large screens */
+        width: 100% !important;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        z-index: 1;
+        transition: all 0.3s ease;
 }
 .confetti{
     position: absolute;
@@ -471,77 +482,29 @@ p:hover {
 
 /* Responsive styles for smaller screens (e.g., phones) */
 @media (max-width: 768px) {
-    .inputBox {
-        width: 90%;
+    .mapBackground {
+      padding: 15px;
     }
+    
+    .leafletContainer {
+      height: 60vh !important;
+      min-height: 400px !important;
+      border-radius: 8px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .mapBackground {
+      padding: 10px;
+    }
+    
+    .leafletContainer {
+      height: 50vh !important;
+      min-height: 350px !important;
+      border-radius: 8px;
+    }
+  }
 
-    .searchInput {
-        position: static;
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-
-    .dropdown {
-        left: 5%;
-        width: 90%;
-    }
-
-    .cardContainer {
-        flex-direction: column; 
-        gap: 1rem; 
-        margin-top: 20px;
-    }
-
-    .card, .secondCard {
-        margin: 0;
-        width: 100%;
-    }
-
-    .searchIcon, .closeIcon {
-        right: 20px;
-    }
-
-    .popup {
-        width: 90%;
-        height: auto;
-    }
-
-    .buttonAddRun {
-        width: 100%;
-        height: auto; 
-        font-size: 1rem;
-    }
-
-    .welcomeName {
-        margin-left: 0;
-        text-align: center;
-    }
-
-    .listCheckbox {
-        margin-left: 0;
-    }
-    .buttonContainer{
-        width: 90%;
-        margin-left: auto;
-        margin-right: auto;
-    }
-    .leafletContainer{
-        width: auto;
-        max-width: 90%;
-        height: 50vh;
-    }
-    .raceTypeSentence{
-        margin-left: 0;
-    }
-    .dropdown .dropdownRow {
-        height: 100px;
-    }
-    .react-select__control {
-        width: 90%;
-    }
-
-}
 .appContainer {
     display: flex;
     width: 100%;

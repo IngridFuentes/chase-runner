@@ -9,6 +9,8 @@ const storeOrUpdateRun = require('./utils/storeOrUpdateRun');
 const getRunsForUser = require('./utils/getRunsForUser');
 const pool = require('./db');
 const aiRoutes = require('./routes/ai.js');
+const userRoutes = require('./src/chase_runner/routes.js');
+
 
 const app = express();
 app.set("views", "views");
@@ -84,6 +86,7 @@ app.use((req, res, next) => {
 });
 
 app.use('/api/ai', aiRoutes);
+app.use('/', userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the backend!");
@@ -135,8 +138,15 @@ app.post('/runs', async (req, res) => {
   
   const runData = req.body;
   console.log("body:", runData);
+  const userId = req.auth.sub;
+
   try {
-    const result = await storeOrUpdateRun(runData);
+    const completeRunData = {
+      ...runData,
+      user_id: userId
+    };
+    
+    const result = await storeOrUpdateRun(completeRunData);
     
     //Return JSON instead of plain text!
     res.status(201).json({ 
