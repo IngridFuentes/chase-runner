@@ -3,6 +3,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 export const UserContext = createContext();
 
+const API_URL = process.env.REACT_APP_API_URL;
+
 export const UserProvider = ({ children }) => {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
     useAuth0();
@@ -24,9 +26,7 @@ export const UserProvider = ({ children }) => {
 
           const authToken = await getAccessTokenSilently();
 
-          const url = `http://localhost:3000/users/${encodeURIComponent(
-            user.sub
-          )}`;
+          const url = `${API_URL}/users/${encodeURIComponent(user.sub)}`;
 
           const response = await fetch(url, {
             headers: {

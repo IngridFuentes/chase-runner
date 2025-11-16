@@ -446,8 +446,7 @@ const Map = () => {
           };
 
           const response = await fetch(
-            // "https://chase-runner-backend.vercel.app/runs",
-            "http://localhost:3000/runs",
+            "https://chase-runner-backend.vercel.app/runs",
             {
               method: "POST",
               headers: {
@@ -538,8 +537,7 @@ const Map = () => {
     try {
       const token = await getAccessTokenSilently();
       const response = await fetch(
-        // `https://chase-runner-backend.vercel.app/runs/${id}`,
-        `http://localhost:3000/${id}`,
+        `https://chase-runner-backend.vercel.app/runs/${id}`,
         {
           method: "DELETE",
           headers: {

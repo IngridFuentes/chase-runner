@@ -30,6 +30,8 @@ const Profile = () => {
   const [saveError, setSaveError] = useState(null);
   const [loadingUserData, setLoadingUserData] = useState(true);
 
+  const API_URL = process.env.REACT_APP_API_URL;
+
   // Fetch user data from database when component mounts
   useEffect(() => {
     const fetchUserData = async () => {
@@ -39,7 +41,7 @@ const Profile = () => {
         try {
           const token = await getAccessTokenSilently();
           const response = await fetch(
-            `http://localhost:3000/users/${encodeURIComponent(user.sub)}`,
+            `${API_URL}/users/${encodeURIComponent(user.sub)}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -105,9 +107,7 @@ const Profile = () => {
       try {
         const token = await getAccessTokenSilently();
         const response = await fetch(
-          `http://localhost:3000/users/${encodeURIComponent(
-            user.sub
-          )}/profile-picture`,
+          `${API_URL}/users/${encodeURIComponent(user.sub)}/profile-picture`,
           {
             method: "PUT",
             headers: {
@@ -153,7 +153,7 @@ const Profile = () => {
     try {
       const token = await getAccessTokenSilently();
       const response = await fetch(
-        `http://localhost:3000/users/${encodeURIComponent(user.sub)}`,
+        `${API_URL}/users/${encodeURIComponent(user.sub)}`,
         {
           method: "PUT",
           headers: {
@@ -189,7 +189,7 @@ const Profile = () => {
     try {
       const token = await getAccessTokenSilently();
       const response = await fetch(
-        `http://localhost:3000/users/${encodeURIComponent(user.sub)}`,
+        `${API_URL}/users/${encodeURIComponent(user.sub)}`,
         {
           method: "PUT",
           headers: {

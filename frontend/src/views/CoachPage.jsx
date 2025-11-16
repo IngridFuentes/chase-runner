@@ -2,7 +2,6 @@ import React from "react";
 import AIAssistant from "../components/AIAssistant";
 
 const CoachPage = () => {
-  // You can pass user's running data here
   const userRunData = {
     totalRuns: 15,
     totalDistance: 45.2,

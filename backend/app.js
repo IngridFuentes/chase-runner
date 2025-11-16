@@ -22,7 +22,7 @@ app.use(express.static("public"))
   // origin: 'http://localhost:3001'
   
 const corsOptions = {
-  origin: 'http://localhost:3001',
+  origin: 'https://chase-runner.vercel.app',
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 
@@ -196,13 +196,6 @@ app.use((error, req, res, next) => {
   const message = error.message || "Internal server error";
   res.status(status).send(message);
 })
-
-
-// app.use((req, res) => {
-//   console.log("name is ....")
-//   console.log('404 handler reached:', req.path);
-//   res.status(404).json({ error: 'Not found' });
-// });
 
 app.listen(3000, () => {
     console.log("Express is running in port 3000")

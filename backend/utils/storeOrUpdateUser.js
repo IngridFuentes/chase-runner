@@ -19,7 +19,7 @@ const storeOrUpdateUser = async (user) => {
                 'INSERT INTO users (sub, nickname, name, email, picture, email_verified, created_at) VALUES ($1, $2, $3, $4, $5, $6, NOW())',
                 [sub, nickname, name, email, picture, email_verified]
             );
-            console.log('✅ User inserted');
+            // console.log('✅ User inserted');
         } else {
             // User exists, update their details (but don't overwrite custom uploaded picture if it exists)
             const currentUser = await client.query(
