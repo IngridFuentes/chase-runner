@@ -17,25 +17,12 @@ function App() {
   useEffect(() => {
     // This will be called when user is authenticated
     if (isAuthenticated) {
-      // console.log(isAuthenticated, '????????')
-      // console.log("User authenticated on app.js react:", user);
     }
   }, [isAuthenticated, user]);
 
   if (isLoading) {
     return <RunningShoesSpinner />;
   }
-
-  // function isRunningLocally() {
-  //   return window.location.hostname === 'localhost' || 
-  //          window.location.hostname === '127.0.0.1';
-  // }
-  
-  // if (isRunningLocally()) {
-  //   console.log('Running on localhost');
-  // } else {
-  //   console.log('Not running on localhost');
-  // }
 
     return (
             <div>

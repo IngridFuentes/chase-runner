@@ -9,7 +9,7 @@
 
 }
 .buttonLogin{
-    background-color: #439f43;
+    background-color: #2f49bf;
     font-size: 20px;
     font-family: sans-serif;
     height: 40px;
@@ -82,7 +82,7 @@
     padding: 10px;
     font-size: 18px;
     color: #fff;
-    background-color: rgb(35, 196, 43);
+    background-color: #2f49bf;
     border: none;
     border-radius: 5px;
     cursor: pointer;
@@ -99,7 +99,7 @@
     pointer-events: none;
   }
   p {
-    text-decoration: none; /* Remove underline */
+    text-decoration: none;
   }
   .createAccountLink:hover{
     text-decoration: none;
@@ -108,5 +108,5 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 10vh; /* Adjust the height as needed */
+    height: 10vh;
   }

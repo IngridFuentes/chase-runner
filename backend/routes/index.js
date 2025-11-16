@@ -10,24 +10,6 @@ router.get("/", (req, res) => {
     console.log('Hey')
 })
 
-//route to see user ID
-
-// router.get("/user/id", async (req, res) => {
-//     if (!req.auth.sub || !req.auth.sub) {
-//         return res.status(401).send('User not authenticated');
-//     }
-
-//     const user = req.auth.sub;
-//     await storeOrUpdateUser(user); // Call the function to store or update user data
-
-//     res.render("index", {
-//         title: "Express Auth User Id", 
-//         // isAuthenticated: req.oidc.isAuthenticated(),
-//         user: `${req.auth.sub} ${req.auth.name}`
-//     });
-// });
-
-// route to POST runs after user authenticate
 
 router.post('/runs', async (req, res) => {
     if (!req.auth.sub || !req.auth.sub) {

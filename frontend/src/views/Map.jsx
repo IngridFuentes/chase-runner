@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import Select from "react-select";
-import { MapContainer, TileLayer, GeoJSON, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON, Popup, useMap } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 import red from "../image/pin.png";
@@ -16,6 +16,9 @@ import CloseIcon from "@mui/icons-material/Close";
 import Banner from "../components/Banner.js";
 import { useAuth0 } from "@auth0/auth0-react";
 import RunningShoesSpinner from "./RunningShoesSpinner.jsx";
+import AIAssistant from "./AIAssistant";
+import pageStyles from "../styles/CoachPage.module.css";
+import StateDetailsPanel from "./StateDetailsPanel";
 
 const Map = () => {
   const {
@@ -45,16 +48,69 @@ const Map = () => {
   const [geoJsonData, setGeoJsonData] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isAIOpen, setIsAIOpen] = useState(false);
+  const [selectedStateData, setSelectedStateData] = useState(null);
+  const [isStatePanelOpen, setIsStatePanelOpen] = useState(false);
 
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
+  const totalRuns = savedPlaces.length;
+  const uniqueStates = useMemo(() => {
+    return [...new Set(savedPlaces.map((place) => place.name))];
+  }, [savedPlaces]);
+  const totalStates = uniqueStates.length;
+
   useEffect(() => {
-    // This will be called when user is authenticated
     if (isAuthenticated) {
-      // console.log(isAuthenticated, "authenticated? on map");
-      // console.log("User authenticated:", user);
     }
   }, [isAuthenticated, user]);
+
+  const userRunData = useMemo(() => {
+    if (!savedPlaces || savedPlaces.length === 0) {
+      return {
+        totalRuns: 0,
+        totalStates: 0,
+        userName: user?.name || "Runner",
+        message: "No runs recorded yet",
+      };
+    }
+
+    // Get unique states
+    const uniqueStates = [...new Set(savedPlaces.map((place) => place.name))];
+
+    // Calculate race type breakdown
+    const raceTypeBreakdown = savedPlaces.reduce((acc, place) => {
+      const type = place.race_type || "Unknown";
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {});
+
+    // Get most recent run
+    const mostRecentRun = savedPlaces[savedPlaces.length - 1];
+
+    return {
+      userName: user?.name || "Runner",
+      userEmail: user?.email,
+      totalRuns: savedPlaces.length,
+      totalStates: uniqueStates.length,
+      statesVisited: uniqueStates,
+      raceTypeBreakdown: raceTypeBreakdown,
+      mostRecentRun: mostRecentRun
+        ? {
+            state: mostRecentRun.name,
+            raceType: mostRecentRun.race_type,
+            description: mostRecentRun.description,
+          }
+        : null,
+      allRuns: savedPlaces.map((place) => ({
+        id: place.id,
+        state: place.name,
+        raceType: place.race_type,
+        description: place.description,
+        color: place.color,
+      })),
+    };
+  }, [savedPlaces, user]); // Recalculate when savedPlaces or user changes
 
   const marathonTypeOptions = [
     { value: "5K", label: "5K" },
@@ -203,32 +259,6 @@ const Map = () => {
     };
   };
 
-  useEffect(() => {
-    localStorage.setItem("marathonsDone", 0);
-    localStorage.setItem("statesCount", 0);
-    const savedGeoJsonData = localStorage.getItem("geoJsonData");
-    if (savedGeoJsonData) {
-      setGeoJsonData(JSON.parse(savedGeoJsonData));
-    } else {
-      // Initialize with empty data or default value if nothing is found
-      setGeoJsonData([]);
-    }
-
-    const storedMarathonsDone = localStorage.getItem("marathonsDone");
-    if (storedMarathonsDone) {
-      setMarathonsDone(parseInt(storedMarathonsDone, 10));
-    } else {
-      setMarathonsDone(0);
-    }
-
-    const statesCount = localStorage.getItem("statesCount");
-    if (statesCount) {
-      setStatesCount(parseInt(statesCount, 10));
-    } else {
-      setStatesCount(0);
-    }
-  }, []);
-
   const handleChange = (e) => {
     const searchWord = e.target.value;
     setCityName(searchWord);
@@ -237,6 +267,19 @@ const Map = () => {
       setFilteredData([]);
       setIsDropdownVisible(false);
       return;
+    }
+  };
+
+  const handleStateClick = (stateName) => {
+    // Filter runs for the clicked state
+    const stateRuns = savedPlaces.filter((place) => place.name === stateName);
+
+    if (stateRuns.length > 0) {
+      setSelectedStateData({
+        name: stateName,
+        runs: stateRuns,
+      });
+      setIsStatePanelOpen(true);
     }
   };
 
@@ -330,8 +373,6 @@ const Map = () => {
 
       const userId = user.sub;
 
-      // console.log(userId, "user id");
-
       if (!userId) {
         console.error("User not authenticated");
         return;
@@ -347,7 +388,7 @@ const Map = () => {
         (feature) => feature.properties.name === state
       );
 
-      if (selectedStateData) {
+      if (selectedStateData && city) {
         // Create a new GeoJSON object that only includes the selected state's data
         const updatedGeoJsonData = {
           type: "FeatureCollection",
@@ -357,13 +398,13 @@ const Map = () => {
               properties: {
                 ...selectedStateData.properties,
                 selectedRaceType: selectedRaceType,
+                city: city,
               },
             },
           ],
         };
 
         // console.log("Updated GeoJSON Data:", updatedGeoJsonData);
-
         try {
           let color;
           switch (selectedRaceType) {
@@ -388,28 +429,31 @@ const Map = () => {
           }
           const token = await getAccessTokenSilently();
           // console.log("runs route frontend");
+
+          const requestBody = {
+            lat: selectedCity.geometry.coordinates[1],
+            lon: selectedCity.geometry.coordinates[0],
+            name: selectedStateData.properties.name,
+            description: description,
+            geojson: {
+              type: selectedStateData.geometry.type,
+              coordinates: selectedStateData.geometry.coordinates,
+            },
+            race_type: selectedRaceType,
+            color: color,
+            city: city,
+            user_id: userId,
+          };
+
           const response = await fetch(
             "https://chase-runner-backend.vercel.app/runs",
-            // "http://localhost:3000/runs",
             {
               method: "POST",
               headers: {
                 Authorization: `Bearer ${token}`,
                 "Content-Type": "application/json",
               },
-              body: JSON.stringify({
-                lat: selectedCity.geometry.coordinates[1],
-                lon: selectedCity.geometry.coordinates[0],
-                name: selectedStateData.properties.name,
-                description: description,
-                geojson: {
-                  type: selectedStateData.geometry.type,
-                  coordinates: selectedStateData.geometry.coordinates,
-                },
-                race_type: selectedRaceType,
-                color: color,
-                user_id: userId,
-              }),
+              body: JSON.stringify(requestBody),
             }
           );
 
@@ -420,6 +464,7 @@ const Map = () => {
               }: ${await response.text()}`
             );
           }
+          const responseData = await response.json();
 
           setSelectedRaceType(selectedRaceType);
           setShowPopup(true);
@@ -437,6 +482,9 @@ const Map = () => {
           console.error("Error saving data to backend:", error);
         }
       } else {
+        // ADD THIS: Debug why we're not entering the if block
+        console.error("❌ selectedStateData:", selectedStateData);
+        console.error("❌ city value:", city);
         console.error("Selected state data not found");
       }
     } else {
@@ -505,7 +553,6 @@ const Map = () => {
 
       const updatedPlaces = savedPlaces.filter((place) => place.id !== id);
       setSavedPlaces(updatedPlaces);
-      console.log(`Place with id ${id} deleted successfully.`);
     } catch (error) {
       console.error("Error during deletion:", error);
     }
@@ -515,162 +562,222 @@ const Map = () => {
     return <RunningShoesSpinner />;
   }
 
+  const MapResizer = ({ isAIOpen }) => {
+    const map = useMap();
+
+    useEffect(() => {
+      // Wait for CSS transition to complete, then recalculate map size
+      const timer = setTimeout(() => {
+        map.invalidateSize(); // Tells Leaflet to recalculate the map size
+
+        // Recenter the map to maintain view
+        if (window.innerWidth > 768) {
+          // Only on desktop
+          map.setView([39.8283, -98.5795], map.getZoom());
+        }
+      }, 350);
+
+      return () => clearTimeout(timer);
+    }, [isAIOpen, map]);
+
+    return null;
+  };
+
   return (
-    <div>
-      <Banner />
-      <br />
-      <div className={styles.search}>
-        <div className={styles.searchInput}>
-          <input
-            ref={inputRef}
-            type="text"
-            className={styles.inputField}
-            placeholder="Search by City"
-            value={cityName}
-            onChange={handleChange}
-            onKeyDown={handleCityKeyDown}
-          />
-          <div className={styles.searchIcon}>
-            {cityName === "" ? (
-              <SearchIcon className={styles.searchIcon} />
-            ) : (
-              <CloseIcon
-                onClick={() => {
-                  setCityName("");
-                  setFilteredData([]);
-                  setIsDropdownVisible(false);
-                }}
-                className={styles.closeIcon}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {data.features !== undefined &&
-        isDropdownVisible &&
-        filteredData.length > 0 && (
-          <div className={styles.dropdown}>
-            <div className={styles.listCheckbox}>
-              {/* <h3>Done </h3>
-                      <h3>Target</h3> */}
-              <h3 className={styles.raceTypeSentence}>Race Type</h3>
-            </div>
-            {filteredData.map((d, index) => (
-              <div
-                key={index}
-                className={styles.dropdownRow}
-                // style={{ backgroundColor: `${selectedMarathonType[index]?.color} !important`  }}
-                // onClick={() => handleCitySelection(d)}
-                // onKeyDown={(e) => handleCityKeyDown(e, d)}
-              >
-                <div
+    <div className={styles.appContainer}>
+      {/* Main Content Area */}
+      <div
+        className={`${styles.mainContent} ${isAIOpen ? styles.splitView : ""}`}
+      >
+        <Banner />
+        <br />
+        <div className={styles.search}>
+          <div className={styles.searchInput}>
+            <input
+              ref={inputRef}
+              type="text"
+              className={styles.inputField}
+              placeholder="Search by City"
+              value={cityName}
+              onChange={handleChange}
+              onKeyDown={handleCityKeyDown}
+            />
+            <div className={styles.searchIcon}>
+              {cityName === "" ? (
+                <SearchIcon className={styles.searchIcon} />
+              ) : (
+                <CloseIcon
                   onClick={() => {
-                    handleCitySelection(d);
-
+                    setCityName("");
+                    setFilteredData([]);
                     setIsDropdownVisible(false);
                   }}
-                  className={styles.list}
-                >
-                  {d.properties.city}, {d.properties.state}
-                </div>
+                  className={styles.closeIcon}
+                />
+              )}
+            </div>
+          </div>
+        </div>
 
-                <div className={styles.marathonTypeDropdown}>
-                  <Select
-                    options={marathonTypeOptions}
-                    isSearchable={false}
-                    value={selectedMarathonType[index]}
-                    onChange={(value) => handleMarathonType(index, value)}
-                    onClick={(value) => handleMarathonType(index, value)}
-                    placeholder="Select..."
-                    styles={{
-                      control: (provided) => ({
-                        ...provided,
-                        width: "117px",
-                      }),
-                      option: (provided, state) => ({
-                        ...provided,
-                        backgroundColor: state.isFocused ? "#f0f0f0" : "white",
-                        color: state.isFocused ? "#000" : "#333",
-                        cursor: "pointer",
-                        zIndex: 1000,
-                      }),
-                    }}
-                  />
-                </div>
+        {data.features !== undefined &&
+          isDropdownVisible &&
+          filteredData.length > 0 && (
+            <div className={styles.dropdown}>
+              <div className={styles.listCheckbox}>
+                <h3 className={styles.raceTypeSentence}>Race Type</h3>
               </div>
-            ))}
+              {filteredData.map((d, index) => (
+                <div key={index} className={styles.dropdownRow}>
+                  <div
+                    onClick={() => {
+                      handleCitySelection(d);
+                      setIsDropdownVisible(false);
+                    }}
+                    className={styles.list}
+                  >
+                    {d.properties.city}, {d.properties.state}
+                  </div>
+
+                  <div className={styles.marathonTypeDropdown}>
+                    <Select
+                      options={marathonTypeOptions}
+                      isSearchable={false}
+                      value={selectedMarathonType[index]}
+                      onChange={(value) => handleMarathonType(index, value)}
+                      onClick={(value) => handleMarathonType(index, value)}
+                      placeholder="Select..."
+                      styles={{
+                        control: (provided) => ({
+                          ...provided,
+                          width: "117px",
+                        }),
+                        option: (provided, state) => ({
+                          ...provided,
+                          backgroundColor: state.isFocused
+                            ? "#f0f0f0"
+                            : "white",
+                          color: state.isFocused ? "#000" : "#333",
+                          cursor: "pointer",
+                          zIndex: 1000,
+                        }),
+                      }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+        {showPopup && (
+          <div className={styles.popup}>
+            <div className={styles.popupContent}>
+              <span className={styles.close} onClick={handleClosePopup}>
+                &times;
+              </span>
+              <h2>Congratulations!</h2>
+              <p>You have completed a race.</p>
+            </div>
           </div>
         )}
 
-      {showPopup && (
-        <div className={styles.popup}>
-          <div className={styles.popupContent}>
-            <span className={styles.close} onClick={handleClosePopup}>
-              &times;
-            </span>
-            <h2>Congratulations!</h2>
-            <p>You have completed a race.</p>
+        {showConfetti && (
+          <div className={styles.confetti}>
+            <ConfettiExplosion
+              force={0.8}
+              duration={5000}
+              particleCount={500}
+              width={2000}
+              angle={180}
+              gravity={0}
+              zIndex={10000}
+            />
+          </div>
+        )}
+
+        <div className={styles.mapBackground}>
+          <MapContainer
+            center={[39.8283, -98.5795]}
+            zoom={4}
+            className={styles.leafletContainer}
+            zoomControl={false}
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
+
+            <MapResizer isAIOpen={isAIOpen} />
+
+            {savedPlaces.map((place) => (
+              <GeoJSON
+                key={place.id}
+                data={place.geojson}
+                style={{ color: place.color }}
+                eventHandlers={{
+                  click: () => handleStateClick(place.name),
+                }}
+              >
+                <Popup>
+                  {place.name}: {place.description}
+                  <button
+                    onClick={() => handleDeletePlace(place.id)}
+                    style={{
+                      marginLeft: "10px",
+                      color: "red",
+                      border: "none",
+                    }}
+                  >
+                    Delete
+                  </button>
+                </Popup>
+              </GeoJSON>
+            ))}
+          </MapContainer>
+        </div>
+
+        <div className={styles.cardContainer}>
+          <div className={styles.card}>
+            <h2 className={styles.cardSentence}>Runs So Far</h2>
+            <div className={styles.marathonCount}>{totalRuns}</div>
+          </div>
+          <div className={styles.secondCard}>
+            <h2 className={styles.cardSentence}>Number of States</h2>
+            <div className={styles.marathonCount}>{totalStates}</div>
+          </div>
+        </div>
+
+        {!isAIOpen && (
+          <button
+            className={styles.aiToggleButton}
+            onClick={() => setIsAIOpen(true)}
+          >
+            🤖 AI Assistant
+          </button>
+        )}
+      </div>
+
+      {isAIOpen && (
+        <div className={styles.aiPanel}>
+          <div className={styles.aiPanelHeader}>
+            <h3>AI Running Coach</h3>
+            <button
+              className={styles.closeAIButton}
+              onClick={() => setIsAIOpen(false)}
+            >
+              ✕
+            </button>
+          </div>
+          <div className={styles.aiPanelContent}>
+            <AIAssistant userRunData={userRunData} />
           </div>
         </div>
       )}
 
-      {showConfetti && (
-        <div className={styles.confetti}>
-          <ConfettiExplosion
-            force={0.8}
-            duration={5000}
-            particleCount={500}
-            width={2000}
-            angle={180}
-            gravity={0}
-            zIndex={10000}
-          />
-        </div>
-      )}
-
-      <div className={styles.mapBackground}>
-        <MapContainer
-          center={[39.8283, -98.5795]}
-          zoom={4}
-          // style={{ height: "500px", width: "50%", margin: "3rem auto auto" }}
-          className={styles.leafletContainer}
-          zoomControl={false}
-        >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
-
-          {savedPlaces.map((place) => (
-            <GeoJSON
-              key={place.id}
-              data={place.geojson}
-              style={{ color: place.color }}
-            >
-              <Popup>
-                {place.name}: {place.description}
-                <button
-                  onClick={() => handleDeletePlace(place.id)}
-                  style={{ marginLeft: "10px", color: "red", border: "none" }}
-                >
-                  Delete
-                </button>
-              </Popup>
-            </GeoJSON>
-          ))}
-        </MapContainer>
-      </div>
-      <div className={styles.cardContainer}>
-        <div className={styles.card}>
-          <h2 className={styles.cardSentence}>Runs So Far</h2>
-          <div className={styles.marathonCount}>{savedPlaces.length}</div>
-        </div>
-        <div className={styles.secondCard}>
-          <h2 className={styles.cardSentence}>Number of States</h2>
-          <div className={styles.marathonCount}>{savedPlaces.length}</div>
-        </div>
-      </div>
+      <StateDetailsPanel
+        isOpen={isStatePanelOpen}
+        onClose={() => setIsStatePanelOpen(false)}
+        stateData={selectedStateData}
+      />
     </div>
   );
 };

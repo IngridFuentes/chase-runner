@@ -8,6 +8,9 @@ const storeOrUpdateUser = require('./utils/storeOrUpdateUser');
 const storeOrUpdateRun = require('./utils/storeOrUpdateRun');
 const getRunsForUser = require('./utils/getRunsForUser');
 const pool = require('./db');
+const aiRoutes = require('./routes/ai.js');
+const userRoutes = require('./src/chase_runner/routes.js');
+
 
 const app = express();
 app.set("views", "views");
@@ -30,6 +33,31 @@ app.use(cors(corsOptions));
 // const port = process.env.PORT || 3000; //do not change this in PRODUCTION. Just do NOT change!
 // const backendUrl = "https://chase-runner-backend.vercel.app"
 
+
+app.use((req, res, next) => {
+  console.log('\n=== BACKEND INCOMING REQUEST ===');
+  console.log('Method:', req.method);
+  console.log('Path:', req.path);
+  console.log('Headers:', {
+    authorization: req.headers.authorization ? 'Present ✓' : 'Missing ✗',
+    'content-type': req.headers['content-type']
+  });
+  
+  if (req.headers.authorization) {
+    console.log('Auth header value:', req.headers.authorization.substring(0, 50) + '...');
+  }
+  
+  next();
+});
+
+
+// Debug logging (must be BEFORE jwt)
+app.use((req, res, next) => {
+  console.log('=== BACKEND REQUEST ===', req.method, req.path);
+  console.log('Auth header:', req.headers.authorization);
+  next();
+});
+
 const verifyJwt = jwt({
   secret:jwks.expressJwtSecret({
     cache: true,
@@ -40,6 +68,14 @@ const verifyJwt = jwt({
   algorithms: ['RS256'],
   audience:process.env.AUTH0_AUDIENCE,
   issuer:process.env.AUTH0_ISSUER,
+
+  getToken: (req) => {
+    if (req.headers.authorization && req.headers.authorization.split(' ')[0] === 'Bearer') {
+      return req.headers.authorization.split(' ')[1];
+    }
+    return null;
+  }
+
 }).unless({path: ['/', '/favicon.ico']});
 
 app.use(verifyJwt);
@@ -48,6 +84,9 @@ app.use((req, res, next) => {
   console.log(req.auth);
   next();
 });
+
+app.use('/api/ai', aiRoutes);
+app.use('/', userRoutes);
 
 app.get("/", (req, res) => {
   res.send("Welcome to the backend!");
@@ -94,16 +133,32 @@ app.get("/user/id/runs", async (req, res) => {
 
 app.post('/runs', async (req, res) => {
   if (!req.auth.sub || !req.auth.sub) {
-      return res.status(401).send("User not authenticated");
+      return res.status(401).json({ error: "User not authenticated" }); //sending JSON instead of text!
     }
   
   const runData = req.body;
   console.log("body:", runData);
+  const userId = req.auth.sub;
+
   try {
-    await storeOrUpdateRun(runData);
-    res.status(201).send('Run added successfully');
+    const completeRunData = {
+      ...runData,
+      user_id: userId
+    };
+    
+    const result = await storeOrUpdateRun(completeRunData);
+    
+    //Return JSON instead of plain text!
+    res.status(201).json({ 
+      message: 'Run added successfully',
+      data: result 
+    });
   } catch (err) {
-    res.status(500).send('Error storing run');
+    console.error('Error storing run:', err);
+    res.status(500).json({ 
+      error: 'Error storing run',
+      details: err.message 
+    });
   }
 });
 
@@ -142,8 +197,7 @@ app.use((error, req, res, next) => {
   res.status(status).send(message);
 })
 
-
-// app.listen(3000, () => {
-//     console.log("Express is running in port 3000")
-// });
+app.listen(3000, () => {
+    console.log("Express is running in port 3000")
+});
 module.exports = app;

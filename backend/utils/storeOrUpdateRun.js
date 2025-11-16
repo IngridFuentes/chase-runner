@@ -15,6 +15,7 @@ const storeOrUpdateRun = async (runData) => {
         geojson,
         race_type,
         color,
+        city, 
         user_id
       } = runData;
   
@@ -41,8 +42,8 @@ const storeOrUpdateRun = async (runData) => {
 
       // Insert a new record into the runs table
       const insertRunQuery = `
-        INSERT INTO runs (lat, lon, name, description, geojson, race_type, color, user_id)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        INSERT INTO runs (lat, lon, name, description, geojson, race_type, color, city, user_id)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *;
       `;
       const result = await client.query(insertRunQuery, [
@@ -53,6 +54,7 @@ const storeOrUpdateRun = async (runData) => {
         geojson,
         race_type,
         color,
+        city,
         userIdInDb
       ]);
   

@@ -1,32 +1,174 @@
-.goalsSentence{
-    color: rgb(91, 162, 75);
-    font-size: x-large;
-    font-family: sans-serif;
-    text-align: center;
-    font-weight: bold;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 30vh;
-}
-.registerSentence{
-    font-size: large;
-    text-align: center;
+.goalsContainer {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #081f85 0%, #902cf4 100%);
+    padding: 2rem;
+    position: relative;
 }
 
-.registerSentence a{
-    text-decoration: none;
-    color: green;
-}
-
-.registerSentence:hover{
-    background: none;
-}
 .backButton {
     position: fixed;
     top: 30px;
     left: 30px;
     cursor: pointer;
     z-index: 1000;
-    color: #4CAF50;
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+    transition: all 0.3s ease;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.backButton:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateX(-5px);
+}
+
+.goalsContent {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 4rem;
+}
+
+.goalsSentence {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.registerSentence {
+    color: rgba(255, 255, 255, 0.9);
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 3rem;
+}
+
+.externalLink {
+    color: #ffd700;
+    text-decoration: underline;
+    font-weight: 600;
+}
+
+.goalsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.goalCard {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.goalCard:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+}
+
+.goalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.icon {
+    color: #ffd700;
+    font-size: 1.5rem;
+}
+
+.raceType {
+    background: linear-gradient(135deg, #0a33ed 0%, #2894f2 100%);
+    color: white;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.raceName {
+    font-size: 1.3rem;
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.goalDetails {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: #666;
+    font-size: 0.95rem;
+}
+
+.detailItem svg {
+    color: #0a33ed;
+}
+
+.addGoalCard {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 2px dashed rgba(255, 255, 255, 0.5);
+    border-radius: 15px;
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-height: 200px;
+}
+
+.addGoalCard:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.addGoalContent {
+    text-align: center;
+    color: white;
+}
+
+.plusIcon {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+}
+
+.addGoalContent p {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.comingSoon {
+    font-size: 0.85rem;
+    opacity: 0.7;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .goalsGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .goalsSentence {
+        font-size: 2rem;
+    }
 }
