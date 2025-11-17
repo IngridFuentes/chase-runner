@@ -35,9 +35,9 @@ app.use(cors(corsOptions));
 
 
 app.use((req, res, next) => {
-  console.log('\n=== BACKEND INCOMING REQUEST ===');
-  console.log('Method:', req.method);
-  console.log('Path:', req.path);
+  // console.log('\n=== BACKEND INCOMING REQUEST ===');
+  // console.log('Method:', req.method);
+  // console.log('Path:', req.path);
   console.log('Headers:', {
     authorization: req.headers.authorization ? 'Present ✓' : 'Missing ✗',
     'content-type': req.headers['content-type']
@@ -47,14 +47,6 @@ app.use((req, res, next) => {
     console.log('Auth header value:', req.headers.authorization.substring(0, 50) + '...');
   }
   
-  next();
-});
-
-
-// Debug logging (must be BEFORE jwt)
-app.use((req, res, next) => {
-  console.log('=== BACKEND REQUEST ===', req.method, req.path);
-  console.log('Auth header:', req.headers.authorization);
   next();
 });
 
@@ -81,7 +73,7 @@ const verifyJwt = jwt({
 app.use(verifyJwt);
 
 app.use((req, res, next) => {
-  console.log(req.auth);
+  // console.log(req.auth);
   next();
 });
 
