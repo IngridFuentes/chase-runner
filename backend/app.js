@@ -22,7 +22,7 @@ app.use(express.static("public"))
   // origin: 'http://localhost:3001'
   
 const corsOptions = {
-  origin: 'https://chase-runner.vercel.app',
+  origin:[ 'https://chase-runner.vercel.app', /https:\/\/chase-runner-.*\.vercel\.app$/],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 
