@@ -26,7 +26,9 @@ export const UserProvider = ({ children }) => {
 
           const authToken = await getAccessTokenSilently();
 
-          const url = `${API_URL}/users/${encodeURIComponent(user.sub)}`;
+          const url = `https://chase-runner-backend.vercel.app/users/${encodeURIComponent(
+            user.sub
+          )}`;
 
           const response = await fetch(url, {
             headers: {
