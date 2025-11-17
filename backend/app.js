@@ -25,14 +25,11 @@ const corsOptions = {
   origin: function (origin, callback) {
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [
-      'https://chase-runner.vercel.app',
-    ];
-    
-    // Check if origin is from Vercel (any cr-*.vercel.app pattern)
-    const isVercelPreview = /^https:\/\/chase-runner(-[a-zA-Z0-9-]*)?\.vercel\.app$/.test(origin);
-    
-    if (allowedOrigins.includes(origin) || isVercelPreview) {
+    // Allow localhost and any .vercel.app domain
+    if (
+      origin === 'http://localhost:3001' ||
+      origin.endsWith('.vercel.app')
+    ) {
       callback(null, true);
     } else {
       console.log('❌ CORS blocked origin:', origin);
