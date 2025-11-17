@@ -22,7 +22,23 @@ app.use(express.static("public"))
   // origin: 'http://localhost:3001'
   
 const corsOptions = {
-  origin:[ 'https://chase-runner.vercel.app', /https:\/\/chase-runner-.*\.vercel\.app$/],
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'https://chase-runner.vercel.app',
+    ];
+    
+    // Check if origin is from Vercel (any cr-*.vercel.app pattern)
+    const isVercelPreview = /^https:\/\/chase-runner(-[a-zA-Z0-9-]*)?\.vercel\.app$/.test(origin);
+    
+    if (allowedOrigins.includes(origin) || isVercelPreview) {
+      callback(null, true);
+    } else {
+      console.log('❌ CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 
