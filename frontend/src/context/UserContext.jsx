@@ -3,7 +3,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 export const UserContext = createContext();
 
-const API_URL = process.env.REACT_APP_API_URL;
+// const API_URL = process.env.REACT_APP_API_URL;
 
 export const UserProvider = ({ children }) => {
   const { user, isAuthenticated, isLoading, getAccessTokenSilently } =
