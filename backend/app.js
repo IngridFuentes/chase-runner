@@ -22,7 +22,28 @@ app.use(express.static("public"))
   // origin: 'http://localhost:3001'
   
 const corsOptions = {
-  origin: 'https://chase-runner.vercel.app',
+  // origin: 'https://chase-runner.vercel.app',
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    
+    const allowedOrigins = [
+      'http://localhost:3001',
+      'https://chase-runner.vercel.app',
+      /https:\/\/cr-.*\.vercel\.app$/ 
+    ];
+    
+    const isAllowed = allowedOrigins.some(allowed => {
+      if (allowed instanceof RegExp) return allowed.test(origin);
+      return allowed === origin;
+    });
+    
+    if (isAllowed) {
+      callback(null, true);
+    } else {
+      console.log('❌ CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, 
@@ -174,6 +195,109 @@ app.delete('/runs/:id', async (req, res) => {
   } catch (error) {
     console.error('Error deleting place:', error);
     res.status(500).json({ message: 'Failed to delete place', error: error.message });
+  }
+});
+
+// Get user profile by userId
+app.get('/users/:userId', async (req, res) => {
+  console.log('📍 GET /users/:userId');
+  const { userId } = req.params;
+  
+  // Verify the authenticated user matches the requested user
+  if (req.auth.sub !== userId) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const client = await pool.connect();
+  
+  try {
+    const result = await client.query(
+      'SELECT * FROM users WHERE user_id = $1 OR sub = $1',
+      [userId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json(result.rows[0]);
+  } catch (error) {
+    console.error('❌ Error fetching user:', error);
+    res.status(500).json({ error: 'Failed to fetch user' });
+  } finally {
+    client.release();
+  }
+});
+
+// Update user profile
+app.put('/users/:userId', async (req, res) => {
+  console.log('📍 PUT /users/:userId');
+  const { userId } = req.params;
+  const { name, nickname, profile_picture } = req.body;
+  
+  if (req.auth.sub !== userId) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const client = await pool.connect();
+  
+  try {
+    const result = await client.query(
+      `UPDATE users 
+       SET name = COALESCE($1, name),
+           nickname = COALESCE($2, nickname),
+           picture = COALESCE($3, picture),
+           updated_at = CURRENT_TIMESTAMP
+       WHERE user_id = $4 OR sub = $4
+       RETURNING *`,
+      [name, nickname, profile_picture, userId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ user: result.rows[0] });
+  } catch (error) {
+    console.error('❌ Error updating user:', error);
+    res.status(500).json({ error: 'Failed to update user' });
+  } finally {
+    client.release();
+  }
+});
+
+// Update user profile picture
+app.put('/users/:userId/profile-picture', async (req, res) => {
+  console.log('📍 PUT /users/:userId/profile-picture');
+  const { userId } = req.params;
+  const { profile_picture } = req.body;
+  
+  if (req.auth.sub !== userId) {
+    return res.status(403).json({ error: 'Forbidden' });
+  }
+
+  const client = await pool.connect();
+  
+  try {
+    const result = await client.query(
+      `UPDATE users 
+       SET picture = $1,
+           updated_at = CURRENT_TIMESTAMP
+       WHERE user_id = $2 OR sub = $2
+       RETURNING *`,
+      [profile_picture, userId]
+    );
+    
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    res.json({ user: result.rows[0] });
+  } catch (error) {
+    console.error('❌ Error updating profile picture:', error);
+    res.status(500).json({ error: 'Failed to update profile picture' });
+  } finally {
+    client.release();
   }
 });
 
