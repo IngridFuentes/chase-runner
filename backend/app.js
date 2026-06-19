@@ -35,9 +35,9 @@ app.use(cors(corsOptions));
 
 
 app.use((req, res, next) => {
-  // console.log('\n=== BACKEND INCOMING REQUEST ===');
-  // console.log('Method:', req.method);
-  // console.log('Path:', req.path);
+  console.log('\n=== BACKEND INCOMING REQUEST ===');
+  console.log('Method:', req.method);
+  console.log('Path:', req.path);
   console.log('Headers:', {
     authorization: req.headers.authorization ? 'Present ✓' : 'Missing ✗',
     'content-type': req.headers['content-type']
