@@ -105,6 +105,7 @@ const Map = () => {
       allRuns: savedPlaces.map((place) => ({
         id: place.id,
         state: place.name,
+        city: place.city,
         raceType: place.race_type,
         description: place.description,
         color: place.color,

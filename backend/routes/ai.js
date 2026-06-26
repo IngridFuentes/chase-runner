@@ -83,7 +83,8 @@ router.post('/chat', async (req, res) => {
       - Race Experience: ${JSON.stringify(userRunData.raceTypeBreakdown)}
       ${userRunData.mostRecentRun ? `- Most Recent Achievement: ${userRunData.mostRecentRun.raceType} in ${userRunData.mostRecentRun.state}` : ''}
       - Goal: Visit all 50 US states
-      - States Remaining: ${50 - (userRunData.totalStates || 0)}`;
+      - States Remaining: ${50 - (userRunData.totalStates || 0)}
+      - Full Run History: ${JSON.stringify(userRunData.allRuns || userRunData.runs || [])}`;
     } else {
       userContext = `\n\nUser Profile:
       - Name: ${userRunData?.userName || 'Runner'}
