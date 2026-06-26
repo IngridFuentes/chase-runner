@@ -50,15 +50,8 @@ const AIAssistant = ({ userRunData }) => {
     setLoading(true);
     setShowSuggestions(false);
 
-    console.log("=== FRONTEND DEBUG ===");
-    console.log("1. Is user authenticated?", isAuthenticated);
-
     try {
-      console.log("2. Getting access token...");
       const token = await getAccessTokenSilently();
-      console.log("3. Token received:", !!token);
-      console.log("4. Token length:", token?.length);
-      console.log("5. Token preview:", token?.substring(0, 30) + "...");
 
       // NEW: Include conversation history (last 10 messages for context)
       const conversationHistory = messages.slice(-10).map((msg) => ({
@@ -77,9 +70,6 @@ const AIAssistant = ({ userRunData }) => {
         Authorization: `Bearer ${token}`,
       };
 
-      console.log("6. Headers:", headers);
-      // console.log("7. Sending request to: http://localhost:3000/api/ai/chat");
-
       const response = await fetch(`${API_URL}/api/ai/chat`, {
         method: "POST",
         headers: headers,
@@ -90,9 +80,6 @@ const AIAssistant = ({ userRunData }) => {
         }),
       });
 
-      console.log("8. Response status:", response.status);
-      console.log("9. Response ok:", response.ok);
-
       if (!response.ok) {
         const errorData = await response.text();
         console.error("10. Error response:", errorData);
@@ -102,7 +89,6 @@ const AIAssistant = ({ userRunData }) => {
       }
 
       const data = await response.json();
-      console.log("11. Success! Got response");
 
       if (data.success) {
         setMessages((prev) => [...prev, { role: "ai", text: data.reply }]);
