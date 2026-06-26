@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import styles from "../styles/AIAssistant.module.css";
 
+const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
+
 const AIAssistant = ({ userRunData }) => {
   const [messages, setMessages] = useState([
     {
@@ -76,9 +78,9 @@ const AIAssistant = ({ userRunData }) => {
       };
 
       console.log("6. Headers:", headers);
-      console.log("7. Sending request to: http://localhost:3000/api/ai/chat");
+      // console.log("7. Sending request to: http://localhost:3000/api/ai/chat");
 
-      const response = await fetch("http://localhost:3000/api/ai/chat", {
+      const response = await fetch(`${API_URL}/api/ai/chat`, {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
