@@ -8,6 +8,7 @@ router.get("/", (req, res) => {
     // console.log(req.oidc.isAuthenticated());
     // res.send('Welcome to the backend!');
     console.log('Hey')
+    res.send('OK')
 })
 
 
