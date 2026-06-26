@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import styles from "../styles/Login.module.css";
+import styles from "../styles/Signup.module.css";
 
 const Signup = () => {
   const { loginWithRedirect, isAuthenticated } = useAuth0();
@@ -18,8 +18,8 @@ const Signup = () => {
 
   return (
     <>
-      <button onClick={handleSignUp} className={styles.buttonLogin}>
-        <h3 className={styles.link}> Sign Up </h3>
+      <button onClick={handleSignUp} className={styles.buttonSignup}>
+        <span className={styles.link}> Sign Up </span>
       </button>
     </>
   );

@@ -8,26 +8,35 @@
     padding-top: 80px;
 
 }
-.buttonLogin{
-    background-color: #2f49bf;
-    font-size: 20px;
-    font-family: sans-serif;
-    height: 40px;
-    width: 250px;
-    text-align: center;
-    margin: 0 auto;
-    border-radius: 8px;
-    border: none;
-    display: flex;
-    position: relative;
-    margin-top: -7rem;
-    align-items: center;
-    justify-content: center;
+.buttonLogin {
+  background-color: transparent;
+  font-size: 14px;
+  font-family: sans-serif;
+  height: 40px;
+  padding: 0 20px;
+  text-align: center;
+  border-radius: 8px;
+  border: 0.5px solid #ccc;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  margin: 0;
+  width: auto;
+  position: static;
 }
-.link{
-    color: white !important;
-    text-decoration: none !important;
-    margin: auto;
+
+.buttonLogin:hover {
+  background-color: #f0f0f0;
+}
+
+.link {
+  color: #333;
+  text-decoration: none;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
 }
 .loginPage{
     margin-top: 100px;

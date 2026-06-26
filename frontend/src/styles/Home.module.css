@@ -1,347 +1,341 @@
-/* .container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }  
-  
-.responsiveImg {
-    display: block;
-    margin: auto;
-    width: 100%; 
-    max-width: 700px;
-    height: auto;
-    object-fit: contain;
-  }
-  .buttonGroup{
-        margin-top: 1rem;
-  }
-  
-  @media (max-width: 768px) {
-
-    .container{
-        margin-top: 8rem;
-    }
-    .buttonGroup{
-        margin-top: 6rem;
-      }
-    .responsive-img {
-        max-width: 90%;
-    }
-  } */
-
 
   .container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: linear-gradient(135deg, #081f85 0%, #8669e6 100%);
-    padding: 2rem 1rem;
+  min-height: 100vh;
+  background: #fafaf8;
+  display: flex;
+  flex-direction: column;
+  padding: 0 2rem;
+}
+
+/* Nav */
+.nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 0;
+  border-bottom: 0.5px solid #e8e8e4;
+}
+
+.navLogo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.navLogoIcon {
+  font-size: 18px;
+}
+
+.navLogoText {
+  font-size: 15px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.navButtons {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Main layout */
+.main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
+  align-items: center;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+  padding: 4rem 0;
+}
+
+/* Text column */
+.textCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 4px 12px;
+  border-radius: 20px;
+  background: #E1F5EE;
+  color: #0F6E56;
+  letter-spacing: 0.04em;
+  width: fit-content;
+}
+
+.headline {
+  font-size: 2.75rem;
+  font-weight: 500;
+  color: #1a1a1a;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.description {
+  font-size: 1rem;
+  color: #666;
+  line-height: 1.7;
+  margin: 0;
+  max-width: 420px;
+}
+
+.ctaButtons {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 0.5rem;
+}
+
+/* Stats row */
+.stats {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 1rem;
+  padding-top: 1.5rem;
+  border-top: 0.5px solid #e8e8e4;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: 1.25rem;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.statLabel {
+  font-size: 11px;
+  color: #999;
+}
+
+.statDivider {
+  width: 0.5px;
+  height: 32px;
+  background: #e8e8e4;
+}
+
+/* Image column */
+.imageCol {
+  position: relative;
+}
+
+/* .imageWrapper {
+  border-radius: 20px;
+  overflow: hidden;
+  border: 0.5px solid #e8e8e4;
+}
+
+.heroImage {
+  width: 100%;
+  height: 420px;
+  object-fit: cover;
+  display: block;
+} */
+
+/* Floating cards */
+/* .cardTopRight {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #fff;
+  border: 0.5px solid #e8e8e4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.cardBottomLeft {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  background: #fff;
+  border: 0.5px solid #e8e8e4;
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+} */
+
+.cardLabel {
+  font-size: 10px;
+  color: #999;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.cardValue {
+  font-size: 13px;
+  font-weight: 500;
+  color: #1D9E75;
+}
+
+.cardValueLarge {
+  font-size: 22px;
+  font-weight: 500;
+  color: #1a1a1a;
+}
+
+.cardValueSub {
+  font-size: 13px;
+  color: #999;
+  font-weight: 400;
+}
+.navLogoImg {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+/* .imagePanel {
+  background: #E1F5EE;
+  border-radius: 20px;
+  border: 0.5px solid #9FE1CB;
+  height: 420px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+} */
+
+.cardGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  width: 100%;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.statCard {
+  background: #fff;
+  border: 0.5px solid #e8e8e4;
+  border-radius: 16px;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.statCardWide {
+  grid-column: span 2;
+  background: #E1F5EE;
+  border: 0.5px solid #9FE1CB;
+  align-items: center;
+  text-align: center;
+}
+
+.statCardValue {
+  font-size: 2rem;
+  font-weight: 500;
+  color: #1D9E75;
+}
+
+.statCardLabel {
+  font-size: 13px;
+  color: #888;
+}
+
+.statCardSmallLabel {
+  font-size: 12px;
+  font-weight: 500;
+  color: #0F6E56;
+}
+
+.statCardRace {
+  font-size: 15px;
+  font-weight: 500;
+  color: #085041;
+  margin-top: 2px;
+}
+
+.mobileCards {
+  display: none;
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .main {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    padding: 2rem 0;
   }
-  
-  .hero {
-    width: 100%;
-    max-width: 1200px;
-    background: #ffffff;
-    border-radius: 32px;
-    box-shadow: 0 25px 80px rgba(0, 0, 0, 0.15);
-    overflow: hidden;
-  }
-  
-  .content {
-    padding: 3rem;
-  }
-  
-  .logoSection {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-  
-  .logo {
-    display: inline-block;
-    font-size: 3rem;
-    font-weight: 900;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    letter-spacing: 0.1em;
-    margin-bottom: 0.5rem;
-  }
-  
-  .appName {
-    font-size: 2.5rem;
-    font-weight: 600;
-    color: #3656e6;
-    margin: 0;
-    letter-spacing: 0.05em;
-  }
-  
-  .mainSection {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 3rem;
-    align-items: center;
-    margin-bottom: 3rem;
-  }
-  
-  .textContent {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-  
-  .tagline {
-    font-size: 2.5rem;
-    font-weight: 800;
-    color: #1a202c;
-    line-height: 1.2;
-    margin: 0;
-  }
-  
-  .highlight {
-    background: linear-gradient(135deg, #3656e6 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+ .mobileCards {
     display: block;
-  }
-  
-  .description {
-    font-size: 1.1rem;
-    color: #4a5568;
-    line-height: 1.7;
-    margin: 0;
-  }
-  
-  .buttonGroup {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    margin: 7rem 0;
-  }
-  
-  .illustrationSection {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-  }
-  
-  .shoeContainer {
-    position: relative;
-    width: 100%;
-    max-width: 300px;
-    animation: float 3s ease-in-out infinite;
-  }
-  
-  @keyframes float {
-    0%, 100% {
-      transform: translateY(0px);
-    }
-    50% {
-      transform: translateY(-20px);
-    }
-  }
-  
-  .shoe {
-    width: 100%;
-    height: auto;
-    filter: drop-shadow(0 10px 30px rgba(102, 126, 234, 0.3));
-  }
-  
-  .motionLines {
-    position: absolute;
-    right: -30px;
-    top: 50%;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-  }
-  
-  .line {
-    height: 3px;
-    background: linear-gradient(90deg, rgba(102, 126, 234, 0.6), transparent);
-    border-radius: 2px;
-    animation: moveLine 1.5s ease-in-out infinite;
-  }
-  
-  .line:nth-child(1) {
-    width: 40px;
-    animation-delay: 0s;
-  }
-  
-  .line:nth-child(2) {
-    width: 60px;
-    animation-delay: 0.2s;
-  }
-  
-  .line:nth-child(3) {
-    width: 50px;
-    animation-delay: 0.4s;
-  }
-  
-  @keyframes moveLine {
-    0%, 100% {
-      opacity: 0.3;
-      transform: translateX(0);
-    }
-    50% {
-      opacity: 1;
-      transform: translateX(10px);
-    }
-  }
-  
-  .features {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1.5rem;
-    padding-top: 2rem;
-    border-top: 2px solid #e2e8f0;
-  }
-  
-  .feature {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1.5rem 1rem;
-    background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    cursor: default;
-  }
-  
-  .feature:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.15);
-  }
-  
-  .icon {
-    font-size: 2rem;
-  }
-  
-  .featureText {
-    font-size: 0.95rem;
-    font-weight: 600;
-    color: #2d3748;
-    text-align: center;
-  }
-  
-  /* Tablet */
-  @media (max-width: 968px) {
-    .content {
-      padding: 2rem;
-    }
-  
-    .mainSection {
-      grid-template-columns: 1fr;
-      gap: 2rem;
-    }
-  
-    .illustrationSection {
-      order: -1;
-    }
-  
-    .tagline {
-      font-size: 2rem;
-      text-align: center;
-    }
-  
-    .description {
-      font-size: 1rem;
-      text-align: center;
-    }
-  
-    .buttonGroup {
-      justify-content: center;
-    }
-  
-    .features {
-      grid-template-columns: repeat(2, 1fr);
-    }
-  }
-  
-  /* Mobile */
-  @media (max-width: 640px) {
-    .container {
-      padding: 1rem;
-    }
-  
-    .hero {
-      border-radius: 24px;
-    }
-  
-    .content {
-      padding: 1.5rem;
-    }
-  
-    .logo {
-      font-size: 2.5rem;
-    }
-  
-    .appName {
-      font-size: 1.2rem;
-    }
-  
-    .logoSection {
-      margin-bottom: 2rem;
-    }
-  
-    .mainSection {
-      gap: 1.5rem;
-      margin-bottom: 2rem;
-    }
-  
-    .tagline {
-      font-size: 1.75rem;
-    }
-  
-    .highlight {
-      display: inline;
-    }
-  
-    .description {
-      font-size: 0.95rem;
-    }
-  
-    .buttonGroup {
-      flex-direction: column;
-      width: 100%;
-    }
-  
-    .shoeContainer {
-      max-width: 200px;
-    }
-  
-    .features {
-      grid-template-columns: 1fr 1fr;
-      gap: 1rem;
-    }
-  
-    .feature {
-      padding: 1rem 0.75rem;
-    }
-  
-    .icon {
-      font-size: 1.5rem;
-    }
-  
-    .featureText {
-      font-size: 0.85rem;
-    }
-  }
-  
-  @media (max-width: 400px) {
-    .features {
-      grid-template-columns: 1fr;
-    }
+    margin-top: 1.5rem;
   }
 
-  .shoeImage {
-    width: 100%;
-    height: auto;
-    max-width: 300px;
+  .imageCol {
+    display: none;
   }
+
+  .heroImage {
+    height: 260px;
+  }
+
+  .headline {
+    font-size: 2rem;
+  }
+
+  .cardTopRight,
+  .cardBottomLeft {
+    display: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 0 1.25rem;
+  }
+
+  .headline {
+    font-size: 1.5rem;
+  }
+
+  .description {
+    font-size: 0.9rem;
+  }
+
+  .ctaButtons {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .ctaButtons > * {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .stats {
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .statDivider {
+    display: none;
+  }
+
+  .navLogoText {
+    font-size: 13px;
+  }
+
+  .heroImage {
+    height: 200px;
+  }
+}
