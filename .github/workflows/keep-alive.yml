@@ -1,0 +1,11 @@
+name: Keep Supabase Alive
+on:
+  schedule:
+    - cron: '0 0 */5 * *'  # every 5 days
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping backend
+        run: curl https://chase-runner-backend.vercel.app/health
