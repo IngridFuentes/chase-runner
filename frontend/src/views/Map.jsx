@@ -13,7 +13,7 @@ import styles from "../styles/Map.module.css";
 import useMapData from "../hooks/useMapData.js";
 import SearchIcon from "@mui/icons-material/Search";
 import CloseIcon from "@mui/icons-material/Close";
-import Banner from "../components/Banner.js";
+import Banner from "../components/Banner.jsx";
 import { useAuth0 } from "@auth0/auth0-react";
 import RunningShoesSpinner from "./RunningShoesSpinner.jsx";
 import AIAssistant from "./AIAssistant";
@@ -51,6 +51,11 @@ const Map = () => {
   const [isAIOpen, setIsAIOpen] = useState(false);
   const [selectedStateData, setSelectedStateData] = useState(null);
   const [isStatePanelOpen, setIsStatePanelOpen] = useState(false);
+  const searchContainerRef = useRef(null);
+  const [dropdownStyle, setDropdownStyle] = useState({});
+  const [aiSuggestion, setAiSuggestion] = useState(null);
+  const [suggestionLoading, setSuggestionLoading] = useState(true);
+
 
   const { user, isAuthenticated, getAccessTokenSilently } = useAuth0();
 
@@ -559,6 +564,101 @@ const Map = () => {
     }
   };
 
+useEffect(() => {
+  const updateDropdownPosition = () => {
+    if (searchContainerRef.current) {
+      const rect = searchContainerRef.current.getBoundingClientRect();
+      const viewportWidth = window.innerWidth;
+      
+      // Clamp so dropdown never goes outside viewport
+      let left = rect.left;
+      let width = rect.width;
+      
+      if (left + width > viewportWidth - 8) {
+        width = viewportWidth - left - 8;
+      }
+      if (left < 8) {
+        left = 8;
+        width = viewportWidth - 16;
+      }
+
+      setDropdownStyle({
+        position: 'fixed',
+        top: rect.bottom + 4,
+        left: left,
+        width: width,
+        zIndex: 9999,
+      });
+    }
+  };
+
+  if (isDropdownVisible) {
+    updateDropdownPosition();
+    window.addEventListener('resize', updateDropdownPosition);
+  }
+
+  return () => {
+    window.removeEventListener('resize', updateDropdownPosition);
+  };
+}, [isDropdownVisible, cityName]);
+
+useEffect(() => {
+  const fetchAISuggestion = async () => {
+    if (!savedPlaces || savedPlaces.length === 0) return;
+    if (!user?.sub) return;
+
+    const cacheKey = `aiSuggestion_${user.sub}`;
+    const cacheTimeKey = `aiSuggestionTime_${user.sub}`;
+    const oneDayMs = 24 * 60 * 60 * 1000;
+
+    const cached = localStorage.getItem(cacheKey);
+    const cachedTime = localStorage.getItem(cacheTimeKey);
+
+    if (cached && cachedTime && Date.now() - parseInt(cachedTime) < oneDayMs) {
+      setAiSuggestion(cached);
+      setSuggestionLoading(false);
+      return;
+    }
+
+    try {
+      setSuggestionLoading(true);
+      const token = await getAccessTokenSilently();
+      const visitedStates = [...new Set(savedPlaces.map(p => p.name))];
+      const today = new Date().toLocaleDateString('en-US', {
+        year: 'numeric', month: 'long', day: 'numeric'
+      });
+
+      const response = await fetch(`${process.env.REACT_APP_BACKEND_URL}/api/ai/chat`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          message: `Today is ${today}. I have already run in these states: ${visitedStates.join(', ')}. Suggest ONE real upcoming race (after today) in a state I haven't visited. Only suggest races that actually exist and are scheduled after ${today}. Reply with ONLY this format: "RaceName, City, State, Month Year" — nothing else.`,
+          userRunData: userRunData,
+          conversationHistory: [],
+        }),
+      });
+
+      const data = await response.json();
+      if (data.success && data.reply) {
+        const suggestion = data.reply.trim();
+        setAiSuggestion(suggestion);
+        setSuggestionLoading(false);
+        localStorage.setItem(cacheKey, suggestion);
+        localStorage.setItem(cacheTimeKey, Date.now().toString());
+      }
+    } catch (err) {
+      console.error('AI suggestion error:', err);
+      setSuggestionLoading(false);
+    }
+  };
+
+  fetchAISuggestion();
+}, [savedPlaces, user?.sub]);
+
+
   if (loading) {
     return <RunningShoesSpinner />;
   }
@@ -584,203 +684,433 @@ const Map = () => {
     return null;
   };
 
+  // return (
+  //   <div className={styles.appContainer}>
+  //     {/* Main Content Area */}
+  //     <div
+  //       className={`${styles.mainContent} ${isAIOpen ? styles.splitView : ""}`}
+  //     >
+  //       <Banner />
+  //       <br />
+  //       <div className={styles.search}>
+  //         <div className={styles.searchInput}>
+  //           <input
+  //             ref={inputRef}
+  //             type="text"
+  //             className={styles.inputField}
+  //             placeholder="Search by City"
+  //             value={cityName}
+  //             onChange={handleChange}
+  //             onKeyDown={handleCityKeyDown}
+  //           />
+  //           <div className={styles.searchIcon}>
+  //             {cityName === "" ? (
+  //               <SearchIcon className={styles.searchIcon} />
+  //             ) : (
+  //               <CloseIcon
+  //                 onClick={() => {
+  //                   setCityName("");
+  //                   setFilteredData([]);
+  //                   setIsDropdownVisible(false);
+  //                 }}
+  //                 className={styles.closeIcon}
+  //               />
+  //             )}
+  //           </div>
+  //         </div>
+  //       </div>
+
+  //       {data.features !== undefined &&
+  //         isDropdownVisible &&
+  //         filteredData.length > 0 && (
+  //           <div className={styles.dropdown}>
+  //             <div className={styles.listCheckbox}>
+  //               <h3 className={styles.raceTypeSentence}>Race Type</h3>
+  //             </div>
+  //             {filteredData.map((d, index) => (
+  //               <div key={index} className={styles.dropdownRow}>
+  //                 <div
+  //                   onClick={() => {
+  //                     handleCitySelection(d);
+  //                     setIsDropdownVisible(false);
+  //                   }}
+  //                   className={styles.list}
+  //                 >
+  //                   {d.properties.city}, {d.properties.state}
+  //                 </div>
+
+  //                 <div className={styles.marathonTypeDropdown}>
+  //                   <Select
+  //                     options={marathonTypeOptions}
+  //                     isSearchable={false}
+  //                     value={selectedMarathonType[index]}
+  //                     onChange={(value) => handleMarathonType(index, value)}
+  //                     onClick={(value) => handleMarathonType(index, value)}
+  //                     placeholder="Select..."
+  //                     styles={{
+  //                       control: (provided) => ({
+  //                         ...provided,
+  //                         width: "117px",
+  //                       }),
+  //                       option: (provided, state) => ({
+  //                         ...provided,
+  //                         backgroundColor: state.isFocused
+  //                           ? "#f0f0f0"
+  //                           : "white",
+  //                         color: state.isFocused ? "#000" : "#333",
+  //                         cursor: "pointer",
+  //                         zIndex: 1000,
+  //                       }),
+  //                     }}
+  //                   />
+  //                 </div>
+  //               </div>
+  //             ))}
+  //           </div>
+  //         )}
+
+  //       {showPopup && (
+  //         <div className={styles.popup}>
+  //           <div className={styles.popupContent}>
+  //             <span className={styles.close} onClick={handleClosePopup}>
+  //               &times;
+  //             </span>
+  //             <h2>Congratulations!</h2>
+  //             <p>You have completed a race.</p>
+  //           </div>
+  //         </div>
+  //       )}
+
+  //       {showConfetti && (
+  //         <div className={styles.confetti}>
+  //           <ConfettiExplosion
+  //             force={0.8}
+  //             duration={5000}
+  //             particleCount={500}
+  //             width={2000}
+  //             angle={180}
+  //             gravity={0}
+  //             zIndex={10000}
+  //           />
+  //         </div>
+  //       )}
+
+  //       <div className={styles.mapBackground}>
+  //         <MapContainer
+  //           center={[39.8283, -98.5795]}
+  //           zoom={4}
+  //           className={styles.leafletContainer}
+  //           zoomControl={false}
+  //         >
+  //           <TileLayer
+  //             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+  //             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+  //           />
+
+  //           <MapResizer isAIOpen={isAIOpen} />
+
+  //           {savedPlaces.map((place) => (
+  //             <GeoJSON
+  //               key={place.id}
+  //               data={place.geojson}
+  //               style={{ color: place.color }}
+  //               eventHandlers={{
+  //                 click: () => handleStateClick(place.name),
+  //               }}
+  //             >
+  //               <Popup>
+  //                 {place.name}: {place.description}
+  //                 <button
+  //                   onClick={() => handleDeletePlace(place.id)}
+  //                   style={{
+  //                     marginLeft: "10px",
+  //                     color: "red",
+  //                     border: "none",
+  //                   }}
+  //                 >
+  //                   Delete
+  //                 </button>
+  //               </Popup>
+  //             </GeoJSON>
+  //           ))}
+  //         </MapContainer>
+  //       </div>
+
+  //       <div className={styles.cardContainer}>
+  //         <div className={styles.card}>
+  //           <h2 className={styles.cardSentence}>Runs So Far</h2>
+  //           <div className={styles.marathonCount}>{totalRuns}</div>
+  //         </div>
+  //         <div className={styles.secondCard}>
+  //           <h2 className={styles.cardSentence}>Number of States</h2>
+  //           <div className={styles.marathonCount}>{totalStates}</div>
+  //         </div>
+  //       </div>
+
+  //       {!isAIOpen && (
+  //         <button
+  //           className={styles.aiToggleButton}
+  //           onClick={() => setIsAIOpen(true)}
+  //         >
+  //           🤖 AI Assistant
+  //         </button>
+  //       )}
+  //     </div>
+
+  //     {isAIOpen && (
+  //       <div className={styles.aiPanel}>
+  //         <div className={styles.aiPanelHeader}>
+  //           <h3>AI Running Coach</h3>
+  //           <button
+  //             className={styles.closeAIButton}
+  //             onClick={() => setIsAIOpen(false)}
+  //           >
+  //             ✕
+  //           </button>
+  //         </div>
+  //         <div className={styles.aiPanelContent}>
+  //           <AIAssistant userRunData={userRunData} />
+  //         </div>
+  //       </div>
+  //     )}
+
+  //     <StateDetailsPanel
+  //       isOpen={isStatePanelOpen}
+  //       onClose={() => setIsStatePanelOpen(false)}
+  //       stateData={selectedStateData}
+  //     />
+  //   </div>
+  // );
+
+
   return (
-    <div className={styles.appContainer}>
-      {/* Main Content Area */}
-      <div
-        className={`${styles.mainContent} ${isAIOpen ? styles.splitView : ""}`}
-      >
-        <Banner />
-        <br />
-        <div className={styles.search}>
-          <div className={styles.searchInput}>
-            <input
-              ref={inputRef}
-              type="text"
-              className={styles.inputField}
-              placeholder="Search by City"
-              value={cityName}
-              onChange={handleChange}
-              onKeyDown={handleCityKeyDown}
-            />
-            <div className={styles.searchIcon}>
-              {cityName === "" ? (
-                <SearchIcon className={styles.searchIcon} />
-              ) : (
-                <CloseIcon
+  <div className={styles.appContainer}>
+    <div className={`${styles.mainContent} ${isAIOpen ? styles.splitView : ""}`}>
+
+      {/* Banner with search */}
+      <Banner
+        cityName={cityName}
+        setCityName={setCityName}
+        handleChange={handleChange}
+        handleCityKeyDown={handleCityKeyDown}
+        inputRef={inputRef}
+        setFilteredData={setFilteredData}
+        setIsDropdownVisible={setIsDropdownVisible}
+        searchContainerRef={searchContainerRef}
+      />
+
+      {/* Dropdown — anchored below banner, centered */}
+      <div className={styles.dropdownAnchor}>
+        {data.features !== undefined && isDropdownVisible && filteredData.length > 0 && (
+          <div className={styles.dropdown} style={dropdownStyle}>
+            <div className={styles.listCheckbox}>
+              <h3 className={styles.raceTypeSentence}>Race Type</h3>
+            </div>
+            {filteredData.map((d, index) => (
+              <div key={index} className={styles.dropdownRow}>
+                <div
                   onClick={() => {
-                    setCityName("");
-                    setFilteredData([]);
+                    handleCitySelection(d);
                     setIsDropdownVisible(false);
                   }}
-                  className={styles.closeIcon}
-                />
-              )}
-            </div>
-          </div>
-        </div>
-
-        {data.features !== undefined &&
-          isDropdownVisible &&
-          filteredData.length > 0 && (
-            <div className={styles.dropdown}>
-              <div className={styles.listCheckbox}>
-                <h3 className={styles.raceTypeSentence}>Race Type</h3>
-              </div>
-              {filteredData.map((d, index) => (
-                <div key={index} className={styles.dropdownRow}>
-                  <div
-                    onClick={() => {
-                      handleCitySelection(d);
-                      setIsDropdownVisible(false);
-                    }}
-                    className={styles.list}
-                  >
-                    {d.properties.city}, {d.properties.state}
-                  </div>
-
-                  <div className={styles.marathonTypeDropdown}>
-                    <Select
-                      options={marathonTypeOptions}
-                      isSearchable={false}
-                      value={selectedMarathonType[index]}
-                      onChange={(value) => handleMarathonType(index, value)}
-                      onClick={(value) => handleMarathonType(index, value)}
-                      placeholder="Select..."
-                      styles={{
-                        control: (provided) => ({
-                          ...provided,
-                          width: "117px",
-                        }),
-                        option: (provided, state) => ({
-                          ...provided,
-                          backgroundColor: state.isFocused
-                            ? "#f0f0f0"
-                            : "white",
-                          color: state.isFocused ? "#000" : "#333",
-                          cursor: "pointer",
-                          zIndex: 1000,
-                        }),
-                      }}
-                    />
-                  </div>
+                  className={styles.list}
+                >
+                  {d.properties.city}, {d.properties.state}
                 </div>
-              ))}
-            </div>
-          )}
-
-        {showPopup && (
-          <div className={styles.popup}>
-            <div className={styles.popupContent}>
-              <span className={styles.close} onClick={handleClosePopup}>
-                &times;
-              </span>
-              <h2>Congratulations!</h2>
-              <p>You have completed a race.</p>
-            </div>
-          </div>
-        )}
-
-        {showConfetti && (
-          <div className={styles.confetti}>
-            <ConfettiExplosion
-              force={0.8}
-              duration={5000}
-              particleCount={500}
-              width={2000}
-              angle={180}
-              gravity={0}
-              zIndex={10000}
-            />
-          </div>
-        )}
-
-        <div className={styles.mapBackground}>
-          <MapContainer
-            center={[39.8283, -98.5795]}
-            zoom={4}
-            className={styles.leafletContainer}
-            zoomControl={false}
-          >
-            <TileLayer
-              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-            />
-
-            <MapResizer isAIOpen={isAIOpen} />
-
-            {savedPlaces.map((place) => (
-              <GeoJSON
-                key={place.id}
-                data={place.geojson}
-                style={{ color: place.color }}
-                eventHandlers={{
-                  click: () => handleStateClick(place.name),
-                }}
-              >
-                <Popup>
-                  {place.name}: {place.description}
-                  <button
-                    onClick={() => handleDeletePlace(place.id)}
-                    style={{
-                      marginLeft: "10px",
-                      color: "red",
-                      border: "none",
+                <div className={styles.marathonTypeDropdown}>
+                  {/* <Select
+                    options={marathonTypeOptions}
+                    isSearchable={false}
+                    value={selectedMarathonType[index]}
+                    onChange={(value) => handleMarathonType(index, value)}
+                    onClick={(value) => handleMarathonType(index, value)}
+                    placeholder="Select..."
+                    styles={{
+                      control: (provided) => ({ ...provided, width: "117px" }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isFocused ? "#f0f0f0" : "white",
+                        color: state.isFocused ? "#000" : "#333",
+                        cursor: "pointer",
+                        zIndex: 1000,
+                      }),
                     }}
-                  >
-                    Delete
-                  </button>
-                </Popup>
-              </GeoJSON>
+                  /> */}
+                  <Select
+                    options={marathonTypeOptions}
+                    isSearchable={false}
+                    value={selectedMarathonType[index]}
+                    onChange={(value) => handleMarathonType(index, value)}
+                    onClick={(value) => handleMarathonType(index, value)}
+                    placeholder="Select..."
+                    styles={{
+                      control: (provided) => ({
+                        ...provided,
+                        width: "120px",
+                        height: "32px",
+                        minHeight: "32px",
+                        border: "0.5px solid #e0e0dc",
+                        borderRadius: "6px",
+                        fontSize: "12px",
+                        boxShadow: "none",
+                        cursor: "pointer",
+                      }),
+                      valueContainer: (provided) => ({
+                        ...provided,
+                        padding: "0 8px",
+                      }),
+                      dropdownIndicator: (provided) => ({
+                        ...provided,
+                        padding: "0 6px",
+                        color: "#888",
+                      }),
+                      indicatorSeparator: () => ({ display: "none" }),
+                      option: (provided, state) => ({
+                        ...provided,
+                        backgroundColor: state.isFocused ? "#E1F5EE" : "white",
+                        color: state.isFocused ? "#0F6E56" : "#333",
+                        fontSize: "12px",
+                        cursor: "pointer",
+                      }),
+                      placeholder: (provided) => ({
+                        ...provided,
+                        color: "#aaa",
+                        fontSize: "12px",
+                      }),
+                    }}
+                  />
+                </div>
+              </div>
             ))}
-          </MapContainer>
-        </div>
-
-        <div className={styles.cardContainer}>
-          <div className={styles.card}>
-            <h2 className={styles.cardSentence}>Runs So Far</h2>
-            <div className={styles.marathonCount}>{totalRuns}</div>
           </div>
-          <div className={styles.secondCard}>
-            <h2 className={styles.cardSentence}>Number of States</h2>
-            <div className={styles.marathonCount}>{totalStates}</div>
-          </div>
-        </div>
-
-        {!isAIOpen && (
-          <button
-            className={styles.aiToggleButton}
-            onClick={() => setIsAIOpen(true)}
-          >
-            🤖 AI Assistant
-          </button>
         )}
       </div>
 
-      {isAIOpen && (
-        <div className={styles.aiPanel}>
-          <div className={styles.aiPanelHeader}>
-            <h3>AI Running Coach</h3>
-            <button
-              className={styles.closeAIButton}
-              onClick={() => setIsAIOpen(false)}
-            >
-              ✕
-            </button>
-          </div>
-          <div className={styles.aiPanelContent}>
-            <AIAssistant userRunData={userRunData} />
+      {/* Stat bar */}
+      <div className={styles.statBar}>
+        <div className={styles.statBarItem}>
+          <span className={styles.statBarValue}>{totalRuns}</span>
+          <span className={styles.statBarLabel}>Runs so far</span>
+        </div>
+        <div className={styles.statBarDivider} />
+        <div className={styles.statBarItem}>
+          <span className={styles.statBarValue}>{totalStates}</span>
+          <span className={styles.statBarLabel}>States visited</span>
+        </div>
+        <div className={styles.statBarDivider} />
+        <div className={styles.statBarItem}>
+          <span className={styles.statBarValue}>{50 - totalStates}</span>
+          <span className={styles.statBarLabel}>States to go</span>
+        </div>
+        <div className={styles.statBarDivider} />
+        <div className={`${styles.statBarItem} ${styles.statBarAI}`}>
+          {suggestionLoading ? (
+            <>
+              <span className={styles.statBarValue}>...</span>
+              <span className={styles.statBarLabel}>Finding next race</span>
+            </>
+          ) : aiSuggestion ? (
+            <>
+              <span className={styles.statBarValue}>{aiSuggestion}</span>
+              <span className={styles.statBarLabel}>AI next suggestion</span>
+            </>
+          ) : (
+            <>
+              <span className={styles.statBarValue}>Add a run</span>
+              <span className={styles.statBarLabel}>To get suggestions</span>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Popup */}
+      {showPopup && (
+        <div className={styles.popup}>
+          <div className={styles.popupContent}>
+            <span className={styles.close} onClick={handleClosePopup}>&times;</span>
+            <h2>Congratulations!</h2>
+            <p>You have completed a race.</p>
           </div>
         </div>
       )}
 
-      <StateDetailsPanel
-        isOpen={isStatePanelOpen}
-        onClose={() => setIsStatePanelOpen(false)}
-        stateData={selectedStateData}
-      />
+      {/* Confetti */}
+      {showConfetti && (
+        <div className={styles.confetti}>
+          <ConfettiExplosion
+            force={0.8} duration={5000} particleCount={500}
+            width={2000} angle={180} gravity={0} zIndex={10000}
+          />
+        </div>
+      )}
+
+      {/* Map */}
+      <div className={styles.mapBackground}>
+        <MapContainer
+          center={[39.8283, -98.5795]}
+          zoom={4}
+          className={styles.leafletContainer}
+          zoomControl={false}
+        >
+          <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          />
+          <MapResizer isAIOpen={isAIOpen} />
+          {savedPlaces.map((place) => (
+            <GeoJSON
+              key={place.id}
+              data={place.geojson}
+              style={{ color: place.color }}
+              eventHandlers={{ click: () => handleStateClick(place.name) }}
+            >
+              <Popup>
+                {place.name}: {place.description}
+                <button
+                  onClick={() => handleDeletePlace(place.id)}
+                  style={{ marginLeft: "10px", color: "red", border: "none" }}
+                >
+                  Delete
+                </button>
+              </Popup>
+            </GeoJSON>
+          ))}
+        </MapContainer>
+      </div>
+
+      {!isAIOpen && (
+        <button className={styles.aiToggleButton} onClick={() => setIsAIOpen(true)}>
+          <i className="ti ti-robot" /> 🤖 Coach Chase
+        </button>
+      )}
     </div>
-  );
+
+    {/* AI Panel */}
+    {isAIOpen && (
+      <div className={styles.aiPanel}>
+        <div className={styles.aiPanelHeader}>
+          <h3>AI Running Coach</h3>
+          <button className={styles.closeAIButton} onClick={() => setIsAIOpen(false)}>✕</button>
+        </div>
+        <div className={styles.aiPanelContent}>
+          <AIAssistant
+            userRunData={userRunData}
+            onSuggestionReady={(suggestion) => {
+              setAiSuggestion(suggestion);
+              setSuggestionLoading(false);
+            }}
+          />
+        </div>
+      </div>
+    )}
+
+    <StateDetailsPanel
+      isOpen={isStatePanelOpen}
+      onClose={() => setIsStatePanelOpen(false)}
+      stateData={selectedStateData}
+    />
+  </div>
+);
 };
 
 export default Map;

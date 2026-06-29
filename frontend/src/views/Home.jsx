@@ -27,7 +27,10 @@ const Home = () => {
       <nav className={styles.nav}>
         <div className={styles.navLogo}>
           <img src={runner} alt="Chase Runner logo" className={styles.navLogoImg} />
-          <span className={styles.navLogoText}>Chase Runner</span>
+          {/* <span className={styles.navLogoText}>Chase Runner</span> */}
+                  <span className={styles.brandName}>
+                    Chase <span className={styles.brandAccent}>Runner</span>
+                  </span>
         </div>
         <div className={styles.navButtons}>
           <Login />

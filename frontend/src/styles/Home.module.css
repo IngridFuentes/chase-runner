@@ -338,4 +338,18 @@
   .heroImage {
     height: 200px;
   }
+  .brandName {
+    font-size: 13px;
+    white-space: nowrap;
+  }
+}
+.brandName {
+  font-size: 16px;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: -0.02em;
+}
+
+.brandAccent {
+  color: #1D9E75;
 }
