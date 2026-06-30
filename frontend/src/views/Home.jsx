@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import Login from "./Login";
 import Signup from "./Signup";
 import styles from "../styles/Home.module.css";
 import runner from "../image/runner.jpg";
+import PublicAIChat from "./PublicAIChat";
 
 const Home = () => {
+  const [showAIChat, setShowAIChat] = useState(false);
+
   const Cards = () => (
     <div className={styles.cardGrid}>
       <div className={styles.statCard}>
@@ -64,6 +67,13 @@ const Home = () => {
               <span className={styles.statLabel}>Forever plan</span>
             </div>
           </div>
+           <button
+            className={styles.publicAIBtn}
+            onClick={() => setShowAIChat(true)}
+          >
+            <i className="ti ti-robot" aria-hidden="true" />
+            🤖 Ask Coach Chase — no account needed
+          </button>
           {/* Cards visible only on mobile */}
           <div className={styles.mobileCards}>
             <Cards />
@@ -75,6 +85,7 @@ const Home = () => {
           <Cards />
         </div>
       </main>
+      {showAIChat && <PublicAIChat onClose={() => setShowAIChat(false)} />}
     </div>
   );
 };

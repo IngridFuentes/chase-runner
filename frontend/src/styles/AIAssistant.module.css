@@ -75,13 +75,32 @@
 }
 
 .ai .messageContent strong {
-  color: #1D9E75;
+  color: #0e0e0e;
 }
 
-.messageContent strong {
+/* .messageContent strong {
   display: block;
   margin-bottom: 0.4rem;
   font-size: 0.85rem;
+} */
+
+.messageLabel {
+  display: block;
+  margin-bottom: 0.4rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+.ai .messageLabel {
+  color: #1D9E75;
+}
+
+.user .messageLabel {
+  color: #E1F5EE;
+}
+
+.messageContent strong {
+  font-weight: 600;
 }
 
 .messageContent p {
@@ -276,4 +295,13 @@
   .statsFooter {
     padding: 0.75rem;
   }
+}
+.messageContent ul {
+  margin: 0.5rem 0;
+  padding-left: 1.25rem;
+}
+
+.messageContent li {
+  margin-bottom: 0.25rem;
+  line-height: 1.6;
 }

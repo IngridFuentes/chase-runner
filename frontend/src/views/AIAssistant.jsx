@@ -4,6 +4,17 @@ import styles from "../styles/AIAssistant.module.css";
 
 const API_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:3000';
 
+const formatMessage = (text) => {
+  let formatted = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^\* (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')
+    .replace(/\n\n/g, '<br/><br/>')
+    .replace(/\n/g, ' ');
+
+  return <span dangerouslySetInnerHTML={{ __html: formatted }} />;
+};
+
 const AIAssistant = ({ userRunData }) => {
   const [messages, setMessages] = useState([
     {
@@ -98,11 +109,21 @@ const AIAssistant = ({ userRunData }) => {
       console.error("Error name:", error.name);
       console.error("Error message:", error.message);
       console.error("Full error:", error);
+
+      const isQuotaExceeded = error.message?.includes('429') || error.message?.includes('RESOURCE_EXHAUSTED');
+      const isOverloaded = error.message?.includes('UNAVAILABLE') || error.message?.includes('503');
+
+      let friendlyMessage = "Something went wrong. Please try again.";
+      if (isQuotaExceeded) {
+        friendlyMessage = "I've hit my daily limit for responses. Please try again tomorrow, or contact support if this keeps happening.";
+      } else if (isOverloaded) {
+        friendlyMessage = "I'm a bit overloaded right now! Please try asking again in a moment.";
+      }
       setMessages((prev) => [
         ...prev,
         {
           role: "ai",
-          text: `Error: ${error.message}`,
+          text: friendlyMessage,
         },
       ]);
     } finally {
@@ -123,8 +144,8 @@ const AIAssistant = ({ userRunData }) => {
         {messages.map((msg, index) => (
           <div key={index} className={`${styles.message} ${styles[msg.role]}`}>
             <div className={styles.messageContent}>
-              <strong>{msg.role === "user" ? "You" : "🤖 Coach Chase"}:</strong>
-              <p>{msg.text}</p>
+              <span className={styles.messageLabel}>{msg.role === "user" ? "You" : "🤖 Coach Chase"}:</span>
+              <p>{formatMessage(msg.text)}</p>
             </div>
           </div>
         ))}
@@ -132,7 +153,7 @@ const AIAssistant = ({ userRunData }) => {
         {loading && (
           <div className={`${styles.message} ${styles.ai}`}>
             <div className={styles.messageContent}>
-              <strong>🤖 Coach:</strong>
+              <span className={styles.messageLabel}>🤖 Coach Chase:</span>
               <p className={styles.typing}>Planning your races...</p>
             </div>
           </div>

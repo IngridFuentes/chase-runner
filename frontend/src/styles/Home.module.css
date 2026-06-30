@@ -353,3 +353,25 @@
 .brandAccent {
   color: #1D9E75;
 }
+.publicAIBtn {
+  margin-top: 5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: #E1F5EE;
+  border: 0.5px solid #9FE1CB;
+  border-radius: 8px;
+  color: #085041;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: fit-content;
+}
+
+.publicAIBtn:hover {
+  background: #1D9E75;
+  color: #fff;
+  border-color: #1D9E75;
+}

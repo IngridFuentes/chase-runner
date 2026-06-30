@@ -51,27 +51,110 @@ app.options('*', cors(corsOptions))
 // const port = process.env.PORT || 3000; //do not change this in PRODUCTION. Just do NOT change!
 // const backendUrl = "https://chase-runner-backend.vercel.app"
 
-app.get('/debug-config', (req, res) => {
-  res.json({
-    nodeEnv: process.env.NODE_ENV,
-    corsOrigin: config.corsOrigin,
-  });
-});
+// app.get('/debug-config', (req, res) => {
+//   res.json({
+//     nodeEnv: process.env.NODE_ENV,
+//     corsOrigin: config.corsOrigin,
+//   });
+// });
 
-app.use((req, res, next) => {
-  console.log('\n=== BACKEND INCOMING REQUEST ===');
-  console.log('Method:', req.method);
-  console.log('Path:', req.path);
-  console.log('Headers:', {
-    authorization: req.headers.authorization ? 'Present ✓' : 'Missing ✗',
-    'content-type': req.headers['content-type']
-  });
+// app.use((req, res, next) => {
+//   console.log('\n=== BACKEND INCOMING REQUEST ===');
+//   console.log('Method:', req.method);
+//   console.log('Path:', req.path);
+//   console.log('Headers:', {
+//     authorization: req.headers.authorization ? 'Present ✓' : 'Missing ✗',
+//     'content-type': req.headers['content-type']
+//   });
   
-  if (req.headers.authorization) {
-    console.log('Auth header value:', req.headers.authorization.substring(0, 50) + '...');
+//   if (req.headers.authorization) {
+//     console.log('Auth header value:', req.headers.authorization.substring(0, 50) + '...');
+//   }
+  
+//   next();
+// });
+
+// Simple in-memory rate limiter
+const ipRequestCounts = new Map();
+
+const simpleRateLimit = (req, res, next) => {
+  const ip = (req.ip || '').replace(/^::ffff:/, '');
+  const now = Date.now();
+  const windowMs = 15 * 60 * 1000;
+  const max = 20;
+
+  const entry = ipRequestCounts.get(ip) || { count: 0, start: now };
+
+  if (now - entry.start > windowMs) {
+    entry.count = 1;
+    entry.start = now;
+  } else {
+    entry.count++;
   }
-  
+
+  ipRequestCounts.set(ip, entry);
+
+  if (entry.count > max) {
+    return res.status(429).json({ error: 'Too many requests, please try again later.' });
+  }
+
   next();
+};
+
+app.post('/public-chat', simpleRateLimit, async (req, res) => {
+  try {
+    const { message, conversationHistory } = req.body;
+
+    if (!message || message.trim() === '') {
+      return res.status(400).json({ error: 'Message is required' });
+    }
+
+    const { GoogleGenAI } = require('@google/genai');
+    const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+
+    const today = new Date().toLocaleDateString('en-US', {
+      year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    const systemPrompt = `You are Coach Chase, a friendly running assistant for Chase Runner app.
+
+      Today's date is ${today}.
+
+      You help anyone — logged in or not — with general running questions:
+      - Finding upcoming races across the US
+      - Explaining race distances (5K, 10K, half marathon, full marathon, ultra)
+      - General training advice and tips
+      - Information about specific races or locations
+      - Running gear and nutrition basics
+
+      Keep responses SHORT and friendly. When suggesting races, always include the month and year.
+      You do NOT have access to the user's personal race history — this is a general assistant.
+      If someone asks about their personal data or wants a personalized plan, encourage them to sign up for a free account.`;
+
+    let conversationContext = '';
+    if (conversationHistory && conversationHistory.length > 0) {
+      conversationContext = '\n\nConversation so far:\n';
+      conversationHistory.slice(-6).forEach(msg => {
+        conversationContext += `${msg.role === 'user' ? 'User' : 'Coach'}: ${msg.content}\n`;
+      });
+    }
+
+    const fullPrompt = `${systemPrompt}${conversationContext}\n\nUser: ${message}\n\nCoach Chase:`;
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-2.5-flash',
+      contents: fullPrompt,
+      config: {
+        tools: [{ googleSearch: {} }],
+      }
+    });
+
+    res.json({ success: true, reply: response.text });
+
+  } catch (error) {
+    console.error('Public AI error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
 });
 
 const verifyJwt = jwt({
@@ -92,7 +175,15 @@ const verifyJwt = jwt({
     return null;
   }
 
-}).unless({path: ['/', '/favicon.ico']});
+}).unless({ path: ['/', '/favicon.ico', '/public-chat'] });
+// Apply JWT only to protected routes — manually skip public ones
+// app.use((req, res, next) => {
+//   const publicPaths = ['/', '/favicon.ico', '/public-chat', '/debug-config', '/health'];
+//   if (publicPaths.includes(req.path)) {
+//     return next();
+//   }
+//   return verifyJwt(req, res, next);
+// });
 
 app.use(verifyJwt);
 
