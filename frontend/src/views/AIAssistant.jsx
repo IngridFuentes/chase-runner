@@ -46,17 +46,16 @@ const AIAssistant = ({ userRunData }) => {
   ];
 
   const handleSuggestionClick = (suggestion) => {
-    setInput(suggestion);
-    setShowSuggestions(false);
+    sendMessage(null, suggestion);
   };
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
+  const sendMessage = async (e, messageText = null) => {
+    if (e) e.preventDefault();
+    const textToSend = messageText || input;
+    if (!textToSend.trim() || loading) return;
 
-    const userMessage = { role: "user", text: input };
+    const userMessage = { role: "user", text: textToSend };
     setMessages((prev) => [...prev, userMessage]);
-    const currentInput = input;
     setInput("");
     setLoading(true);
     setShowSuggestions(false);
@@ -64,7 +63,7 @@ const AIAssistant = ({ userRunData }) => {
     try {
       const token = await getAccessTokenSilently();
 
-      // NEW: Include conversation history (last 10 messages for context)
+      // Include conversation history (last 10 messages for context)
       const conversationHistory = messages.slice(-10).map((msg) => ({
         role: msg.role === "user" ? "user" : "assistant",
         content: msg.text,
@@ -73,7 +72,7 @@ const AIAssistant = ({ userRunData }) => {
       // Add the current message
       conversationHistory.push({
         role: "user",
-        content: currentInput,
+        content: textToSend,
       });
 
       const headers = {
@@ -85,7 +84,7 @@ const AIAssistant = ({ userRunData }) => {
         method: "POST",
         headers: headers,
         body: JSON.stringify({
-          message: currentInput,
+          message: textToSend,
           userRunData: userRunData,
           conversationHistory: conversationHistory,
         }),
