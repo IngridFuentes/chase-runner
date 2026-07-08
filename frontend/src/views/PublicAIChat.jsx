@@ -36,13 +36,13 @@ const PublicAIChat = ({ onClose }) => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  const sendMessage = async (e) => {
-    e.preventDefault();
-    if (!input.trim() || loading) return;
+  const sendMessage = async (e, messageText = null) => {
+    if (e) e.preventDefault();
+    const textToSend = messageText || input;
+    if (!textToSend.trim() || loading) return;
 
-    const userMessage = { role: 'user', text: input };
+    const userMessage = { role: 'user', text: textToSend };
     setMessages(prev => [...prev, userMessage]);
-    const currentInput = input;
     setInput('');
     setLoading(true);
 
@@ -59,16 +59,12 @@ const PublicAIChat = ({ onClose }) => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          message: currentInput,
+          message: textToSend,
           conversationHistory,
         }),
       });
-      console.log('Response status:', response.status);
-      console.log('Response ok:', response.ok);
-
 
       const data = await response.json();
-      console.log(data, 'data')
 
       if (data.success) {
         setMessages(prev => [...prev, { role: 'ai', text: data.reply }]);
@@ -100,7 +96,7 @@ const PublicAIChat = ({ onClose }) => {
             </div>
             <div>
               <div className={styles.headerTitle}>🤖 Coach Chase</div>
-              <div className={styles.headerSub}>General race assistant · No account needed</div>
+              <div className={styles.headerSub}>General race assistant · No account needed!</div>
             </div>
           </div>
           <button className={styles.closeBtn} onClick={onClose} aria-label="Close">✕</button>
@@ -124,7 +120,7 @@ const PublicAIChat = ({ onClose }) => {
                 <button
                   key={i}
                   className={styles.suggestionBtn}
-                  onClick={() => setInput(s)}
+                  onClick={() => sendMessage(null, s)}
                 >
                   {s}
                 </button>

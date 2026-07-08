@@ -38,7 +38,7 @@
   }
   
   .panelHeader {
-    background: linear-gradient(135deg, #e1f5ee, #20a25f);
+    background: linear-gradient(135deg,#20a25f 0%, #e1f5ee 100%);
     color: white;
     padding: 20px;
     display: flex;
@@ -87,7 +87,7 @@
   }
   
   .totalRunsBox {
-    background: linear-gradient(135deg, #e1f5ee, #20a25f);
+    background: linear-gradient(135deg, #20a25f 0%, #e1f5ee 100%);
     padding: 25px;
     border-radius: 12px;
     text-align: center;
